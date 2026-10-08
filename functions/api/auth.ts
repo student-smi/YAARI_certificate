@@ -15,68 +15,117 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
     }
 
+    // Helper to format clean name from email
+    const cleanEmail = email.trim().toLowerCase();
+    const emailUserPart = cleanEmail.split('@')[0] || 'Member';
+    const autoName = emailUserPart
+      .replace(/[._-]+/g, ' ')
+      .replace(/\b\w/g, (c: string) => c.toUpperCase());
+    
+    const emailDomain = cleanEmail.split('@')[1] || '';
+    const autoOrg = emailDomain && !['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com'].includes(emailDomain)
+      ? emailDomain.split('.')[0].toUpperCase() + ' Organization'
+      : `${autoName}'s Team`;
+
+    const userAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name || autoName)}&background=000000&color=ffffff&bold=true`;
+
     if (action === 'signup') {
-      const existing = await env.DB.prepare('SELECT id FROM users WHERE email = ?').bind(email).first();
+      const existing = await env.DB.prepare('SELECT id, email, name, organization_name, role, plan FROM users WHERE email = ?').bind(cleanEmail).first();
       if (existing) {
-        return new Response(JSON.stringify({ error: 'User with this email already exists' }), {
-          status: 409,
+        return new Response(JSON.stringify({ 
+          success: true,
+          user: {
+            id: existing.id,
+            email: existing.email,
+            name: existing.name || autoName,
+            organizationName: existing.organization_name || autoOrg,
+            role: existing.role || 'member',
+            plan: existing.plan || 'starter',
+            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(existing.name || autoName)}&background=000000&color=ffffff&bold=true`
+          }
+        }), {
           headers: { 'Content-Type': 'application/json' }
         });
       }
 
       const id = `usr-${Date.now()}`;
+      const finalName = name?.trim() || autoName;
+      const finalOrg = organizationName?.trim() || autoOrg;
+
       await env.DB.prepare(
         'INSERT INTO users (id, email, name, password_hash, organization_name, role, plan, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
       ).bind(
         id,
-        email,
-        name || 'Admin',
+        cleanEmail,
+        finalName,
         password || '',
-        organizationName || 'Global Academy',
+        finalOrg,
         'owner',
-        'pro',
+        'starter',
         new Date().toISOString()
       ).run();
 
       return new Response(JSON.stringify({
         success: true,
-        user: { id, email, name, organizationName, plan: 'pro', role: 'owner' }
+        user: { 
+          id, 
+          email: cleanEmail, 
+          name: finalName, 
+          organizationName: finalOrg, 
+          plan: 'starter', 
+          role: 'owner',
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(finalName)}&background=000000&color=ffffff&bold=true`
+        }
       }), {
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
     if (action === 'login') {
-      let user = await env.DB.prepare('SELECT id, email, name, organization_name, role, plan FROM users WHERE email = ?').bind(email).first();
+      let user = await env.DB.prepare('SELECT id, email, name, organization_name, role, plan FROM users WHERE email = ?').bind(cleanEmail).first();
       
       if (!user) {
-        // Auto-provision demo session if testing
+        // Create account on first login for user's own identity
         const id = `usr-${Date.now()}`;
+        const finalName = name?.trim() || autoName;
+        const finalOrg = organizationName?.trim() || autoOrg;
+
         await env.DB.prepare(
           'INSERT INTO users (id, email, name, password_hash, organization_name, role, plan, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
         ).bind(
           id,
-          email,
-          'Tejas Gogavale',
+          cleanEmail,
+          finalName,
           password || '',
-          'DevStudio Global Academy',
+          finalOrg,
           'owner',
-          'pro',
+          'starter',
           new Date().toISOString()
         ).run();
 
-        user = { id, email, name: 'Tejas Gogavale', organization_name: 'DevStudio Global Academy', role: 'owner', plan: 'pro' };
+        user = { 
+          id, 
+          email: cleanEmail, 
+          name: finalName, 
+          organization_name: finalOrg, 
+          role: 'owner', 
+          plan: 'starter' 
+        };
       }
+
+      const finalName = (user.name && user.name !== 'Tejas Gogavale' && user.name !== 'Admin') ? user.name : (name?.trim() || autoName);
+      const finalOrg = (user.organization_name && user.organization_name !== 'DevStudio Global Academy') ? user.organization_name : (organizationName?.trim() || autoOrg);
 
       return new Response(JSON.stringify({
         success: true,
         user: {
           id: user.id,
           email: user.email,
-          name: user.name,
-          organizationName: user.organization_name,
-          role: user.role,
-          plan: user.plan
+          name: finalName,
+          organizationName: finalOrg,
+          role: user.role || 'owner',
+          plan: user.plan || 'starter',
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(finalName)}&background=000000&color=ffffff&bold=true`
         }
       }), {
         headers: { 'Content-Type': 'application/json' }

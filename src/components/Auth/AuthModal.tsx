@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { X, Award, Mail, Lock, User, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { X, Award, Mail, Lock, User, ArrowRight, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
 import { UserProfile } from '../../types';
+import { StorageService } from '../../services/storageService';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialMode: 'login' | 'signup';
-  onSuccess: (user: Partial<UserProfile>, isNewUser: boolean) => void;
+  onSuccess: (user: UserProfile, isNewUser: boolean) => void;
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
@@ -21,30 +22,35 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [orgName, setOrgName] = useState('');
   const [password, setPassword] = useState('');
   const [resetSent, setResetSent] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [authError, setAuthError] = useState('');
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (mode === 'forgot') {
       setResetSent(true);
       return;
     }
 
-    if (mode === 'signup') {
-      onSuccess({
-        name: name || 'Demo Member',
-        email: email || 'user@organization.com',
-        organizationName: orgName || 'Global Institute'
-      }, true);
-    } else {
-      onSuccess({
-        name: name || 'Tejas Gogavale',
-        email: email || 'tejas@institution.edu',
-        organizationName: 'DevStudio Global Academy'
-      }, false);
+    setIsLoading(true);
+    setAuthError('');
+
+    try {
+      if (mode === 'signup') {
+        const user = await StorageService.signupUser(email, password, name, orgName);
+        onSuccess(user, true);
+      } else {
+        const user = await StorageService.loginUser(email, password, name, orgName);
+        onSuccess(user, false);
+      }
+      onClose();
+    } catch (err: any) {
+      setAuthError(err?.message || 'Authentication error. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
-    onClose();
   };
 
   return (
@@ -172,14 +178,31 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 </div>
               )}
 
+              {authError && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{authError}</span>
+                </div>
+              )}
+
               <button
                 type="submit"
-                className="w-full mt-2 py-2.5 px-4 bg-black hover:bg-neutral-800 text-white font-bold rounded-xl text-xs shadow-xs transition-all flex items-center justify-center gap-2"
+                disabled={isLoading}
+                className="w-full mt-2 py-2.5 px-4 bg-black hover:bg-neutral-800 disabled:opacity-50 text-white font-bold rounded-xl text-xs shadow-xs transition-all flex items-center justify-center gap-2"
               >
-                <span>
-                  {mode === 'login' ? 'Sign in to Workspace' : mode === 'signup' ? 'Create Account' : 'Send Reset Link'}
-                </span>
-                <ArrowRight className="w-4 h-4" />
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Authenticating...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>
+                      {mode === 'login' ? 'Sign in to Workspace' : mode === 'signup' ? 'Create Account' : 'Send Reset Link'}
+                    </span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
               </button>
             </form>
           )}

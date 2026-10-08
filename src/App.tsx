@@ -22,7 +22,7 @@ import { Project, Template, UserProfile, PricingPlan } from './types';
 export function App() {
   // Navigation View State: 'landing' | 'dashboard' | 'wizard' | 'designer' | 'templates' | 'verify' | 'analytics' | 'api' | 'settings'
   const [currentView, setCurrentView] = useState<string>('landing');
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true); // Pre-authenticated for instant evaluation
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => StorageService.isLoggedIn());
 
   // State loaded from StorageService
   const [user, setUser] = useState<UserProfile>(StorageService.getUser());
@@ -154,7 +154,9 @@ export function App() {
         }}
         isLoggedIn={isLoggedIn}
         onLogout={() => {
+          StorageService.logout();
           setIsLoggedIn(false);
+          setUser(StorageService.getUser());
           setCurrentView('landing');
         }}
       />
@@ -284,8 +286,10 @@ export function App() {
         initialMode={authMode}
         onSuccess={(profile, isNew) => {
           setIsLoggedIn(true);
+          setUser(profile);
+          StorageService.saveUser(profile);
+          StorageService.setLoggedIn(true);
           if (isNew) {
-            setUser({ ...user, ...profile });
             setOnboardingOpen(true);
           } else {
             setCurrentView('dashboard');

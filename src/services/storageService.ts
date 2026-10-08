@@ -6,34 +6,35 @@ const STORAGE_KEYS = {
   PROJECTS: 'certiforge_projects_v1',
   TEMPLATES: 'certiforge_templates_v1',
   USER_PROFILE: 'certiforge_user_profile_v1',
+  IS_LOGGED_IN: 'certiforge_is_logged_in_v1',
   PRICING: 'certiforge_pricing_plans_v1',
   API_KEYS: 'certiforge_api_keys_v1',
   EMAIL_LOGS: 'certiforge_email_logs_v1',
 };
 
-const DEFAULT_USER: UserProfile = {
-  id: 'usr-admin-1',
-  name: 'Tejas Gogavale',
-  email: 'tejas@institution.edu',
-  organizationName: 'DevStudio Global Academy',
+export const DEFAULT_USER: UserProfile = {
+  id: 'usr-guest-1',
+  name: 'Guest User',
+  email: 'guest@certiforge.dev',
+  organizationName: 'Independent Organization',
   role: 'owner',
-  avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256',
-  plan: 'pro',
-  isYearlyBilling: true,
+  avatar: 'https://ui-avatars.com/api/?name=Guest+User&background=000000&color=ffffff&bold=true',
+  plan: 'starter',
+  isYearlyBilling: false,
   usage: {
-    certificatesGenerated: 720,
-    certificatesLimit: 3000,
-    storageUsedMB: 1240, // 1.2 GB
-    storageLimitMB: 15360, // 15 GB
-    emailCreditsUsed: 430,
-    emailCreditsLimit: 3000
+    certificatesGenerated: 0,
+    certificatesLimit: 250,
+    storageUsedMB: 0,
+    storageLimitMB: 1024,
+    emailCreditsUsed: 0,
+    emailCreditsLimit: 250
   },
   branding: {
     logoUrl: '',
-    primaryColor: '#4F46E5',
-    issuerName: 'DevStudio Global Academy',
-    customDomain: 'certificates.devstudio.edu',
-    whiteLabelVerification: true
+    primaryColor: '#000000',
+    issuerName: 'Independent Organization',
+    customDomain: '',
+    whiteLabelVerification: false
   }
 };
 
@@ -67,6 +68,166 @@ export class StorageService {
 
   private static notify() {
     this.listeners.forEach(cb => cb());
+  }
+
+  // Session state
+  public static isLoggedIn(): boolean {
+    const status = localStorage.getItem(STORAGE_KEYS.IS_LOGGED_IN);
+    return status === 'true';
+  }
+
+  public static setLoggedIn(status: boolean) {
+    localStorage.setItem(STORAGE_KEYS.IS_LOGGED_IN, status ? 'true' : 'false');
+    this.notify();
+  }
+
+  public static logout() {
+    this.setLoggedIn(false);
+    localStorage.removeItem(STORAGE_KEYS.USER_PROFILE);
+    this.notify();
+  }
+
+  // Build clean UserProfile based on user's own data
+  public static createProfileForUser(partial: {
+    id?: string;
+    email: string;
+    name?: string;
+    organizationName?: string;
+    role?: 'owner' | 'admin' | 'editor';
+    plan?: 'free' | 'starter' | 'pro' | 'business';
+    avatar?: string;
+  }): UserProfile {
+    const cleanEmail = partial.email.trim().toLowerCase();
+    const emailUserPart = cleanEmail.split('@')[0] || 'Member';
+    const autoName = emailUserPart
+      .replace(/[._-]+/g, ' ')
+      .replace(/\b\w/g, (c: string) => c.toUpperCase());
+    
+    const emailDomain = cleanEmail.split('@')[1] || '';
+    const autoOrg = emailDomain && !['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com'].includes(emailDomain)
+      ? emailDomain.split('.')[0].toUpperCase() + ' Organization'
+      : `${autoName}'s Organization`;
+
+    const finalName = partial.name?.trim() || autoName;
+    const finalOrg = partial.organizationName?.trim() || autoOrg;
+    const finalPlan: UserProfile['plan'] = partial.plan || 'starter';
+    const finalAvatar = partial.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(finalName)}&background=000000&color=ffffff&bold=true`;
+
+    return {
+      id: partial.id || `usr-${Date.now()}`,
+      name: finalName,
+      email: cleanEmail,
+      organizationName: finalOrg,
+      role: partial.role || 'owner',
+      avatar: finalAvatar,
+      plan: finalPlan,
+      isYearlyBilling: false,
+      usage: {
+        certificatesGenerated: 0,
+        certificatesLimit: finalPlan === 'business' ? 10000 : finalPlan === 'pro' ? 3000 : 250,
+        storageUsedMB: 0,
+        storageLimitMB: finalPlan === 'business' ? 51200 : finalPlan === 'pro' ? 15360 : 1024,
+        emailCreditsUsed: 0,
+        emailCreditsLimit: finalPlan === 'business' ? 10000 : finalPlan === 'pro' ? 3000 : 250
+      },
+      branding: {
+        logoUrl: '',
+        primaryColor: '#000000',
+        issuerName: finalOrg,
+        customDomain: '',
+        whiteLabelVerification: false
+      }
+    };
+  }
+
+  // Sign in via Cloudflare D1 with fallback to local state
+  public static async loginUser(email: string, password?: string, name?: string, orgName?: string): Promise<UserProfile> {
+    const cleanEmail = email.trim().toLowerCase();
+    let profile: UserProfile;
+
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'login',
+          email: cleanEmail,
+          password: password || '',
+          name: name || undefined,
+          organizationName: orgName || undefined
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.success && data.user) {
+          profile = this.createProfileForUser({
+            id: data.user.id,
+            email: data.user.email,
+            name: data.user.name,
+            organizationName: data.user.organizationName,
+            role: data.user.role,
+            plan: data.user.plan,
+            avatar: data.user.avatar
+          });
+          this.saveUser(profile);
+          this.setLoggedIn(true);
+          return profile;
+        }
+      }
+    } catch (e) {
+      console.warn('API auth login fallback:', e);
+    }
+
+    profile = this.createProfileForUser({ email: cleanEmail, name, organizationName: orgName });
+    this.saveUser(profile);
+    this.setLoggedIn(true);
+    return profile;
+  }
+
+  // Sign up via Cloudflare D1 with fallback to local state
+  public static async signupUser(email: string, password?: string, name?: string, orgName?: string): Promise<UserProfile> {
+    const cleanEmail = email.trim().toLowerCase();
+    let profile: UserProfile;
+
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'signup',
+          email: cleanEmail,
+          password: password || '',
+          name: name || undefined,
+          organizationName: orgName || undefined
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.success && data.user) {
+          profile = this.createProfileForUser({
+            id: data.user.id,
+            email: data.user.email,
+            name: data.user.name,
+            organizationName: data.user.organizationName,
+            role: data.user.role,
+            plan: data.user.plan,
+            avatar: data.user.avatar
+          });
+          this.saveUser(profile);
+          this.setLoggedIn(true);
+          return profile;
+        }
+      }
+    } catch (e) {
+      console.warn('API auth signup fallback:', e);
+    }
+
+    profile = this.createProfileForUser({ email: cleanEmail, name, organizationName: orgName });
+    this.saveUser(profile);
+    this.setLoggedIn(true);
+    return profile;
   }
 
   // User Profile

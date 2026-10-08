@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Building2, 
   Palette, 
@@ -30,6 +30,15 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   const [brandColor, setBrandColor] = useState(user.branding.primaryColor || '#000000');
   const [customDomain, setCustomDomain] = useState(user.branding.customDomain || 'credentials.institution.edu');
   const [whiteLabelToggle, setWhiteLabelToggle] = useState(user.branding.whiteLabelVerification);
+
+  useEffect(() => {
+    setProfileName(user.name);
+    setProfileEmail(user.email);
+    setOrgName(user.organizationName);
+    setBrandColor(user.branding.primaryColor || '#000000');
+    setCustomDomain(user.branding.customDomain || 'credentials.institution.edu');
+    setWhiteLabelToggle(user.branding.whiteLabelVerification);
+  }, [user]);
 
   const [teamMembers, setTeamMembers] = useState([
     { id: '1', name: user.name, email: user.email, role: 'Owner' },

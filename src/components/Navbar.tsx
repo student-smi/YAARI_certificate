@@ -136,7 +136,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     className="flex items-center gap-2 p-1 rounded-full hover:bg-neutral-100 transition-colors focus:outline-none"
                   >
                     <img
-                      src={user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256'}
+                      src={user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=000000&color=ffffff&bold=true`}
                       alt={user.name}
                       className="w-8 h-8 rounded-full object-cover border border-neutral-200 ring-1 ring-black/10"
                     />
