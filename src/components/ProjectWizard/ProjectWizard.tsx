@@ -15,7 +15,8 @@ import {
   Shuffle, 
   FolderArchive,
   Copy,
-  Share2
+  Share2,
+  Sliders
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Project, Template, Recipient } from '../../types';
@@ -26,6 +27,7 @@ import { StorageService } from '../../services/storageService';
 import { SAMPLE_RECIPIENTS_RAW } from '../../data/sampleData';
 import { CORE_CERTIFICATE_ELEMENTS, OPTIONAL_STUDENT_COURSE_ELEMENTS } from '../../data/certificateFields';
 import { generateLinkedInAddCertificationUrl } from '../../services/linkedinService';
+import { LinkedInEditorModal, LinkedInEditableParams } from '../Verification/LinkedInEditorModal';
 
 interface ProjectWizardProps {
   project: Project;
@@ -63,6 +65,19 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
   const [generatedPdfMap, setGeneratedPdfMap] = useState<Map<string, { blob: Blob; filename: string }> | null>(null);
   const [isZipping, setIsZipping] = useState(false);
   const [copiedLinkedinId, setCopiedLinkedinId] = useState<string | null>(null);
+
+  // Per-recipient or batch LinkedIn URL customizer state
+  const [editingLinkedInRecipient, setEditingLinkedInRecipient] = useState<{
+    id: string;
+    name: string;
+    organizationName: string;
+    issueDate?: string;
+    issueYear?: string | number;
+    issueMonth?: string | number;
+    certId: string;
+    certUrl: string;
+  } | null>(null);
+  const [customRecipientLinkedInMap, setCustomRecipientLinkedInMap] = useState<Record<string, LinkedInEditableParams>>({});
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -893,25 +908,49 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
             </div>
 
             {currentProject.recipients[0] && (
-              <div className="flex items-center gap-2 w-full md:w-auto">
+              <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
                 <a
                   href={generateLinkedInAddCertificationUrl({
-                    name: currentProject.recipients[0].data[currentProject.fieldMapping['course'] || 'course'] || currentProject.recipients[0].data['Course Name'] || currentProject.name,
-                    organizationName: currentProject.organizationName || 'CertiForge Verified Issuer',
+                    name: customRecipientLinkedInMap[currentProject.recipients[0].id]?.name || currentProject.recipients[0].data[currentProject.fieldMapping['course'] || 'course'] || currentProject.recipients[0].data['Course Name'] || currentProject.name,
+                    organizationName: customRecipientLinkedInMap[currentProject.recipients[0].id]?.organizationName || currentProject.organizationName || 'CertiForge Verified Issuer',
                     issueDate: currentProject.recipients[0].data[currentProject.fieldMapping['issue_date'] || 'issue_date'] || currentProject.recipients[0].data['Date'],
-                    certId: currentProject.recipients[0].certificateId,
-                    certUrl: `${window.location.origin}/#verify/${currentProject.recipients[0].certificateId}`
+                    issueYear: customRecipientLinkedInMap[currentProject.recipients[0].id]?.issueYear,
+                    issueMonth: customRecipientLinkedInMap[currentProject.recipients[0].id]?.issueMonth,
+                    certId: customRecipientLinkedInMap[currentProject.recipients[0].id]?.certId || currentProject.recipients[0].certificateId,
+                    certUrl: customRecipientLinkedInMap[currentProject.recipients[0].id]?.certUrl || `${window.location.origin}/#verify/${currentProject.recipients[0].certificateId}`
                   })}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full md:w-auto px-4 py-2.5 bg-[#0A66C2] hover:bg-[#084e96] text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5 shrink-0"
+                  className="px-4 py-2.5 bg-[#0A66C2] hover:bg-[#084e96] text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5 shrink-0"
                 >
                   <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
                     <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.45a1.65 1.65 0 0 0-1.66 1.66 1.66 1.66 0 0 0 1.66 1.66 1.66 1.66 0 0 0 1.66-1.66 1.65 1.65 0 0 0-1.66-1.66z"/>
                   </svg>
-                  <span>Test Sample LinkedIn Button</span>
+                  <span>Test Sample Button</span>
                   <ExternalLink className="w-3 h-3 opacity-80" />
                 </a>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const firstRec = currentProject.recipients[0];
+                    const customRec = customRecipientLinkedInMap[firstRec.id];
+                    setEditingLinkedInRecipient({
+                      id: firstRec.id,
+                      name: customRec?.name || firstRec.data[currentProject.fieldMapping['course'] || 'course'] || firstRec.data['Course Name'] || currentProject.name,
+                      organizationName: customRec?.organizationName || currentProject.organizationName || 'CertiForge Verified Issuer',
+                      issueDate: firstRec.data[currentProject.fieldMapping['issue_date'] || 'issue_date'] || firstRec.data['Date'],
+                      issueYear: customRec?.issueYear,
+                      issueMonth: customRec?.issueMonth,
+                      certId: customRec?.certId || firstRec.certificateId,
+                      certUrl: customRec?.certUrl || `${window.location.origin}/#verify/${firstRec.certificateId}`
+                    });
+                  }}
+                  className="px-3.5 py-2.5 bg-white hover:bg-neutral-100 border border-neutral-300 text-black font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5 shrink-0"
+                >
+                  <Sliders className="w-3.5 h-3.5 text-neutral-600" />
+                  <span>Customize Parameters</span>
+                </button>
               </div>
             )}
           </div>
@@ -921,7 +960,7 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-extrabold text-sm text-black">Generated Certificate Batch</h3>
-                <p className="text-xs text-neutral-500">Each recipient has a unique Certificate ID, public verification link, and LinkedIn 1-click link.</p>
+                <p className="text-xs text-neutral-500">Each recipient has a unique Certificate ID, public verification link, and customizable LinkedIn 1-click link.</p>
               </div>
               <button
                 onClick={handleDownloadSinglePdf}
@@ -946,23 +985,29 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
                 </thead>
                 <tbody className="divide-y divide-neutral-100 font-medium">
                   {currentProject.recipients.map((rec) => {
+                    const customRec = customRecipientLinkedInMap[rec.id];
                     const name = rec.data[currentProject.fieldMapping['name'] || 'name'] || rec.data['Full Name'] || 'Recipient';
                     const email = rec.data[currentProject.fieldMapping['email'] || 'email'] || rec.data['Email Address'] || '—';
-                    const course = rec.data[currentProject.fieldMapping['course'] || 'course'] || rec.data['Course Name'] || currentProject.name;
+                    const course = customRec?.name || rec.data[currentProject.fieldMapping['course'] || 'course'] || rec.data['Course Name'] || currentProject.name;
+                    const org = customRec?.organizationName || currentProject.organizationName || 'CertiForge Verified Issuer';
+                    const certId = customRec?.certId || rec.certificateId;
+                    const certUrl = customRec?.certUrl || `${window.location.origin}/#verify/${rec.certificateId}`;
                     const issueDate = rec.data[currentProject.fieldMapping['issue_date'] || 'issue_date'] || rec.data['Date'];
 
                     const recLinkedInUrl = generateLinkedInAddCertificationUrl({
                       name: course,
-                      organizationName: currentProject.organizationName || 'CertiForge Verified Issuer',
+                      organizationName: org,
                       issueDate,
-                      certId: rec.certificateId,
-                      certUrl: `${window.location.origin}/#verify/${rec.certificateId}`
+                      issueYear: customRec?.issueYear,
+                      issueMonth: customRec?.issueMonth,
+                      certId,
+                      certUrl
                     });
 
                     return (
                       <tr key={rec.id} className="hover:bg-neutral-50/70">
                         <td className="py-3 px-4 font-mono font-bold text-black">
-                          {rec.certificateId}
+                          {certId}
                         </td>
                         <td className="py-3 px-4 font-bold text-black">
                           {name}
@@ -977,10 +1022,10 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
                         </td>
                         <td className="py-3 px-4">
                           <a
-                            href={`#verify/${rec.certificateId}`}
+                            href={`#verify/${certId}`}
                             onClick={(e) => {
                               e.preventDefault();
-                              window.location.hash = `verify/${rec.certificateId}`;
+                              window.location.hash = `verify/${certId}`;
                               window.dispatchEvent(new HashChangeEvent('hashchange'));
                             }}
                             className="inline-flex items-center gap-1 text-xs font-bold text-black hover:underline"
@@ -990,7 +1035,7 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
                           </a>
                         </td>
                         <td className="py-3 px-4 text-right">
-                          <div className="flex items-center justify-end gap-2">
+                          <div className="flex items-center justify-end gap-1.5">
                             <a
                               href={recLinkedInUrl}
                               target="_blank"
@@ -1001,8 +1046,31 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
                               <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
                                 <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.45a1.65 1.65 0 0 0-1.66 1.66 1.66 1.66 0 0 0 1.66 1.66 1.66 1.66 0 0 0 1.66-1.66 1.65 1.65 0 0 0-1.66-1.66z"/>
                               </svg>
-                              <span>Add to Profile</span>
+                              <span>Add</span>
                             </a>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingLinkedInRecipient({
+                                  id: rec.id,
+                                  name: course,
+                                  organizationName: org,
+                                  issueDate,
+                                  issueYear: customRec?.issueYear,
+                                  issueMonth: customRec?.issueMonth,
+                                  certId,
+                                  certUrl
+                                });
+                              }}
+                              className={`p-1.5 rounded-lg border transition-colors ${
+                                customRec 
+                                  ? 'border-amber-300 bg-amber-50 text-amber-900 font-bold' 
+                                  : 'border-neutral-300 hover:bg-neutral-100 text-neutral-600 hover:text-black'
+                              }`}
+                              title="Customize LinkedIn parameters for this recipient"
+                            >
+                              <Sliders className="w-3.5 h-3.5" />
+                            </button>
                             <button
                               type="button"
                               onClick={() => {
@@ -1044,6 +1112,29 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
             </button>
           </div>
         </div>
+      )}
+
+      {/* LinkedIn URL Parameter Customizer Modal */}
+      {editingLinkedInRecipient && (
+        <LinkedInEditorModal
+          isOpen={!!editingLinkedInRecipient}
+          onClose={() => setEditingLinkedInRecipient(null)}
+          initialParams={{
+            name: editingLinkedInRecipient.name,
+            organizationName: editingLinkedInRecipient.organizationName,
+            issueDate: editingLinkedInRecipient.issueDate,
+            issueYear: editingLinkedInRecipient.issueYear,
+            issueMonth: editingLinkedInRecipient.issueMonth,
+            certId: editingLinkedInRecipient.certId,
+            certUrl: editingLinkedInRecipient.certUrl
+          }}
+          onSave={(updatedParams) => {
+            setCustomRecipientLinkedInMap((prev) => ({
+              ...prev,
+              [editingLinkedInRecipient.id]: updatedParams
+            }));
+          }}
+        />
       )}
 
     </div>

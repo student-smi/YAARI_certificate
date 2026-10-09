@@ -12,16 +12,20 @@ import {
   Check, 
   ExternalLink,
   Award,
-  Sparkles
+  Sparkles,
+  Sliders,
+  RotateCcw
 } from 'lucide-react';
 import { StorageService } from '../../services/storageService';
 import { 
   generateLinkedInAddCertificationUrl, 
   generateLinkedInShareFeedUrl, 
-  generateLinkedInPostText 
+  generateLinkedInPostText,
+  parseDateForLinkedIn
 } from '../../services/linkedinService';
 import { generateCertificatePdfBlob } from '../../services/pdfGenerator';
 import { DEFAULT_TEMPLATES } from '../../data/defaultTemplates';
+import { LinkedInEditorModal, LinkedInEditableParams } from './LinkedInEditorModal';
 
 interface VerificationPortalProps {
   initialCertId?: string;
@@ -36,12 +40,21 @@ export const VerificationPortal: React.FC<VerificationPortalProps> = ({ initialC
   const [copiedPostText, setCopiedPostText] = useState(false);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
 
+  // Editable LinkedIn parameters modal state
+  const [isEditorModalOpen, setIsEditorModalOpen] = useState(false);
+  const [customLinkedInParams, setCustomLinkedInParams] = useState<LinkedInEditableParams | null>(null);
+
   useEffect(() => {
     if (initialCertId) {
       setCertIdInput(initialCertId);
       performSearch(initialCertId);
     }
   }, [initialCertId]);
+
+  // Reset custom params if a new ID is searched
+  useEffect(() => {
+    setCustomLinkedInParams(null);
+  }, [searchedId]);
 
   const performSearch = async (idToSearch: string) => {
     if (!idToSearch.trim()) return;
@@ -70,14 +83,22 @@ export const VerificationPortal: React.FC<VerificationPortalProps> = ({ initialC
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
+  // Active LinkedIn parameters (custom edits take precedence)
+  const activeLinkedInName = customLinkedInParams?.name || searchResult?.courseName || 'Certified Program';
+  const activeLinkedInOrg = customLinkedInParams?.organizationName || searchResult?.organization || 'Issuing Institution';
+  const activeLinkedInYear = customLinkedInParams?.issueYear;
+  const activeLinkedInMonth = customLinkedInParams?.issueMonth;
+  const activeLinkedInCertId = customLinkedInParams?.certId || searchResult?.certificateId || searchedId;
+  const activeLinkedInCertUrl = customLinkedInParams?.certUrl || getVerificationUrl();
+
   const handleCopyPostTemplate = () => {
     if (!searchResult) return;
     const postText = generateLinkedInPostText({
       recipientName: searchResult.recipientName || 'Recipient',
-      courseName: searchResult.courseName || 'Certified Program',
-      organizationName: searchResult.organization || 'Issuing Institution',
-      certId: searchResult.certificateId || searchedId,
-      verifyUrl: getVerificationUrl()
+      courseName: activeLinkedInName,
+      organizationName: activeLinkedInOrg,
+      certId: activeLinkedInCertId,
+      verifyUrl: activeLinkedInCertUrl
     });
 
     navigator.clipboard.writeText(postText);
@@ -94,12 +115,12 @@ export const VerificationPortal: React.FC<VerificationPortalProps> = ({ initialC
       const recipientData: Record<string, string> = {
         name: searchResult.recipientName || 'Recipient',
         'Full Name': searchResult.recipientName || 'Recipient',
-        course: searchResult.courseName || 'Certified Program',
-        'Course Name': searchResult.courseName || 'Certified Program',
+        course: activeLinkedInName,
+        'Course Name': activeLinkedInName,
         issue_date: searchResult.issueDate || searchResult.date || 'October 15, 2026',
         completion_date: searchResult.completionDate || searchResult.date || 'October 15, 2026',
-        organization: searchResult.organization || 'Issuing Organization',
-        certificate_id: searchResult.certificateId || searchedId,
+        organization: activeLinkedInOrg,
+        certificate_id: activeLinkedInCertId,
         student_id: searchResult.studentId || '',
         grade: searchResult.grade || '',
         achievement_level: searchResult.achievementLevel || '',
@@ -110,7 +131,7 @@ export const VerificationPortal: React.FC<VerificationPortalProps> = ({ initialC
       const blob = await generateCertificatePdfBlob({
         template,
         recipientData,
-        certificateId: searchResult.certificateId || searchedId,
+        certificateId: activeLinkedInCertId,
         fieldMapping: searchResult.project?.fieldMapping || {}
       });
 
@@ -118,7 +139,7 @@ export const VerificationPortal: React.FC<VerificationPortalProps> = ({ initialC
       const a = document.createElement('a');
       a.href = url;
       const cleanRecName = (searchResult.recipientName || 'certificate').replace(/[^a-zA-Z0-9_-]/g, '_');
-      a.download = `${searchResult.certificateId || searchedId}_${cleanRecName}.pdf`;
+      a.download = `${activeLinkedInCertId}_${cleanRecName}.pdf`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -131,19 +152,21 @@ export const VerificationPortal: React.FC<VerificationPortalProps> = ({ initialC
     }
   };
 
-  // Pre-calculated LinkedIn URLs
+  // Pre-calculated LinkedIn URLs using active values
   const linkedInAddUrl = searchResult?.found
     ? generateLinkedInAddCertificationUrl({
-        name: searchResult.courseName || 'Certified Program',
-        organizationName: searchResult.organization || 'Issuing Institution',
+        name: activeLinkedInName,
+        organizationName: activeLinkedInOrg,
         issueDate: searchResult.issueDate || searchResult.date,
-        certId: searchResult.certificateId || searchedId,
-        certUrl: getVerificationUrl()
+        issueYear: activeLinkedInYear,
+        issueMonth: activeLinkedInMonth,
+        certId: activeLinkedInCertId,
+        certUrl: activeLinkedInCertUrl
       })
     : '';
 
   const linkedInShareFeedUrl = searchResult?.found
-    ? generateLinkedInShareFeedUrl(getVerificationUrl())
+    ? generateLinkedInShareFeedUrl(activeLinkedInCertUrl)
     : '';
 
   return (
@@ -364,6 +387,17 @@ export const VerificationPortal: React.FC<VerificationPortalProps> = ({ initialC
                       <ExternalLink className="w-3.5 h-3.5 opacity-80" />
                     </a>
 
+                    {/* Customize Parameters Button */}
+                    <button
+                      type="button"
+                      onClick={() => setIsEditorModalOpen(true)}
+                      className="flex items-center gap-1.5 px-3.5 py-2.5 bg-white hover:bg-neutral-100 border border-neutral-300 text-black font-bold text-xs rounded-xl shadow-xs transition-colors"
+                      title="Edit certification name, organization, year, month, ID, or URL"
+                    >
+                      <Sliders className="w-3.5 h-3.5 text-neutral-600" />
+                      <span>{customLinkedInParams ? 'Parameters (Customized)' : 'Customize Parameters'}</span>
+                    </button>
+
                     {/* Secondary Button: Share to LinkedIn Feed */}
                     <a
                       href={linkedInShareFeedUrl}
@@ -396,6 +430,26 @@ export const VerificationPortal: React.FC<VerificationPortalProps> = ({ initialC
                     </button>
                   </div>
 
+                  {/* Active Custom Overrides Notice */}
+                  {customLinkedInParams && (
+                    <div className="flex items-center justify-between text-xs px-3.5 py-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-900">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
+                        <span>
+                          Customized LinkedIn URL active: <strong>{activeLinkedInName}</strong> ({activeLinkedInOrg})
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setCustomLinkedInParams(null)}
+                        className="text-amber-800 hover:text-black font-bold flex items-center gap-1 text-[11px] hover:underline shrink-0"
+                      >
+                        <RotateCcw className="w-3 h-3" />
+                        <span>Reset Defaults</span>
+                      </button>
+                    </div>
+                  )}
+
                   {/* LinkedIn Profile Preview Card (Simulates how it appears on recipient's profile) */}
                   <div className="p-3.5 rounded-xl bg-white border border-neutral-200 text-xs space-y-1.5">
                     <span className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400">
@@ -407,17 +461,17 @@ export const VerificationPortal: React.FC<VerificationPortalProps> = ({ initialC
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-bold text-black text-xs truncate">
-                          {searchResult.courseName}
+                          {activeLinkedInName}
                         </p>
                         <p className="text-[11px] text-neutral-600 truncate">
-                          {searchResult.organization}
+                          {activeLinkedInOrg}
                         </p>
                         <p className="text-[10px] text-neutral-400">
-                          Issued {searchResult.issueDate || searchResult.date} • Credential ID: {searchResult.certificateId}
+                          Issued {activeLinkedInMonth ? `${activeLinkedInMonth}/` : ''}{activeLinkedInYear || searchResult.issueDate || searchResult.date} • Credential ID: {activeLinkedInCertId}
                         </p>
                       </div>
                       <a
-                        href={getVerificationUrl()}
+                        href={activeLinkedInCertUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="px-2.5 py-1 rounded-md border border-neutral-300 text-[10px] font-bold text-neutral-700 hover:text-black shrink-0 flex items-center gap-1"
@@ -481,6 +535,26 @@ export const VerificationPortal: React.FC<VerificationPortalProps> = ({ initialC
             </div>
           )}
         </div>
+      )}
+
+      {/* LinkedIn Deep Link Customizer Modal */}
+      {searchResult?.found && (
+        <LinkedInEditorModal
+          isOpen={isEditorModalOpen}
+          onClose={() => setIsEditorModalOpen(false)}
+          initialParams={{
+            name: activeLinkedInName,
+            organizationName: activeLinkedInOrg,
+            issueDate: searchResult.issueDate || searchResult.date,
+            issueYear: activeLinkedInYear,
+            issueMonth: activeLinkedInMonth,
+            certId: activeLinkedInCertId,
+            certUrl: activeLinkedInCertUrl
+          }}
+          onSave={(updatedParams) => {
+            setCustomLinkedInParams(updatedParams);
+          }}
+        />
       )}
 
     </div>

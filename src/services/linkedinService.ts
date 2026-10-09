@@ -5,11 +5,13 @@
  */
 
 export interface LinkedInCertificationParams {
-  name: string;              // Name of certification / course
-  organizationName: string;  // Issuing Organization
-  issueDate?: string;        // Date of issue (e.g. "October 15, 2026" or "2026-10-15")
-  certId?: string;           // Unique Credential ID (e.g. "CERT-2026-00001")
-  certUrl?: string;          // Direct verification link
+  name: string;                       // Name of certification / course
+  organizationName: string;           // Issuing Organization
+  issueDate?: string;                 // Date of issue (e.g. "October 15, 2026" or "2026-10-15")
+  issueYear?: number | string;        // 4-digit year (override)
+  issueMonth?: number | string;       // 1-12 month (override)
+  certId?: string;                    // Unique Credential ID (e.g. "CERT-2026-00001")
+  certUrl?: string;                   // Direct verification link
 }
 
 /**
@@ -76,9 +78,17 @@ export function generateLinkedInAddCertificationUrl(params: LinkedInCertificatio
   queryParams.append('name', params.name || 'Professional Certificate');
   queryParams.append('organizationName', params.organizationName || 'CertiForge Verified Issuer');
 
-  const { year, month } = parseDateForLinkedIn(params.issueDate);
-  if (year) queryParams.append('issueYear', year.toString());
-  if (month) queryParams.append('issueMonth', month.toString());
+  let year: string | undefined = params.issueYear ? params.issueYear.toString() : undefined;
+  let month: string | undefined = params.issueMonth ? params.issueMonth.toString() : undefined;
+
+  if (!year || !month) {
+    const parsed = parseDateForLinkedIn(params.issueDate);
+    if (!year && parsed.year) year = parsed.year.toString();
+    if (!month && parsed.month) month = parsed.month.toString();
+  }
+
+  if (year) queryParams.append('issueYear', year);
+  if (month) queryParams.append('issueMonth', month);
 
   if (params.certId) {
     queryParams.append('certId', params.certId);
