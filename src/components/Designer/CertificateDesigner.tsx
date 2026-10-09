@@ -1994,12 +1994,25 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
         isOpen={signatureModalOpen}
         onClose={() => setSignatureModalOpen(false)}
         onInsertSignature={(dataUrl, name) => {
-          handleAddElement('signature', dataUrl, 'signature', {
-            x: 75,
-            y: 76,
-            width: 26,
-            height: 10
-          });
+          if (selectedElement && selectedElement.type === 'signature') {
+            handleUpdateSelected({ content: dataUrl });
+          } else {
+            const existingSig = template.elements.find(el => el.type === 'signature');
+            if (existingSig) {
+              const updatedElements = template.elements.map(el =>
+                el.id === existingSig.id ? { ...el, content: dataUrl } : el
+              );
+              pushHistory({ ...template, elements: updatedElements });
+              setSelectedElementId(existingSig.id);
+            } else {
+              handleAddElement('signature', dataUrl, 'signature', {
+                x: 75,
+                y: 76,
+                width: 26,
+                height: 10
+              });
+            }
+          }
         }}
       />
 

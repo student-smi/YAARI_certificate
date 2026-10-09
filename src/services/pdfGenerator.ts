@@ -187,6 +187,24 @@ export const renderCertificateToCanvas = async (
 
       const resolvedText = resolveDynamicContent(element.content, recipientData, certificateId, fieldMapping);
 
+      // If data URI or base64 image payload was mistakenly in a text element, render as image or skip to prevent raw code rendering
+      if (resolvedText.startsWith('data:') || resolvedText.includes(';base64,')) {
+        if (resolvedText.startsWith('data:image/')) {
+          await new Promise<void>((res) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+              ctx.drawImage(img, x - elWidth / 2, y - elHeight / 2, elWidth, elHeight);
+              res();
+            };
+            img.onerror = () => res();
+            img.src = resolvedText;
+          });
+        }
+        ctx.restore();
+        continue;
+      }
+
       // Scale font size proportionally to canvas width
       const scaledSize = fs.size * (width / 842);
       const fontStyle = fs.fontStyle || 'normal';
@@ -222,29 +240,65 @@ export const renderCertificateToCanvas = async (
       });
 
     } else if (element.type === 'signature') {
-      const fs = element.fontSettings || {
-        family: 'Great Vibes',
-        size: 28,
-        weight: '400',
-        color: '#0F172A',
-        align: 'center',
-        letterSpacing: 1,
-        lineHeight: 1
-      };
-      const scaledSize = fs.size * (width / 842);
-      ctx.font = `normal ${fs.weight} ${scaledSize}px "${fs.family}", cursive`;
-      ctx.fillStyle = fs.color;
-      ctx.textAlign = fs.align;
-      ctx.textBaseline = 'middle';
-      ctx.fillText(element.content, x, y);
+      const isImageSignature = element.content && (
+        element.content.startsWith('data:') ||
+        element.content.startsWith('http://') ||
+        element.content.startsWith('https://') ||
+        element.content.startsWith('blob:') ||
+        element.content.includes(';base64,')
+      );
 
-      // Elegant pen line under signature
-      ctx.lineWidth = 1 * (width / 842);
-      ctx.strokeStyle = '#94A3B8';
-      ctx.beginPath();
-      ctx.moveTo(x - elWidth / 2, y + 16 * (height / 595));
-      ctx.lineTo(x + elWidth / 2, y + 16 * (height / 595));
-      ctx.stroke();
+      if (isImageSignature) {
+        await new Promise<void>((res) => {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => {
+            const aspect = (img.naturalWidth || elWidth) / (img.naturalHeight || elHeight);
+            let drawW = elWidth;
+            let drawH = elWidth / aspect;
+            if (drawH > elHeight) {
+              drawH = elHeight;
+              drawW = elHeight * aspect;
+            }
+            ctx.drawImage(img, x - drawW / 2, y - drawH / 2, drawW, drawH);
+            res();
+          };
+          img.onerror = () => res();
+          img.src = element.content;
+        });
+
+        // Elegant pen line under signature
+        ctx.lineWidth = 1 * (width / 842);
+        ctx.strokeStyle = '#94A3B8';
+        ctx.beginPath();
+        ctx.moveTo(x - elWidth / 2, y + elHeight / 2 + 4 * (height / 595));
+        ctx.lineTo(x + elWidth / 2, y + elHeight / 2 + 4 * (height / 595));
+        ctx.stroke();
+      } else {
+        const fs = element.fontSettings || {
+          family: 'Great Vibes',
+          size: 28,
+          weight: '400',
+          color: '#0F172A',
+          align: 'center',
+          letterSpacing: 1,
+          lineHeight: 1
+        };
+        const scaledSize = fs.size * (width / 842);
+        ctx.font = `normal ${fs.weight} ${scaledSize}px "${fs.family}", cursive`;
+        ctx.fillStyle = fs.color;
+        ctx.textAlign = fs.align;
+        ctx.textBaseline = 'middle';
+        ctx.fillText(element.content, x, y);
+
+        // Elegant pen line under signature
+        ctx.lineWidth = 1 * (width / 842);
+        ctx.strokeStyle = '#94A3B8';
+        ctx.beginPath();
+        ctx.moveTo(x - elWidth / 2, y + 16 * (height / 595));
+        ctx.lineTo(x + elWidth / 2, y + 16 * (height / 595));
+        ctx.stroke();
+      }
 
     } else if (element.type === 'line') {
       ctx.lineWidth = (element.borderWidth || 1) * (width / 842);
