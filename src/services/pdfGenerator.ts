@@ -141,8 +141,9 @@ export const renderCertificateToCanvas = async (
     });
   } else if (borderStyle === 'classic') {
     // Elegant dual slate navy border
+    const primaryColor = template.backgroundStyle.borderColor || '#0F172A';
     ctx.lineWidth = 10 * (width / 842);
-    ctx.strokeStyle = '#0F172A';
+    ctx.strokeStyle = primaryColor;
     ctx.strokeRect(24 * (width / 842), 24 * (height / 595), width - 48 * (width / 842), height - 48 * (height / 595));
 
     ctx.lineWidth = 1.5 * (width / 842);
@@ -154,9 +155,16 @@ export const renderCertificateToCanvas = async (
     ctx.strokeStyle = '#E2E8F0';
     ctx.strokeRect(24 * (width / 842), 24 * (height / 595), width - 48 * (width / 842), height - 48 * (height / 595));
 
-    // Top vibrant color bar
-    ctx.fillStyle = '#4F46E5';
+    // Top vibrant color bar (customizable borderColor or default luxury indigo)
+    const accentColor = template.backgroundStyle.borderColor || '#4F46E5';
+    ctx.fillStyle = accentColor;
     ctx.fillRect(24 * (width / 842), 24 * (height / 595), width - 48 * (width / 842), 10 * (height / 595));
+  } else if (borderStyle === 'minimal') {
+    ctx.lineWidth = 2 * (width / 842);
+    ctx.strokeStyle = template.backgroundStyle.borderColor || '#CBD5E1';
+    ctx.strokeRect(24 * (width / 842), 24 * (height / 595), width - 48 * (width / 842), height - 48 * (height / 595));
+  } else if (borderStyle === 'none') {
+    // Clean borderless certificate
   }
   ctx.restore();
 

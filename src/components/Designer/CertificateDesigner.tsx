@@ -1327,28 +1327,87 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
                 </div>
 
                 {/* Border Styles */}
-                <div>
-                  <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400 mb-1.5">
-                    Certificate Border
-                  </h4>
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {(['classic', 'gold_double', 'modern'] as const).map((b) => (
+                {/* Certificate Border Styles & Color */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400">
+                      Certificate Border Style
+                    </h4>
+                    {template.backgroundStyle.borderStyle && template.backgroundStyle.borderStyle !== 'none' && (
                       <button
-                        key={b}
                         onClick={() => setTemplate({
                           ...template,
-                          backgroundStyle: { ...template.backgroundStyle, borderStyle: b }
+                          backgroundStyle: { ...template.backgroundStyle, borderStyle: 'none' }
                         })}
-                        className={`p-2 rounded-xl text-[11px] font-bold border text-center capitalize transition-all ${
-                          template.backgroundStyle.borderStyle === b
+                        className="text-[10px] font-bold text-red-600 hover:underline"
+                      >
+                        Remove Border
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { id: 'none', label: 'None (Clean)' },
+                      { id: 'classic', label: 'Classic' },
+                      { id: 'gold_double', label: 'Gold Double' },
+                      { id: 'modern', label: 'Modern Bar' },
+                      { id: 'minimal', label: 'Minimal Thin' }
+                    ] as const).map((b) => (
+                      <button
+                        key={b.id}
+                        onClick={() => setTemplate({
+                          ...template,
+                          backgroundStyle: { ...template.backgroundStyle, borderStyle: b.id }
+                        })}
+                        className={`p-2 rounded-xl text-[10px] font-bold border text-center transition-all ${
+                          (template.backgroundStyle.borderStyle || 'classic') === b.id
                             ? 'border-black bg-black text-white shadow-xs'
                             : 'border-neutral-200 hover:bg-neutral-50 text-neutral-700'
                         }`}
                       >
-                        {b.replace('_', ' ')}
+                        {b.label}
                       </button>
                     ))}
                   </div>
+
+                  {/* Modern Accent Bar Color Picker */}
+                  {template.backgroundStyle.borderStyle === 'modern' && (
+                    <div className="p-2.5 rounded-xl bg-neutral-50 border border-neutral-200 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold text-black">Top Accent Bar Color</span>
+                        <span className="text-[9px] font-mono text-neutral-500">
+                          {template.backgroundStyle.borderColor || '#4F46E5'}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        {[
+                          { name: 'Black', hex: '#000000' },
+                          { name: 'Navy', hex: '#0F172A' },
+                          { name: 'Royal', hex: '#2563EB' },
+                          { name: 'Indigo', hex: '#4F46E5' },
+                          { name: 'Gold', hex: '#D97706' },
+                          { name: 'Emerald', hex: '#059669' },
+                          { name: 'Crimson', hex: '#E11D48' }
+                        ].map(c => (
+                          <button
+                            key={c.hex}
+                            title={c.name}
+                            onClick={() => setTemplate({
+                              ...template,
+                              backgroundStyle: { ...template.backgroundStyle, borderColor: c.hex }
+                            })}
+                            style={{ backgroundColor: c.hex }}
+                            className={`w-5 h-5 rounded-full border transition-transform ${
+                              (template.backgroundStyle.borderColor || '#4F46E5') === c.hex
+                                ? 'scale-125 border-black ring-2 ring-black/20'
+                                : 'border-black/10 hover:scale-110'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Decorative Elements */}
@@ -1433,9 +1492,18 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
               } ${
                 template.backgroundStyle.borderStyle === 'gold_double' ? 'cert-gold-border' :
                 template.backgroundStyle.borderStyle === 'classic' ? 'border-[12px] border-black' :
-                'border-2 border-neutral-400'
+                template.backgroundStyle.borderStyle === 'modern' ? 'border border-neutral-300' :
+                template.backgroundStyle.borderStyle === 'minimal' ? 'border-2 border-neutral-300' :
+                ''
               }`}
             >
+              {/* Modern Top Accent Bar Preview */}
+              {template.backgroundStyle.borderStyle === 'modern' && (
+                <div 
+                  style={{ backgroundColor: template.backgroundStyle.borderColor || '#4F46E5' }}
+                  className="absolute top-0 left-0 right-0 h-3 z-0 pointer-events-none" 
+                />
+              )}
               
               {/* Elements on Canvas */}
               {template.elements.map((el) => {
