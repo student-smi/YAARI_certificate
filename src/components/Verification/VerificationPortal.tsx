@@ -26,6 +26,7 @@ import {
 import { generateCertificatePdfBlob } from '../../services/pdfGenerator';
 import { DEFAULT_TEMPLATES } from '../../data/defaultTemplates';
 import { LinkedInEditorModal, LinkedInEditableParams } from './LinkedInEditorModal';
+import { LinkedInShareModal } from './LinkedInShareModal';
 
 interface VerificationPortalProps {
   initialCertId?: string;
@@ -43,6 +44,9 @@ export const VerificationPortal: React.FC<VerificationPortalProps> = ({ initialC
   // Editable LinkedIn parameters modal state
   const [isEditorModalOpen, setIsEditorModalOpen] = useState(false);
   const [customLinkedInParams, setCustomLinkedInParams] = useState<LinkedInEditableParams | null>(null);
+
+  // Guided Share to LinkedIn Feed modal state
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   useEffect(() => {
     if (initialCertId) {
@@ -74,7 +78,7 @@ export const VerificationPortal: React.FC<VerificationPortalProps> = ({ initialC
 
   const getVerificationUrl = () => {
     const origin = typeof window !== 'undefined' ? window.location.origin : 'https://certiforge.pages.dev';
-    return `${origin}/#verify/${searchedId}`;
+    return `${origin}/verify/${searchedId}`;
   };
 
   const handleCopyLink = () => {
@@ -91,17 +95,19 @@ export const VerificationPortal: React.FC<VerificationPortalProps> = ({ initialC
   const activeLinkedInCertId = customLinkedInParams?.certId || searchResult?.certificateId || searchedId;
   const activeLinkedInCertUrl = customLinkedInParams?.certUrl || getVerificationUrl();
 
-  const handleCopyPostTemplate = () => {
-    if (!searchResult) return;
-    const postText = generateLinkedInPostText({
-      recipientName: searchResult.recipientName || 'Recipient',
-      courseName: activeLinkedInName,
-      organizationName: activeLinkedInOrg,
-      certId: activeLinkedInCertId,
-      verifyUrl: activeLinkedInCertUrl
-    });
+  const currentPostText = searchResult
+    ? generateLinkedInPostText({
+        recipientName: searchResult.recipientName || 'Recipient',
+        courseName: activeLinkedInName,
+        organizationName: activeLinkedInOrg,
+        certId: activeLinkedInCertId,
+        verifyUrl: activeLinkedInCertUrl
+      })
+    : '';
 
-    navigator.clipboard.writeText(postText);
+  const handleCopyPostTemplate = () => {
+    if (!currentPostText) return;
+    navigator.clipboard.writeText(currentPostText);
     setCopiedPostText(true);
     setTimeout(() => setCopiedPostText(false), 2500);
   };
@@ -399,15 +405,18 @@ export const VerificationPortal: React.FC<VerificationPortalProps> = ({ initialC
                     </button>
 
                     {/* Secondary Button: Share to LinkedIn Feed */}
-                    <a
-                      href={linkedInShareFeedUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleCopyPostTemplate();
+                        setIsShareModalOpen(true);
+                      }}
                       className="flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-neutral-100 border border-neutral-300 text-black font-bold text-xs rounded-xl shadow-xs transition-colors"
+                      title="Share your verified certificate on LinkedIn Feed"
                     >
                       <Share2 className="w-3.5 h-3.5 text-black" />
                       <span>Share on Feed</span>
-                    </a>
+                    </button>
 
                     {/* Copy Post Copy Template */}
                     <button
@@ -554,6 +563,16 @@ export const VerificationPortal: React.FC<VerificationPortalProps> = ({ initialC
           onSave={(updatedParams) => {
             setCustomLinkedInParams(updatedParams);
           }}
+        />
+      )}
+
+      {/* Guided LinkedIn Share to Feed Modal */}
+      {searchResult?.found && (
+        <LinkedInShareModal
+          isOpen={isShareModalOpen}
+          onClose={() => setIsShareModalOpen(false)}
+          postCaption={currentPostText}
+          shareUrl={linkedInShareFeedUrl}
         />
       )}
 
