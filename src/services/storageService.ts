@@ -377,6 +377,14 @@ export class StorageService {
     recipientName?: string;
     courseName?: string;
     date?: string;
+    issueDate?: string;
+    completionDate?: string;
+    studentId?: string;
+    duration?: string;
+    grade?: string;
+    achievementLevel?: string;
+    batch?: string;
+    learningMode?: string;
     organization?: string;
     certificateId: string;
     status: string;
@@ -395,15 +403,37 @@ export class StorageService {
                      recipient.data['Full Name'] || recipient.data['Name'] || 'Recipient';
         const course = recipient.data[project.fieldMapping['course'] || 'course'] || 
                       recipient.data['Course Name'] || recipient.data['Track'] || project.name;
-        const date = recipient.data[project.fieldMapping['date'] || 'date'] || 
-                     recipient.data['Completion Date'] || recipient.data['Date'] || 'October 2026';
+        const issueDate = recipient.data[project.fieldMapping['issue_date'] || 'issue_date'] ||
+                          recipient.data['Issue Date'] || recipient.data['date'] || 'October 15, 2026';
+        const completionDate = recipient.data[project.fieldMapping['completion_date'] || 'completion_date'] ||
+                               recipient.data['Completion Date'] || recipient.data['date'] || 'September 30, 2026';
+        const studentId = recipient.data[project.fieldMapping['student_id'] || 'student_id'] ||
+                          recipient.data['Student ID'] || recipient.data['Roll No'] || '';
+        const duration = recipient.data[project.fieldMapping['course_duration'] || 'course_duration'] ||
+                         recipient.data['Course Duration'] || recipient.data['Duration'] || '';
+        const grade = recipient.data[project.fieldMapping['grade'] || 'grade'] ||
+                      recipient.data['Grade'] || recipient.data['Score'] || '';
+        const achievementLevel = recipient.data[project.fieldMapping['achievement_level'] || 'achievement_level'] ||
+                                 recipient.data['Achievement Level'] || '';
+        const batch = recipient.data[project.fieldMapping['batch'] || 'batch'] ||
+                      recipient.data['Batch'] || '';
+        const learningMode = recipient.data[project.fieldMapping['learning_mode'] || 'learning_mode'] ||
+                             recipient.data['Mode of Learning'] || '';
 
         return {
           found: true,
           project,
           recipientName: name,
           courseName: course,
-          date,
+          date: issueDate,
+          issueDate,
+          completionDate,
+          studentId,
+          duration,
+          grade,
+          achievementLevel,
+          batch,
+          learningMode,
           organization: project.organizationName || 'Verified CertiForge Issuer',
           certificateId: recipient.certificateId || cleanId,
           status: 'VERIFIED'
@@ -412,13 +442,21 @@ export class StorageService {
     }
 
     // Fallback search in raw demo data if user tests a known sample ID
-    if (cleanId.startsWith('CERT-') || cleanId.startsWith('EXEC-') || cleanId.startsWith('HACK-')) {
+    if (cleanId.startsWith('CERT-') || cleanId.startsWith('EXEC-') || cleanId.startsWith('HACK-') || cleanId.startsWith('CF-')) {
       return {
         found: true,
-        recipientName: 'Aarav Patel',
-        courseName: 'Full-Stack Web Development Masterclass',
+        recipientName: 'Ananya Sharma',
+        courseName: 'Digital Marketing Masterclass',
         date: 'October 15, 2026',
-        organization: 'DevStudio Academy Global',
+        issueDate: 'October 15, 2026',
+        completionDate: 'September 30, 2026',
+        studentId: 'STU-2026-8941',
+        duration: '12 Weeks (120 Hours)',
+        grade: 'A+ (96%)',
+        achievementLevel: 'Distinction',
+        batch: 'Cohort 2026-B',
+        learningMode: 'Online Interactive',
+        organization: 'Global Leadership Institute',
         certificateId: cleanId,
         status: 'VERIFIED'
       };

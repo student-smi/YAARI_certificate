@@ -11,21 +11,46 @@ export interface RenderContext {
 }
 
 /**
- * Replaces dynamic placeholders like {{name}}, {{course}} with actual recipient data
+ * Replaces dynamic placeholders like {{name}}, {{course}}, {{issue_date}}, {{completion_date}} with actual recipient data
  */
 export const resolveDynamicContent = (
   rawText: string,
   recipientData: Record<string, string>,
   certificateId: string,
-  fieldMapping: Record<string, string> = {}
+  fieldMapping: Record<string, string> = {},
+  qrBaseUrl: string = typeof window !== 'undefined' ? window.location.origin : 'https://certiforge.io'
 ): string => {
   let text = rawText;
 
-  // Replace standard certificate ID
+  // Replace standard certificate ID and verification URL
   text = text.replace(/\{\{certificate_id\}\}/gi, certificateId);
+  const verifyLink = `${qrBaseUrl.replace(/\/$/, '')}/#verify/${certificateId}`;
+  text = text.replace(/\{\{verification_url\}\}/gi, verifyLink);
 
-  // Map known fields
-  const fieldKeys = ['name', 'course', 'date', 'email', 'organization', 'grade', 'title'];
+  // Map known fields according to specification
+  const fieldKeys = [
+    'name', 
+    'course', 
+    'issue_date', 
+    'completion_date', 
+    'date', 
+    'organization', 
+    'title', 
+    'statement',
+    'student_id',
+    'start_date',
+    'course_duration',
+    'grade',
+    'achievement_level',
+    'batch',
+    'specialization',
+    'learning_mode',
+    'training_location',
+    'accreditation',
+    'expiry_date',
+    'credits',
+    'email'
+  ];
   
   fieldKeys.forEach((key) => {
     const mappedHeader = fieldMapping[key] || key;
@@ -33,9 +58,30 @@ export const resolveDynamicContent = (
     let value = recipientData[mappedHeader] || recipientData[key] || '';
     if (!value) {
       // Try fuzzy match in recipientData
-      const foundKey = Object.keys(recipientData).find(k => k.toLowerCase() === key.toLowerCase() || k.toLowerCase() === mappedHeader.toLowerCase());
+      const foundKey = Object.keys(recipientData).find(
+        k => k.toLowerCase() === key.toLowerCase() || 
+             k.toLowerCase() === mappedHeader.toLowerCase() ||
+             k.toLowerCase().replace(/[\s_-]/g, '') === key.toLowerCase().replace(/[\s_-]/g, '')
+      );
       if (foundKey) value = recipientData[foundKey];
     }
+
+    // Special fallbacks
+    if (!value && key === 'issue_date') {
+      value = recipientData['date'] || recipientData['Date'] || new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    }
+    if (!value && key === 'completion_date') {
+      value = recipientData['date'] || recipientData['Date'] || '';
+    }
+    if (!value && key === 'date') {
+      value = recipientData['issue_date'] || recipientData['completion_date'] || '';
+    }
+    if (!value && key === 'statement') {
+      const recName = recipientData[fieldMapping['name'] || 'name'] || recipientData['Full Name'] || 'Recipient';
+      const cName = recipientData[fieldMapping['course'] || 'course'] || recipientData['Course Name'] || 'the program';
+      value = `This certifies that ${recName} has successfully completed the program ${cName}.`;
+    }
+
     const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'gi');
     text = text.replace(regex, value);
   });
@@ -253,6 +299,19 @@ export const renderCertificateToCanvas = async (
           };
           img.onerror = () => res();
           img.src = qrDataUrl;
+        });
+      }
+    } else if (element.type === 'logo' || element.type === 'image') {
+      if (element.content) {
+        await new Promise<void>((res) => {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => {
+            ctx.drawImage(img, x - elWidth / 2, y - elHeight / 2, elWidth, elHeight);
+            res();
+          };
+          img.onerror = () => res();
+          img.src = element.content;
         });
       }
     }

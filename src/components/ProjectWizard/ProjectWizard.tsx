@@ -13,7 +13,9 @@ import {
   ExternalLink, 
   RefreshCw, 
   Shuffle, 
-  FolderArchive 
+  FolderArchive,
+  Copy,
+  Share2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Project, Template, Recipient } from '../../types';
@@ -22,6 +24,8 @@ import { generateCertificatePreviewDataUrl, generateCertificatePdfBlob, batchGen
 import { packageCertificatesToZip, downloadBlobFile } from '../../services/zipPackager';
 import { StorageService } from '../../services/storageService';
 import { SAMPLE_RECIPIENTS_RAW } from '../../data/sampleData';
+import { CORE_CERTIFICATE_ELEMENTS, OPTIONAL_STUDENT_COURSE_ELEMENTS } from '../../data/certificateFields';
+import { generateLinkedInAddCertificationUrl } from '../../services/linkedinService';
 
 interface ProjectWizardProps {
   project: Project;
@@ -58,6 +62,7 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
   const [currentProcessingName, setCurrentProcessingName] = useState('');
   const [generatedPdfMap, setGeneratedPdfMap] = useState<Map<string, { blob: Blob; filename: string }> | null>(null);
   const [isZipping, setIsZipping] = useState(false);
+  const [copiedLinkedinId, setCopiedLinkedinId] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -79,10 +84,13 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
     if (fields.size === 0) {
       fields.add('name');
       fields.add('course');
-      fields.add('date');
+      fields.add('issue_date');
+      fields.add('completion_date');
     }
+    // Also include any fields previously saved in project fieldMapping
+    Object.keys(currentProject.fieldMapping).forEach(k => fields.add(k));
     return Array.from(fields);
-  }, [activeTemplate]);
+  }, [activeTemplate, currentProject.fieldMapping]);
 
   useEffect(() => {
     if (currentStep === 4 && currentProject.recipients.length > 0) {
@@ -145,13 +153,29 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
   };
 
   const handleLoadSampleRecipients = () => {
-    const headers = ['Full Name', 'Course Name', 'Completion Date', 'Email Address', 'Grade'];
+    const headers = [
+      'Full Name', 
+      'Student ID', 
+      'Course Name', 
+      'Issue Date', 
+      'Completion Date', 
+      'Course Duration', 
+      'Grade', 
+      'Achievement Level', 
+      'Batch', 
+      'Email Address'
+    ];
     const rows = SAMPLE_RECIPIENTS_RAW.map(r => ({
       'Full Name': r.name,
+      'Student ID': r.studentId,
       'Course Name': r.course,
-      'Completion Date': r.date,
-      'Email Address': r.email,
-      'Grade': r.grade
+      'Issue Date': r.issueDate,
+      'Completion Date': r.completionDate,
+      'Course Duration': r.duration,
+      'Grade': r.grade,
+      'Achievement Level': r.achievementLevel,
+      'Batch': r.batch,
+      'Email Address': r.email
     }));
 
     const suggested = suggestFieldMappings(templateRequiredFields, headers);
@@ -556,32 +580,47 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
 
           {/* Mapping Grid */}
           <div className="bg-white rounded-2xl border border-neutral-200 shadow-card p-6 space-y-4">
-            <h3 className="font-bold text-xs text-black uppercase tracking-wider border-b border-neutral-100 pb-3">
-              Certificate Fields ➔ Spreadsheet Columns
-            </h3>
+            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+              <h3 className="font-bold text-xs text-black uppercase tracking-wider">
+                Certificate Fields ➔ Spreadsheet Columns
+              </h3>
+              <span className="text-[10px] text-neutral-400 font-medium">
+                Auto-mapped using credential heuristics
+              </span>
+            </div>
 
             <div className="space-y-3">
               {templateRequiredFields.map((fieldKey) => {
                 const currentVal = currentProject.fieldMapping[fieldKey] || '';
-                const availableCols = currentProject.recipients[0] ? Object.keys(currentProject.recipients[0].data) : ['Full Name', 'Course Name', 'Completion Date', 'Email Address'];
+                const availableCols = currentProject.recipients[0] ? Object.keys(currentProject.recipients[0].data) : ['Full Name', 'Course Name', 'Completion Date', 'Issue Date', 'Email Address'];
+                const fieldMeta = [...CORE_CERTIFICATE_ELEMENTS, ...OPTIONAL_STUDENT_COURSE_ELEMENTS].find(f => f.key === fieldKey);
 
                 return (
                   <div key={fieldKey} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-neutral-50 border border-neutral-200">
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-md bg-black text-white font-mono text-[11px] font-bold flex items-center justify-center">
-                        T
-                      </div>
-                      <div>
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-2">
                         <span className="text-xs font-bold text-black capitalize">
-                          {fieldKey.replace(/_/g, ' ')}
+                          {fieldMeta ? fieldMeta.label : fieldKey.replace(/_/g, ' ')}
                         </span>
-                        <code className="ml-2 text-[10px] text-neutral-600 font-mono">
+                        <code className="text-[10px] text-neutral-500 font-mono">
                           {`{{${fieldKey}}}`}
                         </code>
+                        {fieldMeta && (
+                          <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded ${
+                            fieldMeta.requirement.startsWith('Required') 
+                              ? 'bg-black text-white' 
+                              : 'bg-neutral-200 text-neutral-800'
+                          }`}>
+                            {fieldMeta.requirement.startsWith('Required') ? 'Required' : 'Optional'}
+                          </span>
+                        )}
                       </div>
+                      {fieldMeta && (
+                        <p className="text-[10px] text-neutral-500">{fieldMeta.purpose}</p>
+                      )}
                     </div>
 
-                    <div className="flex items-center gap-2 sm:w-72">
+                    <div className="flex items-center gap-2 sm:w-72 shrink-0">
                       <span className="text-xs text-neutral-400">maps to</span>
                       <select
                         value={currentVal}
@@ -608,6 +647,45 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
                   </div>
                 );
               })}
+            </div>
+
+            {/* Quick add optional field selector */}
+            <div className="pt-3 border-t border-neutral-100 flex items-center justify-between">
+              <span className="text-xs text-neutral-500 font-medium">Want to map another optional column?</span>
+              <select
+                onChange={(e) => {
+                  if (e.target.value) {
+                    const newKey = e.target.value;
+                    const updatedMapping = {
+                      ...currentProject.fieldMapping,
+                      [newKey]: currentProject.fieldMapping[newKey] || ''
+                    };
+                    const updatedProj = { ...currentProject, fieldMapping: updatedMapping };
+                    setCurrentProject(updatedProj);
+                    onUpdateProject(updatedProj);
+                    StorageService.saveProject(updatedProj);
+                    e.target.value = '';
+                  }
+                }}
+                className="px-2.5 py-1 text-xs font-bold bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 rounded-lg text-black cursor-pointer"
+                defaultValue=""
+              >
+                <option value="" disabled>+ Map Additional Field...</option>
+                <optgroup label="Standard Elements">
+                  {CORE_CERTIFICATE_ELEMENTS.filter(f => !templateRequiredFields.includes(f.key)).map(f => (
+                    <option key={f.key} value={f.key}>{f.label}</option>
+                  ))}
+                </optgroup>
+                <optgroup label="Optional Student & Course Details">
+                  {OPTIONAL_STUDENT_COURSE_ELEMENTS.filter(f => !templateRequiredFields.includes(f.key)).map(f => (
+                    <option key={f.key} value={f.key}>{f.label}</option>
+                  ))}
+                </optgroup>
+              </select>
+            </div>
+
+            <div className="p-3 rounded-xl bg-amber-50/70 border border-amber-200 text-amber-900 text-xs">
+              <strong>Best Practice:</strong> Keep issue date and completion date separate — a certificate may be issued days or weeks after the course ends.
             </div>
           </div>
 
@@ -793,12 +871,57 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
             </div>
           </div>
 
+          {/* 🎖️ VIRAL LINKEDIN "ADD TO PROFILE" INTEGRATION CARD */}
+          <div className="p-6 rounded-2xl bg-white border border-neutral-300 shadow-card flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+            <div className="flex items-start gap-3.5">
+              <div className="w-11 h-11 rounded-2xl bg-[#0A66C2] text-white flex items-center justify-center shrink-0 shadow-xs">
+                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                  <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.45a1.65 1.65 0 0 0-1.66 1.66 1.66 1.66 0 0 0 1.66 1.66 1.66 1.66 0 0 0 1.66-1.66 1.65 1.65 0 0 0-1.66-1.66z"/>
+                </svg>
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-extrabold text-sm text-black">LinkedIn 1-Click "Add to Profile" Enabled</h3>
+                  <span className="text-[10px] font-extrabold bg-[#E8F3FD] text-[#0A66C2] px-2 py-0.5 rounded-md border border-[#B2D5F8]">
+                    Viral Organic Traffic
+                  </span>
+                </div>
+                <p className="text-xs text-neutral-500 max-w-xl">
+                  Every recipient receives a pre-filled LinkedIn certification link. With 1-click, your Certificate Name, Issuing Organization, Issue Date, and Verification URL are saved to their official profile.
+                </p>
+              </div>
+            </div>
+
+            {currentProject.recipients[0] && (
+              <div className="flex items-center gap-2 w-full md:w-auto">
+                <a
+                  href={generateLinkedInAddCertificationUrl({
+                    name: currentProject.recipients[0].data[currentProject.fieldMapping['course'] || 'course'] || currentProject.recipients[0].data['Course Name'] || currentProject.name,
+                    organizationName: currentProject.organizationName || 'CertiForge Verified Issuer',
+                    issueDate: currentProject.recipients[0].data[currentProject.fieldMapping['issue_date'] || 'issue_date'] || currentProject.recipients[0].data['Date'],
+                    certId: currentProject.recipients[0].certificateId,
+                    certUrl: `${window.location.origin}/#verify/${currentProject.recipients[0].certificateId}`
+                  })}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full md:w-auto px-4 py-2.5 bg-[#0A66C2] hover:bg-[#084e96] text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5 shrink-0"
+                >
+                  <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.45a1.65 1.65 0 0 0-1.66 1.66 1.66 1.66 0 0 0 1.66 1.66 1.66 1.66 0 0 0 1.66-1.66 1.65 1.65 0 0 0-1.66-1.66z"/>
+                  </svg>
+                  <span>Test Sample LinkedIn Button</span>
+                  <ExternalLink className="w-3 h-3 opacity-80" />
+                </a>
+              </div>
+            )}
+          </div>
+
           {/* Generated Certificates List */}
           <div className="bg-white rounded-2xl border border-neutral-200 shadow-card p-6 space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-extrabold text-sm text-black">Generated Certificate Batch</h3>
-                <p className="text-xs text-neutral-500">Each recipient has a unique Certificate ID and public verification link.</p>
+                <p className="text-xs text-neutral-500">Each recipient has a unique Certificate ID, public verification link, and LinkedIn 1-click link.</p>
               </div>
               <button
                 onClick={handleDownloadSinglePdf}
@@ -817,13 +940,24 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
                     <th className="py-3 px-4">Recipient Name</th>
                     <th className="py-3 px-4">Email</th>
                     <th className="py-3 px-4">Status</th>
-                    <th className="py-3 px-4 text-right">Verification</th>
+                    <th className="py-3 px-4">Verification</th>
+                    <th className="py-3 px-4 text-right">LinkedIn 1-Click</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-neutral-100 font-medium">
                   {currentProject.recipients.map((rec) => {
                     const name = rec.data[currentProject.fieldMapping['name'] || 'name'] || rec.data['Full Name'] || 'Recipient';
                     const email = rec.data[currentProject.fieldMapping['email'] || 'email'] || rec.data['Email Address'] || '—';
+                    const course = rec.data[currentProject.fieldMapping['course'] || 'course'] || rec.data['Course Name'] || currentProject.name;
+                    const issueDate = rec.data[currentProject.fieldMapping['issue_date'] || 'issue_date'] || rec.data['Date'];
+
+                    const recLinkedInUrl = generateLinkedInAddCertificationUrl({
+                      name: course,
+                      organizationName: currentProject.organizationName || 'CertiForge Verified Issuer',
+                      issueDate,
+                      certId: rec.certificateId,
+                      certUrl: `${window.location.origin}/#verify/${rec.certificateId}`
+                    });
 
                     return (
                       <tr key={rec.id} className="hover:bg-neutral-50/70">
@@ -841,7 +975,7 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
                             <Check className="w-3 h-3 text-black" /> Ready
                           </span>
                         </td>
-                        <td className="py-3 px-4 text-right">
+                        <td className="py-3 px-4">
                           <a
                             href={`#verify/${rec.certificateId}`}
                             onClick={(e) => {
@@ -854,6 +988,38 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
                             <span>Verify Online</span>
                             <ExternalLink className="w-3 h-3" />
                           </a>
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <a
+                              href={recLinkedInUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#0A66C2] hover:bg-[#084e96] text-white text-[11px] font-bold transition-colors shadow-xs"
+                              title="Open recipient LinkedIn Add to Profile dialog"
+                            >
+                              <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
+                                <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.45a1.65 1.65 0 0 0-1.66 1.66 1.66 1.66 0 0 0 1.66 1.66 1.66 1.66 0 0 0 1.66-1.66 1.65 1.65 0 0 0-1.66-1.66z"/>
+                              </svg>
+                              <span>Add to Profile</span>
+                            </a>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                navigator.clipboard.writeText(recLinkedInUrl);
+                                setCopiedLinkedinId(rec.id);
+                                setTimeout(() => setCopiedLinkedinId(null), 2000);
+                              }}
+                              className="p-1.5 rounded-lg border border-neutral-300 hover:bg-neutral-100 text-neutral-600 hover:text-black transition-colors"
+                              title="Copy 1-Click LinkedIn URL"
+                            >
+                              {copiedLinkedinId === rec.id ? (
+                                <Check className="w-3.5 h-3.5 text-emerald-600" />
+                              ) : (
+                                <Copy className="w-3.5 h-3.5" />
+                              )}
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );

@@ -108,6 +108,8 @@ export const parseSpreadsheetFile = async (file: File): Promise<ParseResult> => 
   });
 };
 
+import { CORE_CERTIFICATE_ELEMENTS, OPTIONAL_STUDENT_COURSE_ELEMENTS } from '../data/certificateFields';
+
 /**
  * Heuristic auto-mapping between certificate fields and spreadsheet column headers
  */
@@ -117,18 +119,20 @@ export const suggestFieldMappings = (
 ): Record<string, string> => {
   const mapping: Record<string, string> = {};
 
-  const matchMap: Record<string, string[]> = {
-    name: ['name', 'full name', 'student name', 'recipient name', 'candidate name', 'participant', 'attendee'],
-    course: ['course', 'course name', 'program', 'workshop', 'topic', 'training', 'event', 'track'],
-    date: ['date', 'issue date', 'completion date', 'conferred date', 'awarded on', 'awarded date'],
-    email: ['email', 'email address', 'recipient email', 'mail', 'work email'],
-    certificate_id: ['certificate id', 'cert id', 'id', 'credential id', 'serial no', 'roll no'],
-    organization: ['organization', 'company', 'institute', 'department', 'college', 'school'],
-    grade: ['grade', 'score', 'marks', 'performance', 'percentage', 'result']
-  };
+  // Build match map from our centralized certificate specification
+  const matchMap: Record<string, string[]> = {};
+  [...CORE_CERTIFICATE_ELEMENTS, ...OPTIONAL_STUDENT_COURSE_ELEMENTS].forEach(f => {
+    matchMap[f.key] = f.matchPatterns;
+  });
+
+  // Additional aliases & fallbacks
+  matchMap['email'] = ['email', 'email address', 'recipient email', 'mail', 'work email'];
+  matchMap['phone'] = ['phone', 'contact', 'mobile', 'cell'];
+  matchMap['date'] = ['issue date', 'completion date', 'date', 'awarded on'];
 
   templateFields.forEach(field => {
-    const targets = matchMap[field.toLowerCase()] || [field.toLowerCase()];
+    const fLower = field.toLowerCase();
+    const targets = matchMap[fLower] || [fLower];
     
     // Find best header match
     const found = availableHeaders.find(h => {
@@ -140,7 +144,7 @@ export const suggestFieldMappings = (
       mapping[field] = found;
     } else {
       // Default fallback if identical
-      const exact = availableHeaders.find(h => h.toLowerCase() === field.toLowerCase());
+      const exact = availableHeaders.find(h => h.toLowerCase() === fLower);
       if (exact) mapping[field] = exact;
     }
   });
@@ -149,49 +153,69 @@ export const suggestFieldMappings = (
 };
 
 /**
- * Download sample Excel spreadsheet
+ * Download sample Excel spreadsheet with core and optional certificate fields
  */
 export const downloadSampleExcel = () => {
   const sampleData = [
     {
-      'Full Name': 'Aarav Sharma',
-      'Course Name': 'Advanced Full-Stack AI Engineering',
-      'Completion Date': 'October 15, 2026',
-      'Email Address': 'aarav.sharma@example.com',
-      'Grade': 'Distinction',
-      'Organization': 'Tech Academy Global'
-    },
-    {
-      'Full Name': 'Priya Deshmukh',
-      'Course Name': 'Advanced Full-Stack AI Engineering',
-      'Completion Date': 'October 15, 2026',
-      'Email Address': 'priya.d@example.com',
-      'Grade': 'A+',
-      'Organization': 'Tech Academy Global'
+      'Full Name': 'Ananya Sharma',
+      'Student ID': 'STU-2026-8941',
+      'Course Name': 'Digital Marketing Masterclass',
+      'Issuing Organization': 'Global Institute of Marketing',
+      'Issue Date': 'October 15, 2026',
+      'Completion Date': 'September 30, 2026',
+      'Course Duration': '12 Weeks (120 Hours)',
+      'Grade': 'A+ (96%)',
+      'Achievement Level': 'Distinction',
+      'Batch': 'Cohort 2026-B',
+      'Mode of Learning': 'Online Interactive',
+      'Training Location': 'Digital Campus',
+      'Email Address': 'ananya.sharma@example.com'
     },
     {
       'Full Name': 'Rohan Patel',
-      'Course Name': 'Advanced Full-Stack AI Engineering',
-      'Completion Date': 'October 15, 2026',
-      'Email Address': 'rohan.patel@example.com',
-      'Grade': 'A',
-      'Organization': 'Tech Academy Global'
+      'Student ID': 'STU-2026-8942',
+      'Course Name': 'Digital Marketing Masterclass',
+      'Issuing Organization': 'Global Institute of Marketing',
+      'Issue Date': 'October 15, 2026',
+      'Completion Date': 'September 30, 2026',
+      'Course Duration': '12 Weeks (120 Hours)',
+      'Grade': 'A (89%)',
+      'Achievement Level': 'Merit',
+      'Batch': 'Cohort 2026-B',
+      'Mode of Learning': 'Hybrid',
+      'Training Location': 'Metro Center',
+      'Email Address': 'rohan.patel@example.com'
     },
     {
-      'Full Name': 'Ananya Iyer',
-      'Course Name': 'Advanced Full-Stack AI Engineering',
-      'Completion Date': 'October 15, 2026',
-      'Email Address': 'ananya.iyer@example.com',
-      'Grade': 'Distinction',
-      'Organization': 'Tech Academy Global'
+      'Full Name': 'Priya Deshmukh',
+      'Student ID': 'STU-2026-8943',
+      'Course Name': 'Digital Marketing Masterclass',
+      'Issuing Organization': 'Global Institute of Marketing',
+      'Issue Date': 'October 15, 2026',
+      'Completion Date': 'September 30, 2026',
+      'Course Duration': '12 Weeks (120 Hours)',
+      'Grade': 'A+ (94%)',
+      'Achievement Level': 'Distinction',
+      'Batch': 'Cohort 2026-B',
+      'Mode of Learning': 'Online Interactive',
+      'Training Location': 'Digital Campus',
+      'Email Address': 'priya.d@example.com'
     },
     {
       'Full Name': 'Kabir Mehta',
-      'Course Name': 'Advanced Full-Stack AI Engineering',
-      'Completion Date': 'October 15, 2026',
-      'Email Address': 'kabir.mehta@example.com',
-      'Grade': 'A+',
-      'Organization': 'Tech Academy Global'
+      'Student ID': 'STU-2026-8944',
+      'Course Name': 'Digital Marketing Masterclass',
+      'Issuing Organization': 'Global Institute of Marketing',
+      'Issue Date': 'October 15, 2026',
+      'Completion Date': 'September 30, 2026',
+      'Course Duration': '12 Weeks (120 Hours)',
+      'Grade': 'B+ (84%)',
+      'Achievement Level': 'Advanced',
+      'Batch': 'Cohort 2026-B',
+      'Mode of Learning': 'Online Interactive',
+      'Training Location': 'Digital Campus',
+      'Email Address': 'kabir.mehta@example.com'
     }
   ];
 
@@ -201,14 +225,22 @@ export const downloadSampleExcel = () => {
   
   // Auto-width columns
   const wscols = [
-    { wch: 22 },
-    { wch: 38 },
     { wch: 20 },
+    { wch: 16 },
+    { wch: 34 },
     { wch: 30 },
-    { wch: 15 },
-    { wch: 25 }
+    { wch: 18 },
+    { wch: 20 },
+    { wch: 24 },
+    { wch: 14 },
+    { wch: 20 },
+    { wch: 16 },
+    { wch: 20 },
+    { wch: 18 },
+    { wch: 28 }
   ];
   worksheet['!cols'] = wscols;
 
   XLSX.writeFile(workbook, 'certiforge_sample_recipients.xlsx');
 };
+

@@ -127,22 +127,42 @@ export const DEFAULT_TEMPLATES: Template[] = [
         }
       },
       {
-        id: 'el-date-block',
+        id: 'el-issue-date',
         type: 'dynamic_field',
-        fieldKey: 'date',
+        fieldKey: 'issue_date',
         x: 25,
-        y: 78,
+        y: 75,
         width: 25,
-        height: 6,
+        height: 5,
         zIndex: 1,
-        content: 'Date: {{date}}',
+        content: 'Issued on: {{issue_date}}',
         fontSettings: {
           family: 'Plus Jakarta Sans',
-          size: 12,
-          weight: '500',
-          color: '#475569',
+          size: 11,
+          weight: '600',
+          color: '#334155',
           align: 'center',
-          letterSpacing: 1,
+          letterSpacing: 0.5,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-completion-date',
+        type: 'dynamic_field',
+        fieldKey: 'completion_date',
+        x: 25,
+        y: 81,
+        width: 30,
+        height: 5,
+        zIndex: 1,
+        content: 'Course completed: {{completion_date}}',
+        fontSettings: {
+          family: 'Plus Jakarta Sans',
+          size: 10,
+          weight: '500',
+          color: '#64748B',
+          align: 'center',
+          letterSpacing: 0.5,
           lineHeight: 1.2
         }
       },
@@ -173,14 +193,14 @@ export const DEFAULT_TEMPLATES: Template[] = [
         width: 25,
         height: 4,
         zIndex: 1,
-        content: 'DIRECTOR OF ACADEMICS',
+        content: 'AUTHORIZED ISSUER & DIRECTOR',
         fontSettings: {
           family: 'Plus Jakarta Sans',
-          size: 10,
-          weight: '600',
+          size: 9,
+          weight: '700',
           color: '#64748B',
           align: 'center',
-          letterSpacing: 2,
+          letterSpacing: 1.5,
           lineHeight: 1.2
         }
       },
@@ -199,7 +219,7 @@ export const DEFAULT_TEMPLATES: Template[] = [
         type: 'certificate_id',
         fieldKey: 'certificate_id',
         x: 50,
-        y: 91,
+        y: 89,
         width: 40,
         height: 4,
         zIndex: 1,
@@ -207,10 +227,30 @@ export const DEFAULT_TEMPLATES: Template[] = [
         fontSettings: {
           family: 'JetBrains Mono',
           size: 10,
-          weight: '500',
-          color: '#94A3B8',
+          weight: '600',
+          color: '#0F172A',
           align: 'center',
           letterSpacing: 1,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-verify-url',
+        type: 'dynamic_field',
+        fieldKey: 'verification_url',
+        x: 50,
+        y: 93,
+        width: 45,
+        height: 3,
+        zIndex: 1,
+        content: 'Verify at: certiforge.io/verify/{{certificate_id}}',
+        fontSettings: {
+          family: 'JetBrains Mono',
+          size: 8.5,
+          weight: '400',
+          color: '#64748B',
+          align: 'center',
+          letterSpacing: 0.5,
           lineHeight: 1.2
         }
       }

@@ -26,7 +26,7 @@ export const EmailCampaignModal: React.FC<EmailCampaignModalProps> = ({
   const [subject, setSubject] = useState(`Your Certificate of Completion: ${project.name}`);
   const [replyTo, setReplyTo] = useState('certificates@institution.edu');
   const [bodyText, setBodyText] = useState(
-    `Dear {{name}},\n\nCongratulations on successfully completing the program "{{course}}"!\n\nAttached to this email is your official vector-print certificate of completion (Credential ID: {{certificate_id}}).\n\nYou can also verify your credential online anytime with the issuing authority.\n\nWarm regards,\nAcademic Operations Team\n${project.organizationName}`
+    `Dear {{name}},\n\nCongratulations on successfully completing the program "{{course}}"!\n\nAttached to this email is your official vector-print certificate of completion (Credential ID: {{certificate_id}}).\n\n🎖️ Add this certificate to your LinkedIn profile with 1 click:\n{{linkedin_add_url}}\n\n🔗 Verify your credential online:\n{{verification_url}}\n\nWarm regards,\nAcademic Operations Team\n${project.organizationName}`
   );
   
   const [isSending, setIsSending] = useState(false);
@@ -180,12 +180,24 @@ export const EmailCampaignModal: React.FC<EmailCampaignModalProps> = ({
               </div>
 
               <div>
-                <div className="flex items-center justify-between mb-1">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1.5">
                   <label className="text-xs font-bold text-black">Email Body Template</label>
-                  <span className="text-[10px] text-neutral-500 font-mono">Variables: {'{{name}}'}, {'{{course}}'}, {'{{certificate_id}}'}</span>
+                  <div className="flex flex-wrap items-center gap-1 text-[10px]">
+                    <span className="text-neutral-400 font-semibold mr-1">Insert variable:</span>
+                    {['{{name}}', '{{course}}', '{{certificate_id}}', '{{linkedin_add_url}}', '{{verification_url}}'].map((tag) => (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => setBodyText(prev => `${prev}\n${tag}`)}
+                        className="px-1.5 py-0.5 rounded bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 font-mono text-[10px] text-neutral-800 transition-colors"
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
                 </div>
                 <textarea
-                  rows={6}
+                  rows={7}
                   value={bodyText}
                   onChange={(e) => setBodyText(e.target.value)}
                   className="w-full p-3 text-xs border border-neutral-300 rounded-lg focus:outline-none focus:border-black font-sans leading-relaxed"
