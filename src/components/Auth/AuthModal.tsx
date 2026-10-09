@@ -207,8 +207,45 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </form>
           )}
 
+          {/* Quick Admin Demo Credentials Card */}
+          <div className="mt-4 p-3 rounded-2xl bg-neutral-50 border border-neutral-200 flex items-center justify-between text-xs">
+            <div>
+              <span className="font-bold text-black flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>Admin Demo Credentials</span>
+              </span>
+              <span className="text-[11px] text-neutral-500 font-mono block mt-0.5">
+                admin@certiforge.com • admin123
+              </span>
+            </div>
+            <button
+              type="button"
+              disabled={isLoading}
+              onClick={async () => {
+                setIsLoading(true);
+                try {
+                  const demoUser = await StorageService.loginUser(
+                    'admin@certiforge.com', 
+                    'admin123', 
+                    'Tejas Gogavale', 
+                    'CertiForge Global'
+                  );
+                  onSuccess(demoUser, false);
+                  onClose();
+                } catch (e: any) {
+                  setAuthError(e?.message || 'Demo login failed');
+                } finally {
+                  setIsLoading(false);
+                }
+              }}
+              className="px-3 py-1.5 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-xl shadow-xs transition-colors shrink-0"
+            >
+              1-Click Login
+            </button>
+          </div>
+
           {/* Switch mode */}
-          <div className="mt-6 pt-4 border-t border-neutral-100 text-center text-xs text-neutral-500">
+          <div className="mt-4 pt-3 border-t border-neutral-100 text-center text-xs text-neutral-500">
             {mode === 'login' ? (
               <p>
                 Don't have an account?{' '}
