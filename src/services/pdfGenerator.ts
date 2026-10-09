@@ -274,14 +274,6 @@ export const renderCertificateToCanvas = async (
           img.onerror = () => res();
           img.src = element.content;
         });
-
-        // Elegant pen line under signature
-        ctx.lineWidth = 1 * (width / 842);
-        ctx.strokeStyle = '#94A3B8';
-        ctx.beginPath();
-        ctx.moveTo(x - elWidth / 2, y + elHeight / 2 + 4 * (height / 595));
-        ctx.lineTo(x + elWidth / 2, y + elHeight / 2 + 4 * (height / 595));
-        ctx.stroke();
       } else {
         const fs = element.fontSettings || {
           family: 'Great Vibes',
@@ -298,14 +290,6 @@ export const renderCertificateToCanvas = async (
         ctx.textAlign = fs.align;
         ctx.textBaseline = 'middle';
         ctx.fillText(element.content, x, y);
-
-        // Elegant pen line under signature
-        ctx.lineWidth = 1 * (width / 842);
-        ctx.strokeStyle = '#94A3B8';
-        ctx.beginPath();
-        ctx.moveTo(x - elWidth / 2, y + 16 * (height / 595));
-        ctx.lineTo(x + elWidth / 2, y + 16 * (height / 595));
-        ctx.stroke();
       }
 
     } else if (element.type === 'line') {
