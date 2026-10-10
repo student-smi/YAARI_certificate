@@ -35,7 +35,9 @@ export const SaveTemplateModal: React.FC<SaveTemplateModalProps> = ({
     currentTemplate.isCustom ? currentTemplate.name : `${currentTemplate.name} (Custom)`
   );
   const [description, setDescription] = useState(currentTemplate.description || '');
-  const [category, setCategory] = useState<TemplateCategory>(currentTemplate.category || 'corporate');
+  const [category, setCategory] = useState<TemplateCategory>(
+    currentTemplate.isCustom ? (currentTemplate.category || 'custom') : 'custom'
+  );
   const [saveMode, setSaveMode] = useState<'new' | 'update'>(isExistingCustom ? 'update' : 'new');
   
   // Status: 'editing' | 'success'
@@ -45,6 +47,7 @@ export const SaveTemplateModal: React.FC<SaveTemplateModalProps> = ({
   if (!isOpen) return null;
 
   const categories: { id: TemplateCategory; label: string }[] = [
+    { id: 'custom', label: '⭐ My Custom Templates (Personal Collection)' },
     { id: 'corporate', label: 'Corporate & Executive' },
     { id: 'academic', label: 'Academic & Diploma' },
     { id: 'workshop', label: 'Workshop & Bootcamp' },
@@ -198,15 +201,20 @@ export const SaveTemplateModal: React.FC<SaveTemplateModalProps> = ({
                 </div>
               )}
 
-              {/* Category Dropdown */}
+              {/* Category / Save Folder Dropdown */}
               <div>
-                <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-1.5">
-                  Template Category
-                </label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-bold text-neutral-800 uppercase tracking-wider">
+                    Template Category / Save Folder
+                  </label>
+                  <span className="text-[10px] text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded font-bold">
+                    ⭐ My Templates
+                  </span>
+                </div>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value as TemplateCategory)}
-                  className="w-full px-4 py-2.5 text-xs bg-neutral-50 border border-neutral-300 rounded-xl focus:outline-none focus:border-black font-semibold text-neutral-800"
+                  className="w-full px-4 py-2.5 text-xs bg-neutral-50 border border-neutral-300 rounded-xl focus:outline-none focus:border-black font-bold text-neutral-900 shadow-xs"
                 >
                   {categories.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -214,6 +222,9 @@ export const SaveTemplateModal: React.FC<SaveTemplateModalProps> = ({
                     </option>
                   ))}
                 </select>
+                <p className="text-[11px] text-neutral-500 mt-1">
+                  Saved templates will appear directly under <strong>Templates ➔ ⭐ My Templates</strong>.
+                </p>
               </div>
 
               {/* Optional Short Description */}

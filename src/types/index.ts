@@ -8,7 +8,8 @@ export type TemplateCategory =
   | 'event' 
   | 'achievement' 
   | 'appreciation' 
-  | 'participation';
+  | 'participation'
+  | 'custom';
 
 export type ElementType = 
   | 'text' 
