@@ -231,6 +231,7 @@ export function App() {
 
         {currentView === 'designer' && (
           <CertificateDesigner
+            key={activeDesignerTemplate.id}
             initialTemplate={activeDesignerTemplate}
             onBack={() => setCurrentView('dashboard')}
             onSaveTemplate={(updated) => {

@@ -201,6 +201,33 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
             </div>
           </div>
         ))}
+
+        {filteredTemplates.length === 0 && (
+          <div className="col-span-full py-16 text-center bg-neutral-50 rounded-3xl border border-dashed border-neutral-300">
+            <Sparkles className="w-8 h-8 text-neutral-400 mx-auto mb-3" />
+            <h3 className="text-sm font-bold text-neutral-800">No templates found</h3>
+            <p className="text-xs text-neutral-500 mt-1 max-w-sm mx-auto">
+              {selectedCategory === 'custom' 
+                ? "You haven't saved any custom templates yet. Edit any default template or create a new one to save here." 
+                : "No templates matched your current filter criteria."}
+            </p>
+            {selectedCategory === 'custom' ? (
+              <button
+                onClick={() => onEditTemplate('')}
+                className="mt-4 px-4 py-2 bg-black text-white text-xs font-bold rounded-xl hover:bg-neutral-800 shadow-xs"
+              >
+                Create Blank Template
+              </button>
+            ) : (
+              <button
+                onClick={() => { setSelectedCategory('all'); setSearchQuery(''); }}
+                className="mt-4 px-4 py-2 bg-black text-white text-xs font-bold rounded-xl hover:bg-neutral-800 shadow-xs"
+              >
+                View All Templates
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
     </div>

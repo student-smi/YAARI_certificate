@@ -1010,7 +1010,7 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-black hover:bg-neutral-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-transform"
           >
             <Save className="w-3.5 h-3.5" />
-            <span>Save Template</span>
+            <span>{template.isCustom ? 'Save Changes' : 'Save Template'}</span>
           </button>
         </div>
 

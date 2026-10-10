@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   Save, 
@@ -31,18 +31,30 @@ export const SaveTemplateModal: React.FC<SaveTemplateModalProps> = ({
   onNavigateToWizard
 }) => {
   const isExistingCustom = Boolean(currentTemplate.isCustom);
-  const [templateName, setTemplateName] = useState(
-    currentTemplate.isCustom ? currentTemplate.name : `${currentTemplate.name} (Custom)`
-  );
+  const [templateName, setTemplateName] = useState(currentTemplate.name);
   const [description, setDescription] = useState(currentTemplate.description || '');
   const [category, setCategory] = useState<TemplateCategory>(
-    currentTemplate.isCustom ? (currentTemplate.category || 'custom') : 'custom'
+    currentTemplate.category || 'custom'
   );
   const [saveMode, setSaveMode] = useState<'new' | 'update'>(isExistingCustom ? 'update' : 'new');
   
   // Status: 'editing' | 'success'
   const [step, setStep] = useState<'editing' | 'success'>('editing');
   const [savedResult, setSavedResult] = useState<Template | null>(null);
+
+  // Sync state whenever modal opens or currentTemplate changes
+  useEffect(() => {
+    if (isOpen) {
+      const isCustom = Boolean(currentTemplate.isCustom);
+      setTemplateName(currentTemplate.name);
+      setDescription(currentTemplate.description || '');
+      setCategory(currentTemplate.category || 'custom');
+      // For existing custom templates, default to update mode so no duplicate is created!
+      setSaveMode(isCustom ? 'update' : 'new');
+      setStep('editing');
+      setSavedResult(null);
+    }
+  }, [isOpen, currentTemplate]);
 
   if (!isOpen) return null;
 
@@ -76,8 +88,10 @@ export const SaveTemplateModal: React.FC<SaveTemplateModalProps> = ({
         updatedAt: new Date().toISOString()
       };
     } else {
+      // Overwrite/update existing custom template preserving its exact ID!
       finalTemplate = {
         ...currentTemplate,
+        id: currentTemplate.id,
         name: templateName.trim(),
         description: description.trim(),
         category,
@@ -265,7 +279,11 @@ export const SaveTemplateModal: React.FC<SaveTemplateModalProps> = ({
                 className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-black hover:bg-neutral-800 text-white text-xs font-bold shadow-md hover:scale-[1.01] active:scale-[0.99] transition-all"
               >
                 <Save className="w-4 h-4" />
-                <span>Confirm & Save</span>
+                <span>
+                  {isExistingCustom 
+                    ? (saveMode === 'update' ? 'Update Template' : 'Save as New Copy')
+                    : 'Save to My Templates'}
+                </span>
               </button>
             </div>
           </form>
