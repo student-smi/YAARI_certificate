@@ -101,12 +101,10 @@ export const SaveTemplateModal: React.FC<SaveTemplateModalProps> = ({
     }
 
     onConfirmSave(finalTemplate, saveMode);
-    setSavedResult(finalTemplate);
-    setStep('success');
+    onClose();
   };
 
   const handleClose = () => {
-    setStep('editing');
     onClose();
   };
 
