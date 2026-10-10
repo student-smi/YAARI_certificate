@@ -76,6 +76,7 @@ export interface Template {
   createdAt: string;
   updatedAt: string;
   isCustom?: boolean;
+  userId?: string;
 }
 
 export interface Recipient {
@@ -90,6 +91,7 @@ export interface Recipient {
 
 export interface Project {
   id: string;
+  userId?: string;
   name: string;
   description?: string;
   category: string;

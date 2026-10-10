@@ -15,6 +15,7 @@ import { SettingsView } from './components/Settings/SettingsView';
 import { ApiPlayground } from './components/Api/ApiPlayground';
 import { AuthModal } from './components/Auth/AuthModal';
 import { OnboardingModal } from './components/Auth/OnboardingModal';
+import { AdminView } from './components/Admin/AdminView';
 
 import { StorageService } from './services/storageService';
 import { Project, Template, UserProfile, PricingPlan } from './types';
@@ -44,16 +45,33 @@ export function App() {
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [emailTargetProject, setEmailTargetProject] = useState<Project | null>(null);
 
-  // Subscribe to Storage updates
+  // Subscribe to Storage updates with isolated data
   useEffect(() => {
     const unsubscribe = StorageService.subscribe(() => {
-      setUser(StorageService.getUser());
-      setProjects(StorageService.getProjects());
-      setTemplates(StorageService.getTemplates());
+      const currentUser = StorageService.getUser();
+      setUser(currentUser);
+      setProjects(StorageService.getProjects(currentUser.id));
+      setTemplates(StorageService.getTemplates(currentUser.id));
       setPricingPlans(StorageService.getPricingPlans());
     });
     return unsubscribe;
   }, []);
+
+  const handleSwitchAccount = (targetUserId: string) => {
+    const switched = StorageService.switchUser(targetUserId);
+    setUser(switched);
+    const switchedProjects = StorageService.getProjects(switched.id);
+    const switchedTemplates = StorageService.getTemplates(switched.id);
+    setProjects(switchedProjects);
+    setTemplates(switchedTemplates);
+    setActiveProject(switchedProjects[0] || null);
+    if (switched.role === 'admin') {
+      setCurrentView('admin');
+    } else {
+      setCurrentView('dashboard');
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Handle URL hash changes (e.g. #verify/CERT-2026-00001)
   useEffect(() => {
@@ -159,6 +177,7 @@ export function App() {
           setUser(StorageService.getUser());
           setCurrentView('landing');
         }}
+        onSwitchAccount={handleSwitchAccount}
       />
 
       {/* Main Content Area */}
@@ -216,6 +235,33 @@ export function App() {
             onBack={() => setCurrentView('dashboard')}
             onSaveTemplate={(updated) => {
               setTemplates(StorageService.getTemplates());
+              setActiveDesignerTemplate(updated);
+            }}
+            onNavigateToTemplates={() => {
+              setCurrentView('templates');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onNavigateToWizard={(templateId) => {
+              const allTpls = StorageService.getTemplates();
+              const selectedTpl = allTpls.find(t => t.id === templateId) || activeDesignerTemplate;
+              const newProj: Project = {
+                id: `proj-${Date.now()}`,
+                name: `${selectedTpl.name} Campaign`,
+                category: selectedTpl.category,
+                status: 'draft',
+                templateId: selectedTpl.id,
+                recipientsCount: 0,
+                generatedCount: 0,
+                emailedCount: 0,
+                verifiedCount: 0,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                prefix: 'CERT-2026-',
+                organizationName: user.organizationName,
+                fieldMapping: { name: 'Full Name', course: 'Course Name', date: 'Completion Date' },
+                recipients: []
+              };
+              handleCreateProject(newProj);
             }}
           />
         )}
@@ -246,6 +292,10 @@ export function App() {
             }}
             onEditTemplate={(tplId) => handleOpenDesigner(tplId)}
             onDuplicateTemplate={handleDuplicateTemplate}
+            onDeleteTemplate={(tplId) => {
+              StorageService.deleteTemplate(tplId);
+              setTemplates(StorageService.getTemplates());
+            }}
           />
         )}
 
@@ -267,6 +317,15 @@ export function App() {
             plans={pricingPlans}
             onUpdateUser={(updated) => setUser(updated)}
             onUpdatePlans={(updated) => setPricingPlans(updated)}
+          />
+        )}
+
+        {currentView === 'admin' && (
+          <AdminView
+            currentUser={user}
+            pricingPlans={pricingPlans}
+            onUpdatePlans={(updated) => setPricingPlans(updated)}
+            onSwitchAccount={handleSwitchAccount}
           />
         )}
       </main>

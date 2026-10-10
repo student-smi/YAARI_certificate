@@ -115,7 +115,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             { id: 'branding', label: 'Branding & White-Label', icon: Palette },
             { id: 'profile', label: 'Profile & Organization', icon: Building2 },
             { id: 'team', label: 'Team Members', icon: Users },
-            { id: 'pricing', label: 'Admin Pricing Config', icon: DollarSign },
+            ...(user.role === 'admin' ? [{ id: 'pricing', label: 'Admin Pricing Config', icon: DollarSign }] : []),
             { id: 'danger', label: 'Danger Zone', icon: Trash2 },
           ].map((tab) => {
             const Icon = tab.icon;

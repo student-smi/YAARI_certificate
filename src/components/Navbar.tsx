@@ -15,6 +15,7 @@ import {
   Code2
 } from 'lucide-react';
 import { UserProfile } from '../types';
+import { StorageService } from '../services/storageService';
 
 interface NavbarProps {
   currentView: string;
@@ -26,6 +27,7 @@ interface NavbarProps {
   onOpenSignup: () => void;
   isLoggedIn: boolean;
   onLogout: () => void;
+  onSwitchAccount: (userId: string) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -37,7 +39,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenLogin,
   onOpenSignup,
   isLoggedIn,
-  onLogout
+  onLogout,
+  onSwitchAccount
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -49,6 +52,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'verify', label: 'Verify Credential', icon: ShieldCheck, authRequired: false },
     { id: 'api', label: 'API & Dev', icon: Code2, authRequired: true },
     { id: 'settings', label: 'Settings', icon: Settings, authRequired: true },
+    ...(user.role === 'admin' ? [{ id: 'admin', label: '👑 Admin Console', icon: ShieldCheck, authRequired: true }] : []),
   ];
 
   return (
@@ -162,6 +166,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                           <Layers className="w-3.5 h-3.5 text-neutral-400" />
                           Dashboard
                         </button>
+                        {user.role === 'admin' && (
+                          <button
+                            onClick={() => setCurrentView('admin')}
+                            className="w-full text-left px-4 py-2 text-xs bg-amber-50 hover:bg-amber-100/70 text-amber-950 flex items-center gap-2 font-bold"
+                          >
+                            <ShieldCheck className="w-3.5 h-3.5 text-amber-700" />
+                            Admin Console
+                          </button>
+                        )}
                         <button
                           onClick={onOpenBilling}
                           className="w-full text-left px-4 py-2 text-xs hover:bg-neutral-50 flex items-center gap-2 font-medium"
@@ -176,6 +189,35 @@ export const Navbar: React.FC<NavbarProps> = ({
                           <Settings className="w-3.5 h-3.5 text-neutral-400" />
                           Organization Settings
                         </button>
+                      </div>
+
+                      {/* Multi-Tenant Switcher */}
+                      <div className="border-t border-neutral-100 py-2 px-3 bg-neutral-50">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-neutral-500 block mb-1.5">
+                          Switch Tenant (Data Isolated)
+                        </span>
+                        <div className="space-y-1">
+                          {StorageService.getAllUsers().map((acc) => (
+                            <button
+                              key={acc.id}
+                              type="button"
+                              onClick={() => onSwitchAccount(acc.id)}
+                              className={`w-full text-left px-2 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors ${
+                                acc.id === user.id ? 'bg-black text-white shadow-xs' : 'hover:bg-neutral-200 text-neutral-800'
+                              }`}
+                            >
+                              <div className="truncate max-w-[120px]">
+                                <span className="block truncate font-bold">{acc.name}</span>
+                                <span className="text-[9px] opacity-75 font-mono truncate block">{acc.organizationName}</span>
+                              </div>
+                              <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${
+                                acc.id === user.id ? 'bg-neutral-800 text-white' : 'bg-neutral-200 text-black'
+                              }`}>
+                                {acc.role === 'admin' ? '👑 ADMIN' : acc.role}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
                       </div>
 
                       <div className="border-t border-neutral-100 pt-1">

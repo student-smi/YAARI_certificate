@@ -59,11 +59,14 @@ import {
   SignatoryDefinition
 } from '../../data/certificateFields';
 import { SignaturePadModal } from './SignaturePadModal';
+import { SaveTemplateModal } from './SaveTemplateModal';
 
 interface CertificateDesignerProps {
   initialTemplate: Template;
   onBack: () => void;
   onSaveTemplate: (updated: Template) => void;
+  onNavigateToTemplates?: () => void;
+  onNavigateToWizard?: (templateId: string) => void;
 }
 
 type ResizeHandle = 'nw' | 'ne' | 'se' | 'sw' | 'e' | 'w';
@@ -82,7 +85,9 @@ interface ResizeState {
 export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
   initialTemplate,
   onBack,
-  onSaveTemplate
+  onSaveTemplate,
+  onNavigateToTemplates,
+  onNavigateToWizard
 }) => {
   const [template, setTemplate] = useState<Template>(initialTemplate);
   const [selectedElementId, setSelectedElementId] = useState<string | null>(
@@ -96,7 +101,8 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
   // Left sidebar active tab
   const [sidebarTab, setSidebarTab] = useState<'core' | 'optional' | 'signatories' | 'decor'>('core');
 
-  // Digital Signature Modal
+  // Modals
+  const [saveModalOpen, setSaveModalOpen] = useState(false);
   const [signatureModalOpen, setSignatureModalOpen] = useState(false);
 
   // Hidden File Inputs for PC Uploads
@@ -1000,12 +1006,8 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
             <span>Test Preview</span>
           </button>
           <button
-            onClick={() => {
-              StorageService.saveTemplate(template);
-              onSaveTemplate(template);
-              setSaveStatus('saved');
-            }}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-black hover:bg-neutral-800 text-white text-xs font-bold shadow-xs"
+            onClick={() => setSaveModalOpen(true)}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-black hover:bg-neutral-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-transform"
           >
             <Save className="w-3.5 h-3.5" />
             <span>Save Template</span>
@@ -2111,6 +2113,21 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
           </div>
         </div>
       )}
+
+      {/* SAVE TEMPLATE DIALOG & CONFIRMATION MODAL */}
+      <SaveTemplateModal
+        isOpen={saveModalOpen}
+        onClose={() => setSaveModalOpen(false)}
+        currentTemplate={template}
+        onConfirmSave={(savedTemplate) => {
+          setTemplate(savedTemplate);
+          StorageService.saveTemplate(savedTemplate);
+          onSaveTemplate(savedTemplate);
+          setSaveStatus('saved');
+        }}
+        onNavigateToTemplates={onNavigateToTemplates}
+        onNavigateToWizard={onNavigateToWizard}
+      />
 
     </div>
   );

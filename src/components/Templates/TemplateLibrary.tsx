@@ -4,7 +4,9 @@ import {
   Search, 
   Copy, 
   Edit3, 
-  ArrowRight 
+  ArrowRight,
+  Sparkles,
+  Trash2
 } from 'lucide-react';
 import { Template } from '../../types';
 
@@ -13,19 +15,24 @@ interface TemplateLibraryProps {
   onSelectTemplateToCreate: (templateId: string) => void;
   onEditTemplate: (templateId: string) => void;
   onDuplicateTemplate: (template: Template) => void;
+  onDeleteTemplate?: (templateId: string) => void;
 }
 
 export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
   templates,
   onSelectTemplateToCreate,
   onEditTemplate,
-  onDuplicateTemplate
+  onDuplicateTemplate,
+  onDeleteTemplate
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
+  const customCount = templates.filter(t => t.isCustom).length;
+
   const categories = [
     { id: 'all', label: 'All Templates' },
+    { id: 'custom', label: `⭐ My Templates (${customCount})` },
     { id: 'corporate', label: 'Corporate' },
     { id: 'academic', label: 'Academic & Diploma' },
     { id: 'workshop', label: 'Bootcamp & Tech' },
@@ -34,7 +41,12 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
   ];
 
   const filteredTemplates = templates.filter(t => {
-    const matchesCategory = selectedCategory === 'all' || t.category === selectedCategory;
+    const matchesCategory = 
+      selectedCategory === 'all' 
+        ? true 
+        : selectedCategory === 'custom' 
+          ? Boolean(t.isCustom) 
+          : t.category === selectedCategory;
     const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           t.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
@@ -126,9 +138,17 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
             <div className="p-5 flex-1 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-black bg-neutral-100 border border-neutral-200 px-2 py-0.5 rounded">
-                    {template.category}
-                  </span>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-black bg-neutral-100 border border-neutral-200 px-2 py-0.5 rounded">
+                      {template.category}
+                    </span>
+                    {template.isCustom && (
+                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-900 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded flex items-center gap-1">
+                        <Sparkles className="w-2.5 h-2.5 text-amber-600" />
+                        MY TEMPLATE
+                      </span>
+                    )}
+                  </div>
                   <span className="text-[11px] text-neutral-400 font-medium">
                     A4 {template.orientation}
                   </span>
@@ -163,6 +183,20 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
                 >
                   <Copy className="w-4 h-4" />
                 </button>
+
+                {template.isCustom && onDeleteTemplate && (
+                  <button
+                    onClick={() => {
+                      if (confirm(`Are you sure you want to delete "${template.name}"?`)) {
+                        onDeleteTemplate(template.id);
+                      }
+                    }}
+                    className="p-2 border border-red-200 hover:bg-red-50 text-red-600 rounded-xl transition-colors"
+                    title="Delete Custom Template"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
               </div>
             </div>
           </div>
