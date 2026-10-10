@@ -220,27 +220,41 @@ export const renderCertificateToCanvas = async (
       ctx.fillStyle = fs.color;
       ctx.textAlign = fs.align;
       ctx.textBaseline = 'middle';
+      if ('letterSpacing' in ctx) {
+        const scaledLetterSpacing = (fs.letterSpacing || 0) * (width / 842);
+        (ctx as any).letterSpacing = `${scaledLetterSpacing}px`;
+      }
 
-      // Text wrap if needed
-      const maxTextWidth = elWidth * 1.2;
-      const words = resolvedText.split(' ');
-      let line = '';
+      // Exact text wrap matching editor bounds (no artificial multiplier)
+      const maxTextWidth = elWidth;
+      const paragraphs = resolvedText.split('\n');
       const lines: string[] = [];
 
-      for (let n = 0; n < words.length; n++) {
-        const testLine = line + words[n] + ' ';
-        const metrics = ctx.measureText(testLine);
-        if (metrics.width > maxTextWidth && n > 0) {
-          lines.push(line.trim());
-          line = words[n] + ' ';
-        } else {
-          line = testLine;
+      for (const para of paragraphs) {
+        if (!para.trim()) {
+          lines.push('');
+          continue;
+        }
+        const words = para.split(' ');
+        let currentLine = '';
+
+        for (let n = 0; n < words.length; n++) {
+          const testLine = currentLine ? `${currentLine} ${words[n]}` : words[n];
+          const metrics = ctx.measureText(testLine);
+          if (metrics.width > maxTextWidth && currentLine !== '') {
+            lines.push(currentLine);
+            currentLine = words[n];
+          } else {
+            currentLine = testLine;
+          }
+        }
+        if (currentLine) {
+          lines.push(currentLine);
         }
       }
-      lines.push(line.trim());
 
       const lineHeightPx = scaledSize * (fs.lineHeight || 1.3);
-      const totalBlockHeight = lines.length * lineHeightPx;
+      const totalBlockHeight = Math.max(1, lines.length) * lineHeightPx;
       const startY = y - totalBlockHeight / 2 + lineHeightPx / 2;
 
       lines.forEach((l, idx) => {
@@ -370,6 +384,11 @@ export const renderCertificateToCanvas = async (
  * Creates a high-res image data URL (useful for fast canvas preview)
  */
 export const generateCertificatePreviewDataUrl = async (context: RenderContext): Promise<string> => {
+  if (typeof document !== 'undefined' && (document as any).fonts) {
+    try {
+      await (document as any).fonts.ready;
+    } catch (e) {}
+  }
   const canvas = document.createElement('canvas');
   // High-def preview: 1684 x 1190 (2x scale of 842 x 595)
   canvas.width = 1684;
@@ -385,6 +404,11 @@ export const generateCertificatePreviewDataUrl = async (context: RenderContext):
  * Generates an individual PDF file blob using jsPDF
  */
 export const generateCertificatePdfBlob = async (context: RenderContext): Promise<Blob> => {
+  if (typeof document !== 'undefined' && (document as any).fonts) {
+    try {
+      await (document as any).fonts.ready;
+    } catch (e) {}
+  }
   const canvas = document.createElement('canvas');
   // 300 DPI print quality: 2480 x 1754 (A4 at 300 DPI)
   canvas.width = 2480;

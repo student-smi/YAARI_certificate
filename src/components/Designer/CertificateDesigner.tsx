@@ -254,8 +254,15 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
       if (!dataUrl) return;
 
       if (targetType === 'logo') {
-        if (selectedElement && selectedElement.type === 'logo') {
+        const existingLogo = template.elements.find(el => el.type === 'logo' || el.fieldKey === 'logo');
+        if (selectedElement && (selectedElement.type === 'logo' || selectedElement.fieldKey === 'logo')) {
           handleUpdateSelected({ content: dataUrl });
+        } else if (existingLogo) {
+          const updated = template.elements.map(el =>
+            el.id === existingLogo.id ? { ...el, content: dataUrl } : el
+          );
+          pushHistory({ ...template, elements: updated });
+          setSelectedElementId(existingLogo.id);
         } else {
           handleAddElement('logo', dataUrl, 'logo', {
             x: 50,
@@ -282,6 +289,21 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
   };
 
   const handleAddCoreElement = (field: FieldDefinition) => {
+    // If element already exists on canvas, select it instead of creating a duplicate!
+    const existingElement = template.elements.find(el => 
+      (field.key === 'logo' && (el.type === 'logo' || el.fieldKey === 'logo')) ||
+      (el.fieldKey === field.key) ||
+      (field.key === 'title' && (el.id === 'el-title' || el.fieldKey === 'title')) ||
+      (field.key === 'organization' && (el.id === 'el-org-name' || el.fieldKey === 'organization')) ||
+      (field.key === 'certificate_id' && (el.type === 'certificate_id' || el.fieldKey === 'certificate_id')) ||
+      (field.key === 'qr' && (el.type === 'qr' || el.fieldKey === 'qr'))
+    );
+
+    if (existingElement) {
+      setSelectedElementId(existingElement.id);
+      return;
+    }
+
     if (field.key === 'logo') {
       handleAddElement('logo', field.defaultText, 'logo', {
         x: 50,
@@ -1143,12 +1165,29 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
                               Upload
                             </button>
                           )}
-                          <button
-                            onClick={() => handleAddCoreElement(field)}
-                            className="px-2 py-0.5 rounded bg-neutral-100 hover:bg-black hover:text-white text-black font-bold border border-neutral-200 shrink-0 transition-colors"
-                          >
-                            + Add
-                          </button>
+                          {(() => {
+                            const isAdded = template.elements.some(el => 
+                              (field.key === 'logo' && (el.type === 'logo' || el.fieldKey === 'logo')) ||
+                              (el.fieldKey === field.key) ||
+                              (field.key === 'title' && (el.id === 'el-title' || el.fieldKey === 'title')) ||
+                              (field.key === 'organization' && (el.id === 'el-org-name' || el.fieldKey === 'organization')) ||
+                              (field.key === 'certificate_id' && (el.type === 'certificate_id' || el.fieldKey === 'certificate_id')) ||
+                              (field.key === 'qr' && (el.type === 'qr' || el.fieldKey === 'qr'))
+                            );
+                            return (
+                              <button
+                                onClick={() => handleAddCoreElement(field)}
+                                className={`px-2 py-0.5 rounded font-bold border shrink-0 transition-colors ${
+                                  isAdded
+                                    ? 'bg-neutral-200 hover:bg-black hover:text-white text-neutral-800 border-neutral-300'
+                                    : 'bg-neutral-100 hover:bg-black hover:text-white text-black border-neutral-200'
+                                }`}
+                                title={isAdded ? 'Select this element on canvas' : 'Add to canvas'}
+                              >
+                                {isAdded ? 'Select' : '+ Add'}
+                              </button>
+                            );
+                          })()}
                         </div>
                       </div>
                     </div>
@@ -1614,7 +1653,12 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
                         className="flex items-center justify-center border border-dashed border-neutral-300 rounded bg-white/80 p-1 overflow-hidden"
                       >
                         {el.content && (el.content.startsWith('http') || el.content.startsWith('data:')) ? (
-                          <img src={el.content} alt="Logo" className="w-full h-full object-contain" />
+                          <img 
+                            src={el.content} 
+                            alt="Logo" 
+                            draggable={false}
+                            className="w-full h-full object-contain pointer-events-none select-none" 
+                          />
                         ) : (
                           <div className="flex flex-col items-center justify-center text-neutral-400">
                             <Building2 className="w-5 h-5 mb-0.5" />
@@ -1630,7 +1674,12 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
                         }}
                         className="flex items-center justify-center"
                       >
-                        <img src={el.content} alt="Signature" className="max-w-full max-h-full object-contain" />
+                        <img 
+                          src={el.content} 
+                          alt="Signature" 
+                          draggable={false}
+                          className="max-w-full max-h-full object-contain pointer-events-none select-none" 
+                        />
                       </div>
                     ) : el.type === 'seal' ? (
                       <div 
@@ -1652,10 +1701,13 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
                           lineHeight: fs.lineHeight,
                           fontStyle: fs.fontStyle || 'normal',
                           textTransform: fs.textTransform || 'none',
+                          width: `${elWidthPx}px`,
                           maxWidth: `${elWidthPx}px`,
-                          whiteSpace: 'pre-wrap'
+                          whiteSpace: 'pre-wrap',
+                          wordBreak: 'break-word',
+                          boxSizing: 'border-box'
                         }}
-                        className="px-2 py-0.5 relative group"
+                        className="relative group select-none"
                       >
                         {el.type === 'dynamic_field' && el.fieldKey && (
                           <span className="absolute -top-3.5 left-0 text-[8px] font-mono font-bold bg-neutral-900 text-white px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
