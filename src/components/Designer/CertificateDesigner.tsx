@@ -201,7 +201,15 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
     initialTemplate.elements[0]?.id || null
   );
   const [isAdvancedMode, setIsAdvancedMode] = useState<boolean>(false);
-  const [zoomLevel, setZoomLevel] = useState<number>(100);
+  
+  // Dynamic scale calculation: on laptop screens, portrait mode (842px) fits cleanly at 62-65%, landscape (595px) fits at 85%
+  const getOptimalZoom = (orientation: 'landscape' | 'portrait') => {
+    return orientation === 'portrait' ? 62 : 85;
+  };
+
+  const [zoomLevel, setZoomLevel] = useState<number>(() => 
+    initialTemplate.orientation === 'portrait' ? 62 : 85
+  );
   const [showGrid, setShowGrid] = useState<boolean>(true);
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'unsaved'>('saved');
 
@@ -448,6 +456,7 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
     };
     setTemplate(updated);
     pushHistory(updated);
+    setZoomLevel(getOptimalZoom(orientation));
   };
 
   const handleBackgroundUpload = (file: File) => {
@@ -1265,22 +1274,29 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
 
           <div className="h-4 w-px bg-neutral-200 hidden sm:block" />
 
-          {/* Zoom controls */}
-          <div className="flex items-center gap-1 text-xs text-neutral-700">
+          {/* Zoom controls with Auto-Fit */}
+          <div className="flex items-center gap-1 text-xs text-neutral-700 bg-neutral-100 px-1 py-0.5 rounded-lg border border-neutral-200">
             <button
-              onClick={() => setZoomLevel(Math.max(60, zoomLevel - 10))}
-              className="p-1.5 rounded-lg hover:bg-neutral-100"
+              onClick={() => setZoomLevel(Math.max(40, zoomLevel - 10))}
+              className="p-1 rounded-md hover:bg-neutral-200 text-neutral-700 cursor-pointer"
               title="Zoom Out"
             >
-              <ZoomOut className="w-4 h-4" />
+              <ZoomOut className="w-3.5 h-3.5" />
             </button>
-            <span className="w-10 text-center font-mono font-bold text-black">{zoomLevel}%</span>
+            <span className="w-9 text-center font-mono font-bold text-black text-xs">{zoomLevel}%</span>
             <button
-              onClick={() => setZoomLevel(Math.min(140, zoomLevel + 10))}
-              className="p-1.5 rounded-lg hover:bg-neutral-100"
+              onClick={() => setZoomLevel(Math.min(150, zoomLevel + 10))}
+              className="p-1 rounded-md hover:bg-neutral-200 text-neutral-700 cursor-pointer"
               title="Zoom In"
             >
-              <ZoomIn className="w-4 h-4" />
+              <ZoomIn className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => setZoomLevel(getOptimalZoom(template.orientation))}
+              className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-white border border-neutral-300 hover:bg-neutral-50 text-black shadow-2xs cursor-pointer ml-1"
+              title="Fit to Screen (Auto-scale so entire certificate is visible)"
+            >
+              Fit
             </button>
           </div>
 
@@ -2120,7 +2136,7 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
 
         {/* CENTER: CERTIFICATE CANVAS (CANVA-LEVEL WORKSPACE) */}
         <div 
-          className="flex-1 bg-neutral-100 p-6 flex items-center justify-center overflow-auto relative"
+          className="flex-1 bg-neutral-200/60 p-6 sm:p-8 flex items-center justify-center overflow-auto relative min-h-0"
           onDragOver={(e) => e.preventDefault()}
           onDrop={(e) => {
             e.preventDefault();
@@ -2137,30 +2153,43 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
             }
           }}
         >
-          
+          {/* Sized Layout Bounding Wrapper: matches scaled visual size for perfect centering and smooth scrolling */}
           <div 
-            style={{ transform: `scale(${zoomLevel / 100})`, transformOrigin: 'center center' }}
-            className="transition-transform duration-100"
+            style={{ 
+              width: `${Math.round(template.width * (zoomLevel / 100))}px`,
+              height: `${Math.round(template.height * (zoomLevel / 100))}px`,
+            }}
+            className="relative transition-all duration-150 m-auto shrink-0 shadow-2xl rounded-xs"
           >
-            {/* The Certificate Canvas Board */}
-            <div
-              ref={canvasRef}
-              style={{
+            {/* Scaled Certificate Board */}
+            <div 
+              style={{ 
+                transform: `scale(${zoomLevel / 100})`, 
+                transformOrigin: 'top left',
                 width: `${template.width}px`,
                 height: `${template.height}px`,
-                backgroundColor: template.backgroundStyle.color || '#FFFFFF',
-                backgroundImage: template.backgroundStyle.gradient || undefined,
               }}
-              className={`relative shadow-2xl rounded-xs transition-all select-none overflow-hidden ${
-                showGrid ? 'canvas-grid-dots' : ''
-              } ${
-                template.backgroundStyle.borderStyle === 'gold_double' ? 'cert-gold-border' :
-                template.backgroundStyle.borderStyle === 'classic' ? 'border-[12px] border-black' :
-                template.backgroundStyle.borderStyle === 'modern' ? 'border border-neutral-300' :
-                template.backgroundStyle.borderStyle === 'minimal' ? 'border-2 border-neutral-300' :
-                ''
-              }`}
+              className="absolute top-0 left-0 transition-transform duration-150"
             >
+              {/* The Certificate Canvas Board */}
+              <div
+                ref={canvasRef}
+                style={{
+                  width: `${template.width}px`,
+                  height: `${template.height}px`,
+                  backgroundColor: template.backgroundStyle.color || '#FFFFFF',
+                  backgroundImage: template.backgroundStyle.gradient || undefined,
+                }}
+                className={`w-full h-full relative rounded-xs select-none overflow-hidden ${
+                  showGrid ? 'canvas-grid-dots' : ''
+                } ${
+                  template.backgroundStyle.borderStyle === 'gold_double' ? 'cert-gold-border' :
+                  template.backgroundStyle.borderStyle === 'classic' ? 'border-[12px] border-black' :
+                  template.backgroundStyle.borderStyle === 'modern' ? 'border border-neutral-300' :
+                  template.backgroundStyle.borderStyle === 'minimal' ? 'border-2 border-neutral-300' :
+                  ''
+                }`}
+              >
               {/* Custom Institute Background Image Layer */}
               {template.backgroundStyle.imageUrl && (
                 <div 
@@ -2387,8 +2416,9 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
 
             </div>
           </div>
-
         </div>
+
+      </div>
 
         {/* RIGHT PANEL: PROPERTIES PANEL & QUICK ALIGNMENT (CANVA-LEVEL) */}
         <div className="w-80 bg-white border-l border-neutral-200 p-4 overflow-y-auto shrink-0 space-y-5">
@@ -2848,9 +2878,13 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
               </button>
             </div>
 
-            <div className="border border-neutral-200 rounded-lg overflow-hidden bg-neutral-50 p-4 text-center">
+            <div className="border border-neutral-200 rounded-lg overflow-hidden bg-neutral-100 p-4 flex items-center justify-center max-h-[72vh]">
               {testPreviewUrl ? (
-                <img src={testPreviewUrl} alt="Test certificate render" className="w-full h-auto shadow-md block rounded" />
+                <img 
+                  src={testPreviewUrl} 
+                  alt="Test certificate render" 
+                  className="max-h-[68vh] w-auto max-w-full shadow-2xl block rounded object-contain border border-neutral-300" 
+                />
               ) : (
                 <div className="py-12 text-xs text-neutral-500 font-medium">Rendering vector preview...</div>
               )}

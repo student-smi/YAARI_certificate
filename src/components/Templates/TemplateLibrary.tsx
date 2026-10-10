@@ -273,10 +273,12 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
               </div>
 
               {/* Visual Preview Thumbnail Box */}
-              <div className="p-4 bg-neutral-50/80 border-b border-neutral-100 flex items-center justify-center min-h-[220px]">
+              <div className="p-4 bg-neutral-50/80 border-b border-neutral-100 flex items-center justify-center min-h-[240px] h-[240px]">
                 <div 
-                  className={`rounded-lg border-2 p-5 shadow-xs flex flex-col items-center justify-center text-center relative overflow-hidden group-hover:scale-[1.01] transition-all duration-200 ${
-                    isPortrait ? 'aspect-[1/1.35] w-[190px] mx-auto' : 'aspect-[1.414/1] w-full'
+                  className={`rounded-lg border-2 shadow-xs flex flex-col items-center justify-between text-center relative overflow-hidden group-hover:scale-[1.01] transition-all duration-200 ${
+                    isPortrait 
+                      ? 'aspect-[1/1.414] h-[210px] w-auto mx-auto p-4' 
+                      : 'aspect-[1.414/1] h-[160px] w-auto max-w-full mx-auto p-4'
                   }`}
                   style={{ 
                     borderColor: borderColor,
@@ -293,21 +295,34 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
                     backgroundRepeat: 'no-repeat'
                   }}
                 >
-                  <p className="text-[9px] font-bold tracking-widest text-neutral-500 uppercase line-clamp-1 px-2 z-10">
-                    {displayOrg}
-                  </p>
-                  <h4 className="font-serif font-bold text-xs sm:text-sm text-black mt-1 line-clamp-1 z-10">
-                    {displayTitle}
-                  </h4>
-                  <div className="w-16 h-0.5 bg-neutral-800 my-1.5 z-10" />
-                  <p className="text-[9px] text-neutral-500 font-serif italic z-10">
-                    Presented to Recipient
-                  </p>
-                  <div className="absolute bottom-2.5 left-3 text-[8px] text-neutral-400 font-mono z-10">
-                    QR Verified
+                  <div className="w-full flex flex-col items-center pt-1 z-10">
+                    <p className="text-[8px] font-bold tracking-widest text-neutral-500 uppercase line-clamp-1 px-1">
+                      {displayOrg}
+                    </p>
+                    <h4 className="font-serif font-bold text-xs sm:text-[13px] text-black mt-0.5 line-clamp-1">
+                      {displayTitle}
+                    </h4>
+                    <div className="w-12 h-0.5 bg-neutral-800 my-1.5" />
+                    <p className="text-[8px] text-neutral-500 font-serif italic">
+                      Presented to Recipient
+                    </p>
                   </div>
-                  <div className="absolute bottom-2.5 right-3 text-[9px] font-signature text-black font-bold z-10">
-                    Signatory
+
+                  {isPortrait && (
+                    <div className="my-auto py-1 z-10">
+                      <p className="text-[11px] font-serif font-bold text-neutral-800 tracking-wide">
+                        Recipient Name
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="w-full flex items-center justify-between px-1 pb-1 z-10">
+                    <div className="text-[7px] text-neutral-400 font-mono">
+                      QR Verified
+                    </div>
+                    <div className="text-[9px] font-signature text-black font-bold">
+                      Signatory
+                    </div>
                   </div>
                 </div>
               </div>
@@ -707,10 +722,10 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
               </div>
 
               {/* Preview Box */}
-              <div className="p-4 bg-neutral-50 rounded-2xl border border-neutral-200 flex items-center justify-center">
+              <div className="p-4 bg-neutral-50 rounded-2xl border border-neutral-200 flex items-center justify-center min-h-[220px]">
                 <div 
-                  className={`rounded-lg border-2 p-3 shadow-xs flex flex-col items-center justify-center text-center relative overflow-hidden transition-all duration-200 ${
-                    editOrientation === 'portrait' ? 'aspect-[1/1.35] w-[150px]' : 'aspect-[1.414/1] w-[240px]'
+                  className={`rounded-lg border-2 p-4 shadow-xs flex flex-col items-center justify-between text-center relative overflow-hidden transition-all duration-200 ${
+                    editOrientation === 'portrait' ? 'aspect-[1/1.414] h-[190px] w-auto' : 'aspect-[1.414/1] h-[140px] w-auto'
                   }`}
                   style={{ 
                     borderColor: templateToEdit.backgroundStyle?.borderColor || '#000000',
@@ -721,16 +736,22 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
                     backgroundSize: 'cover'
                   }}
                 >
-                  <span className="text-[8px] font-bold tracking-widest text-neutral-500 uppercase line-clamp-1">
-                    {templateToEdit.category}
-                  </span>
-                  <span className="font-serif font-bold text-[11px] text-black mt-0.5 line-clamp-1">
-                    {templateToEdit.name}
-                  </span>
-                  <div className="w-10 h-0.5 bg-neutral-800 my-1" />
-                  <span className="text-[7px] text-neutral-500 font-serif italic">
+                  <div className="w-full flex flex-col items-center">
+                    <span className="text-[8px] font-bold tracking-widest text-neutral-500 uppercase line-clamp-1">
+                      {templateToEdit.category}
+                    </span>
+                    <span className="font-serif font-bold text-[11px] text-black mt-0.5 line-clamp-1">
+                      {templateToEdit.name}
+                    </span>
+                    <div className="w-10 h-0.5 bg-neutral-800 my-1" />
+                  </div>
+                  <span className="text-[9px] text-neutral-600 font-serif font-semibold italic my-auto">
                     Recipient Name
                   </span>
+                  <div className="w-full flex items-center justify-between text-[7px] text-neutral-400 font-mono px-1">
+                    <span>QR Code</span>
+                    <span className="font-signature font-bold text-black text-[9px]">Signatory</span>
+                  </div>
                 </div>
               </div>
 
