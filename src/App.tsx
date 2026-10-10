@@ -98,8 +98,167 @@ export function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleOpenDesigner = (templateId?: string) => {
-    const tpl = templates.find(t => t.id === templateId) || templates[0];
+  const handleOpenDesigner = (
+    templateId?: string,
+    orientation?: 'landscape' | 'portrait',
+    customBgUrl?: string,
+    customName?: string
+  ) => {
+    let tpl: Template;
+    if (templateId === 'blank' || templateId === 'new' || (!templateId && templateId !== undefined && templateId === '')) {
+      const isPortrait = orientation === 'portrait';
+      tpl = {
+        id: `tpl-custom-${Date.now()}`,
+        name: customName?.trim() || (isPortrait ? 'Portrait Certificate' : 'Landscape Certificate'),
+        description: 'Custom certificate design.',
+        category: 'custom',
+        orientation: isPortrait ? 'portrait' : 'landscape',
+        width: isPortrait ? 595 : 842,
+        height: isPortrait ? 842 : 595,
+        backgroundStyle: {
+          type: customBgUrl ? 'image' : 'color',
+          color: '#FFFFFF',
+          imageUrl: customBgUrl || undefined,
+          imageFit: 'cover',
+          imageOpacity: 1,
+          borderStyle: customBgUrl ? 'none' : 'gold_double',
+          borderColor: '#B45309'
+        },
+        elements: [
+          {
+            id: 'el-org-name',
+            type: 'text',
+            x: 50,
+            y: isPortrait ? 12 : 14,
+            width: 80,
+            height: 6,
+            zIndex: 1,
+            content: user.organizationName || 'INSTITUTION OR ORGANIZATION NAME',
+            fontSettings: { family: 'Plus Jakarta Sans', size: 14, weight: '700', color: '#64748B', align: 'center', letterSpacing: 4, lineHeight: 1.2 }
+          },
+          {
+            id: 'el-title',
+            type: 'text',
+            x: 50,
+            y: isPortrait ? 20 : 23,
+            width: 90,
+            height: 8,
+            zIndex: 2,
+            content: 'CERTIFICATE OF COMPLETION',
+            fontSettings: { family: 'Cinzel', size: 30, weight: '700', color: '#0F172A', align: 'center', letterSpacing: 3, lineHeight: 1.1 }
+          },
+          {
+            id: 'el-subtitle',
+            type: 'text',
+            x: 50,
+            y: isPortrait ? 30 : 33,
+            width: 80,
+            height: 5,
+            zIndex: 2,
+            content: 'PROUDLY PRESENTED TO',
+            fontSettings: { family: 'Plus Jakarta Sans', size: 11, weight: '600', color: '#64748B', align: 'center', letterSpacing: 2, lineHeight: 1.2 }
+          },
+          {
+            id: 'el-recipient-name',
+            type: 'dynamic_field',
+            fieldKey: 'name',
+            x: 50,
+            y: isPortrait ? 42 : 44,
+            width: 80,
+            height: 9,
+            zIndex: 3,
+            content: '{{name}}',
+            fontSettings: { family: 'Cinzel', size: 36, weight: '700', color: '#B45309', align: 'center', letterSpacing: 1, lineHeight: 1.1 }
+          },
+          {
+            id: 'el-statement',
+            type: 'text',
+            x: 50,
+            y: isPortrait ? 52 : 54,
+            width: 85,
+            height: 6,
+            zIndex: 3,
+            content: 'For successfully completing all requirements of the professional curriculum.',
+            fontSettings: { family: 'Plus Jakarta Sans', size: 12, weight: '400', color: '#475569', align: 'center', letterSpacing: 0.5, lineHeight: 1.4 }
+          },
+          {
+            id: 'el-course-name',
+            type: 'dynamic_field',
+            fieldKey: 'course',
+            x: 50,
+            y: isPortrait ? 60 : 62,
+            width: 85,
+            height: 7,
+            zIndex: 4,
+            content: '{{course}}',
+            fontSettings: { family: 'Plus Jakarta Sans', size: 20, weight: '700', color: '#0F172A', align: 'center', letterSpacing: 1, lineHeight: 1.2 }
+          },
+          {
+            id: 'el-qr',
+            type: 'qr',
+            fieldKey: 'qr',
+            x: isPortrait ? 22 : 18,
+            y: isPortrait ? 82 : 80,
+            width: isPortrait ? 14 : 12,
+            height: isPortrait ? 14 : 12,
+            zIndex: 5,
+            content: '{{verification_url}}'
+          },
+          {
+            id: 'el-cert-id',
+            type: 'certificate_id',
+            fieldKey: 'certificate_id',
+            x: isPortrait ? 22 : 18,
+            y: isPortrait ? 91 : 89,
+            width: 25,
+            height: 4,
+            zIndex: 5,
+            content: 'ID: {{certificate_id}}',
+            fontSettings: { family: 'Plus Jakarta Sans', size: 9, weight: '600', color: '#64748B', align: 'center', letterSpacing: 1, lineHeight: 1 }
+          },
+          {
+            id: 'el-sig-1',
+            type: 'signature',
+            x: isPortrait ? 78 : 80,
+            y: isPortrait ? 81 : 78,
+            width: 26,
+            height: 8,
+            zIndex: 6,
+            content: 'Authorized Signatory',
+            fontSettings: { family: 'Great Vibes', size: 28, weight: '400', color: '#0F172A', align: 'center', letterSpacing: 1, lineHeight: 1 }
+          },
+          {
+            id: 'el-sig-title',
+            type: 'text',
+            x: isPortrait ? 78 : 80,
+            y: isPortrait ? 89 : 86,
+            width: 26,
+            height: 4,
+            zIndex: 6,
+            content: 'DIRECTOR OF ACADEMICS',
+            fontSettings: { family: 'Plus Jakarta Sans', size: 9, weight: '700', color: '#64748B', align: 'center', letterSpacing: 1.2, lineHeight: 1 }
+          }
+        ],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        isCustom: true
+      };
+      StorageService.saveTemplate(tpl);
+      setTemplates(StorageService.getTemplates());
+    } else {
+      const found = templates.find(t => t.id === templateId) || templates[0];
+      if (orientation && found.orientation !== orientation) {
+        const isPortrait = orientation === 'portrait';
+        tpl = {
+          ...found,
+          orientation,
+          width: isPortrait ? 595 : 842,
+          height: isPortrait ? 842 : 595
+        };
+      } else {
+        tpl = found;
+      }
+    }
     setActiveDesignerTemplate(tpl);
     setCurrentView('designer');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -270,14 +429,21 @@ export function App() {
         {currentView === 'templates' && (
           <TemplateLibrary
             templates={templates}
-            onSelectTemplateToCreate={(templateId) => {
+            onSelectTemplateToCreate={(templateId, orientation) => {
               const selectedTpl = templates.find(t => t.id === templateId) || templates[0];
+              const isTargetPortrait = orientation === 'portrait';
+              const targetTpl = orientation && selectedTpl.orientation !== orientation ? {
+                ...selectedTpl,
+                orientation,
+                width: isTargetPortrait ? 595 : 842,
+                height: isTargetPortrait ? 842 : 595
+              } : selectedTpl;
               const newProj: Project = {
                 id: `proj-${Date.now()}`,
-                name: `${selectedTpl.name} Campaign`,
-                category: selectedTpl.category,
+                name: `${targetTpl.name} Campaign`,
+                category: targetTpl.category,
                 status: 'draft',
-                templateId: selectedTpl.id,
+                templateId: targetTpl.id,
                 recipientsCount: 0,
                 generatedCount: 0,
                 emailedCount: 0,
@@ -291,7 +457,9 @@ export function App() {
               };
               handleCreateProject(newProj);
             }}
-            onEditTemplate={(tplId) => handleOpenDesigner(tplId)}
+            onEditTemplate={(tplId, orientation, customBgUrl, customName) => 
+              handleOpenDesigner(tplId, orientation, customBgUrl, customName)
+            }
             onDuplicateTemplate={handleDuplicateTemplate}
             onDeleteTemplate={(tplId) => {
               StorageService.deleteTemplate(tplId);
