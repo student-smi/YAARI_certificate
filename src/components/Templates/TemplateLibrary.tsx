@@ -107,29 +107,39 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
 
       {/* Templates Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredTemplates.map((template) => (
+        {filteredTemplates.map((template) => {
+          const orgEl = template.elements.find(e => e.id === 'el-org-name' || e.fieldKey === 'org_name');
+          const titleEl = template.elements.find(e => e.id === 'el-title');
+          const displayOrg = orgEl?.content || template.category;
+          const displayTitle = titleEl?.content || template.name;
+          const borderColor = template.backgroundStyle?.borderColor || '#000000';
+
+          return (
           <div
             key={template.id}
             className="bg-white rounded-2xl border border-neutral-200 shadow-card hover:border-black transition-all overflow-hidden flex flex-col justify-between group"
           >
             {/* Visual Preview Thumbnail Box */}
             <div className="p-4 bg-neutral-50 border-b border-neutral-100 flex items-center justify-center">
-              <div className="w-full aspect-[1.414/1] rounded-lg border border-neutral-300 bg-white p-6 shadow-sm flex flex-col items-center justify-center text-center relative overflow-hidden group-hover:scale-[1.01] transition-transform duration-200">
-                <p className="text-[9px] font-bold tracking-widest text-neutral-400 uppercase">
-                  {template.category}
+              <div 
+                className="w-full aspect-[1.414/1] rounded-lg border-2 bg-white p-5 shadow-sm flex flex-col items-center justify-center text-center relative overflow-hidden group-hover:scale-[1.01] transition-transform duration-200"
+                style={{ borderColor: borderColor }}
+              >
+                <p className="text-[9px] font-bold tracking-widest text-neutral-500 uppercase line-clamp-1 px-2">
+                  {displayOrg}
                 </p>
-                <h4 className="font-serif font-bold text-sm text-black mt-1 line-clamp-1">
-                  {template.name}
+                <h4 className="font-serif font-bold text-xs sm:text-sm text-black mt-1 line-clamp-1">
+                  {displayTitle}
                 </h4>
-                <div className="w-20 h-0.5 bg-black my-2" />
-                <p className="text-[10px] text-neutral-500 font-serif italic">
+                <div className="w-16 h-0.5 bg-neutral-800 my-1.5" />
+                <p className="text-[9px] text-neutral-500 font-serif italic">
                   Presented to Recipient
                 </p>
-                <div className="absolute bottom-3 left-3 text-[8px] text-neutral-400 font-mono">
-                  QR Verified ID
+                <div className="absolute bottom-2.5 left-3 text-[8px] text-neutral-400 font-mono">
+                  QR Verified
                 </div>
-                <div className="absolute bottom-3 right-3 text-[9px] font-signature text-black font-bold">
-                  Authorized Signatory
+                <div className="absolute bottom-2.5 right-3 text-[9px] font-signature text-black font-bold">
+                  Signatory
                 </div>
               </div>
             </div>
@@ -200,7 +210,8 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
               </div>
             </div>
           </div>
-        ))}
+        );
+      })}
 
         {filteredTemplates.length === 0 && (
           <div className="col-span-full py-16 text-center bg-neutral-50 rounded-3xl border border-dashed border-neutral-300">
