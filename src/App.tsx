@@ -349,11 +349,20 @@ export function App() {
           setUser(profile);
           StorageService.saveUser(profile);
           StorageService.setLoggedIn(true);
-          if (isNew) {
+          const userProjects = StorageService.getProjects(profile.id);
+          const userTemplates = StorageService.getTemplates(profile.id);
+          setProjects(userProjects);
+          setTemplates(userTemplates);
+          setActiveProject(userProjects[0] || null);
+
+          if (profile.role === 'admin') {
+            setCurrentView('admin');
+          } else if (isNew) {
             setOnboardingOpen(true);
           } else {
             setCurrentView('dashboard');
           }
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
       />
 

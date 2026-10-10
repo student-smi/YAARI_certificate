@@ -10,6 +10,44 @@ const STORAGE_KEYS = {
   DEFAULT_TEMPLATES: 'certiforge_system_templates_v1',
 };
 
+export const isAdminEmail = (email: string): boolean => {
+  if (!email) return false;
+  const clean = email.trim().toLowerCase();
+  return (
+    clean === 'tejasgogavale5@gmail.com' ||
+    clean === 'admin@certiforge.io' ||
+    clean === 'admin@certiforge.com' ||
+    clean.startsWith('admin@') ||
+    clean.includes('admin')
+  );
+};
+
+export const ADMIN_TEJAS: UserProfile = {
+  id: 'usr-1791604641396',
+  name: 'Tejas Gogavale',
+  email: 'tejasgogavale5@gmail.com',
+  organizationName: 'CertiForge Global Platform',
+  role: 'admin',
+  avatar: 'https://ui-avatars.com/api/?name=Tejas+Gogavale&background=000000&color=ffffff&bold=true',
+  plan: 'business',
+  isYearlyBilling: true,
+  usage: {
+    certificatesGenerated: 1420,
+    certificatesLimit: 25000,
+    storageUsedMB: 580,
+    storageLimitMB: 102400,
+    emailCreditsUsed: 1200,
+    emailCreditsLimit: 25000
+  },
+  branding: {
+    logoUrl: '',
+    primaryColor: '#000000',
+    issuerName: 'CertiForge Platform',
+    customDomain: 'certiforge.pages.dev',
+    whiteLabelVerification: true
+  }
+};
+
 // Built-in Demo Accounts for Seamless Multi-User Testing
 export const DEMO_ADMIN: UserProfile = {
   id: 'usr-admin-1',
@@ -128,13 +166,21 @@ export class StorageService {
       const data = localStorage.getItem(STORAGE_KEYS.ACCOUNTS);
       if (data) {
         const parsed = JSON.parse(data);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Normalize and make sure admin emails always have admin role
+          return parsed.map((u: UserProfile) => {
+            if (isAdminEmail(u.email)) {
+              return { ...u, role: 'admin', plan: 'business' };
+            }
+            return u;
+          });
+        }
       }
     } catch (e) {
       console.warn('Accounts read failed', e);
     }
 
-    const initialAccounts = [DEMO_ADMIN, DEMO_USER_1, DEMO_USER_2];
+    const initialAccounts = [ADMIN_TEJAS, DEMO_ADMIN, DEMO_USER_1, DEMO_USER_2];
     localStorage.setItem(STORAGE_KEYS.ACCOUNTS, JSON.stringify(initialAccounts));
     return initialAccounts;
   }
@@ -191,20 +237,26 @@ export class StorageService {
     avatar?: string;
   }): UserProfile {
     const cleanEmail = partial.email.trim().toLowerCase();
+    const isAdmin = isAdminEmail(cleanEmail) || partial.role === 'admin';
     const emailUserPart = cleanEmail.split('@')[0] || 'Member';
-    const autoName = emailUserPart
-      .replace(/[._-]+/g, ' ')
-      .replace(/\b\w/g, (c: string) => c.toUpperCase());
+    const autoName = cleanEmail === 'tejasgogavale5@gmail.com'
+      ? 'Tejas Gogavale'
+      : isAdmin
+      ? 'Platform Administrator'
+      : emailUserPart
+          .replace(/[._-]+/g, ' ')
+          .replace(/\b\w/g, (c: string) => c.toUpperCase());
     
     const emailDomain = cleanEmail.split('@')[1] || '';
-    const autoOrg = emailDomain && !['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com'].includes(emailDomain)
+    const autoOrg = isAdmin
+      ? 'CertiForge Global Platform'
+      : emailDomain && !['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com'].includes(emailDomain)
       ? emailDomain.split('.')[0].toUpperCase() + ' Organization'
-      : `${autoName}'s Organization`;
+      : `${autoName}'s Workspace`;
 
     const finalName = partial.name?.trim() || autoName;
     const finalOrg = partial.organizationName?.trim() || autoOrg;
-    const isAdmin = cleanEmail.startsWith('admin@') || cleanEmail.includes('admin') || partial.role === 'admin';
-    const finalRole = isAdmin ? 'admin' : (partial.role || 'owner');
+    const finalRole: UserProfile['role'] = isAdmin ? 'admin' : (partial.role || 'owner');
     const finalPlan: UserProfile['plan'] = partial.plan || (isAdmin ? 'business' : 'starter');
     const finalAvatar = partial.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(finalName)}&background=000000&color=ffffff&bold=true`;
 
@@ -216,7 +268,7 @@ export class StorageService {
       role: finalRole,
       avatar: finalAvatar,
       plan: finalPlan,
-      isYearlyBilling: false,
+      isYearlyBilling: finalPlan === 'business',
       usage: {
         certificatesGenerated: 0,
         certificatesLimit: finalPlan === 'business' ? 25000 : finalPlan === 'pro' ? 3000 : 250,
@@ -238,28 +290,68 @@ export class StorageService {
   // Sign in with Account Registry tracking & isolated workspace
   public static async loginUser(email: string, password?: string, name?: string, orgName?: string): Promise<UserProfile> {
     const cleanEmail = email.trim().toLowerCase();
+    
+    // First, verify with backend API if available
+    let serverUser: any = null;
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          action: 'login', 
+          email: cleanEmail, 
+          password: password || '', 
+          name, 
+          organizationName: orgName 
+        })
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        throw new Error(data?.error || `Login failed (${res.status})`);
+      }
+
+      if (data?.success && data?.user) {
+        serverUser = data.user;
+      }
+    } catch (err: any) {
+      // If error is from server (e.g. incorrect password or user not found), bubble it up
+      if (err.message && !err.message.includes('Failed to fetch') && !err.message.includes('NetworkError') && !err.message.includes('404')) {
+        throw err;
+      }
+      console.warn('Backend auth sync warning:', err);
+    }
+
     const all = this.getAllUsers();
     const existing = all.find(u => u.email.toLowerCase() === cleanEmail);
 
     let profile: UserProfile;
 
-    if (existing) {
+    if (serverUser) {
+      profile = this.createProfileForUser({
+        id: serverUser.id,
+        email: serverUser.email,
+        name: serverUser.name,
+        organizationName: serverUser.organizationName,
+        role: serverUser.role,
+        plan: serverUser.plan,
+        avatar: serverUser.avatar
+      });
+
+      if (existing) {
+        const idx = all.findIndex(u => u.id === existing.id || u.email.toLowerCase() === cleanEmail);
+        if (idx >= 0) all[idx] = profile;
+      } else {
+        all.push(profile);
+      }
+      this.saveAccounts(all);
+    } else if (existing) {
       profile = existing;
     } else {
       profile = this.createProfileForUser({ email: cleanEmail, name, organizationName: orgName });
       all.push(profile);
       this.saveAccounts(all);
-    }
-
-    try {
-      // Optional Cloudflare D1 sync
-      await fetch('/api/auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'login', email: cleanEmail, password: password || '', name, organizationName: orgName })
-      });
-    } catch (e) {
-      // Fallback works seamlessly
     }
 
     this.saveUser(profile);
@@ -270,22 +362,67 @@ export class StorageService {
   // Sign up with Account Registry tracking
   public static async signupUser(email: string, password?: string, name?: string, orgName?: string): Promise<UserProfile> {
     const cleanEmail = email.trim().toLowerCase();
-    const all = this.getAllUsers();
-    let profile = all.find(u => u.email.toLowerCase() === cleanEmail);
+    
+    let serverUser: any = null;
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          action: 'signup', 
+          email: cleanEmail, 
+          password: password || '', 
+          name, 
+          organizationName: orgName 
+        })
+      });
 
-    if (!profile) {
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        throw new Error(data?.error || `Signup failed (${res.status})`);
+      }
+
+      if (data?.success && data?.user) {
+        serverUser = data.user;
+      }
+    } catch (err: any) {
+      if (err.message && !err.message.includes('Failed to fetch') && !err.message.includes('NetworkError') && !err.message.includes('404')) {
+        throw err;
+      }
+      console.warn('Backend auth signup warning:', err);
+    }
+
+    const all = this.getAllUsers();
+    const existing = all.find(u => u.email.toLowerCase() === cleanEmail);
+
+    let profile: UserProfile;
+
+    if (serverUser) {
+      profile = this.createProfileForUser({
+        id: serverUser.id,
+        email: serverUser.email,
+        name: serverUser.name,
+        organizationName: serverUser.organizationName,
+        role: serverUser.role,
+        plan: serverUser.plan,
+        avatar: serverUser.avatar
+      });
+
+      if (existing) {
+        const idx = all.findIndex(u => u.id === existing.id || u.email.toLowerCase() === cleanEmail);
+        if (idx >= 0) all[idx] = profile;
+      } else {
+        all.push(profile);
+      }
+      this.saveAccounts(all);
+    } else if (existing) {
+      profile = existing;
+    } else {
       profile = this.createProfileForUser({ email: cleanEmail, name, organizationName: orgName });
       all.push(profile);
       this.saveAccounts(all);
     }
-
-    try {
-      await fetch('/api/auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'signup', email: cleanEmail, password: password || '', name, organizationName: orgName })
-      });
-    } catch (e) {}
 
     this.saveUser(profile);
     this.setLoggedIn(true);
@@ -296,7 +433,13 @@ export class StorageService {
   public static getUser(): UserProfile {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
-      if (data) return JSON.parse(data);
+      if (data) {
+        const u: UserProfile = JSON.parse(data);
+        if (isAdminEmail(u.email)) {
+          return { ...u, role: 'admin', plan: 'business' };
+        }
+        return u;
+      }
     } catch (e) {
       console.warn('Storage read failed', e);
     }
