@@ -202,7 +202,14 @@ export const renderCertificateToCanvas = async (
             const img = new Image();
             img.crossOrigin = 'anonymous';
             img.onload = () => {
-              ctx.drawImage(img, x - elWidth / 2, y - elHeight / 2, elWidth, elHeight);
+              const aspect = (img.naturalWidth || elWidth) / (img.naturalHeight || elHeight);
+              let drawW = elWidth;
+              let drawH = elWidth / aspect;
+              if (drawH > elHeight) {
+                drawH = elHeight;
+                drawW = elHeight * aspect;
+              }
+              ctx.drawImage(img, x - drawW / 2, y - drawH / 2, drawW, drawH);
               res();
             };
             img.onerror = () => res();
@@ -367,7 +374,14 @@ export const renderCertificateToCanvas = async (
           const img = new Image();
           img.crossOrigin = 'anonymous';
           img.onload = () => {
-            ctx.drawImage(img, x - elWidth / 2, y - elHeight / 2, elWidth, elHeight);
+            const aspect = (img.naturalWidth || elWidth) / (img.naturalHeight || elHeight);
+            let drawW = elWidth;
+            let drawH = elWidth / aspect;
+            if (drawH > elHeight) {
+              drawH = elHeight;
+              drawW = elHeight * aspect;
+            }
+            ctx.drawImage(img, x - drawW / 2, y - drawH / 2, drawW, drawH);
             res();
           };
           img.onerror = () => res();

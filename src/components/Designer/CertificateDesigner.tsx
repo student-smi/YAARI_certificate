@@ -254,23 +254,62 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
       if (!dataUrl) return;
 
       if (targetType === 'logo') {
-        const existingLogo = template.elements.find(el => el.type === 'logo' || el.fieldKey === 'logo');
-        if (selectedElement && (selectedElement.type === 'logo' || selectedElement.fieldKey === 'logo')) {
-          handleUpdateSelected({ content: dataUrl });
-        } else if (existingLogo) {
-          const updated = template.elements.map(el =>
-            el.id === existingLogo.id ? { ...el, content: dataUrl } : el
-          );
-          pushHistory({ ...template, elements: updated });
-          setSelectedElementId(existingLogo.id);
-        } else {
-          handleAddElement('logo', dataUrl, 'logo', {
-            x: 50,
-            y: 12,
-            width: 14,
-            height: 14
-          });
-        }
+        const img = new Image();
+        img.onload = () => {
+          const naturalW = img.naturalWidth || 100;
+          const naturalH = img.naturalHeight || 100;
+          const aspect = naturalW / naturalH; // width / height
+
+          const cWidth = template.width || 842;
+          const cHeight = template.height || 595;
+          const canvasAspect = cWidth / cHeight; // e.g. 1.415
+
+          // Choose optimal bounding box dimensions matching the logo's aspect ratio
+          let targetHeightPercent = 8;
+          let targetWidthPercent = Math.round((targetHeightPercent / canvasAspect) * aspect * 10) / 10;
+
+          // If logo is very wide banner (aspect > 3), cap width at 45% and adjust height
+          if (targetWidthPercent > 45) {
+            targetWidthPercent = 45;
+            targetHeightPercent = Math.round((targetWidthPercent * canvasAspect / aspect) * 10) / 10;
+          }
+          if (targetWidthPercent < 10) {
+            targetWidthPercent = 10;
+            targetHeightPercent = Math.round((targetWidthPercent * canvasAspect / aspect) * 10) / 10;
+          }
+          if (targetHeightPercent > 18) {
+            targetHeightPercent = 18;
+            targetWidthPercent = Math.round((targetHeightPercent / canvasAspect) * aspect * 10) / 10;
+          }
+
+          const existingLogo = template.elements.find(el => el.type === 'logo' || el.fieldKey === 'logo');
+          if (selectedElement && (selectedElement.type === 'logo' || selectedElement.fieldKey === 'logo')) {
+            handleUpdateSelected({
+              content: dataUrl,
+              width: targetWidthPercent,
+              height: targetHeightPercent
+            });
+          } else if (existingLogo) {
+            const updated = template.elements.map(el =>
+              el.id === existingLogo.id ? { 
+                ...el, 
+                content: dataUrl, 
+                width: targetWidthPercent, 
+                height: targetHeightPercent 
+              } : el
+            );
+            pushHistory({ ...template, elements: updated });
+            setSelectedElementId(existingLogo.id);
+          } else {
+            handleAddElement('logo', dataUrl, 'logo', {
+              x: 50,
+              y: 10,
+              width: targetWidthPercent,
+              height: targetHeightPercent
+            });
+          }
+        };
+        img.src = dataUrl;
       } else {
         if (selectedElement && selectedElement.type === 'signature') {
           handleUpdateSelected({ content: dataUrl });
@@ -783,6 +822,9 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
       let newX = initialX;
       let newY = initialY;
 
+      const isImageOrLogo = selectedElement?.type === 'logo' || selectedElement?.type === 'image' || selectedElement?.type === 'signature';
+      const initialAspect = (initialWidth * rect.width) / (initialHeight * rect.height || 1);
+
       if (handle === 'e') {
         newWidth = Math.max(4, Math.min(96, initialWidth + deltaXPercent));
       } else if (handle === 'w') {
@@ -790,20 +832,42 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
         newX = initialX + deltaXPercent / 2;
       } else if (handle === 'se') {
         newWidth = Math.max(4, Math.min(96, initialWidth + deltaXPercent));
-        newHeight = Math.max(2, Math.min(96, initialHeight + deltaYPercent));
+        if (isImageOrLogo && initialAspect > 0) {
+          const newHeightPx = (newWidth / 100 * rect.width) / initialAspect;
+          newHeight = Math.max(2, Math.min(96, (newHeightPx / rect.height) * 100));
+        } else {
+          newHeight = Math.max(2, Math.min(96, initialHeight + deltaYPercent));
+        }
       } else if (handle === 'sw') {
         newWidth = Math.max(4, Math.min(96, initialWidth - deltaXPercent));
-        newHeight = Math.max(2, Math.min(96, initialHeight + deltaYPercent));
+        if (isImageOrLogo && initialAspect > 0) {
+          const newHeightPx = (newWidth / 100 * rect.width) / initialAspect;
+          newHeight = Math.max(2, Math.min(96, (newHeightPx / rect.height) * 100));
+        } else {
+          newHeight = Math.max(2, Math.min(96, initialHeight + deltaYPercent));
+        }
         newX = initialX + deltaXPercent / 2;
       } else if (handle === 'ne') {
         newWidth = Math.max(4, Math.min(96, initialWidth + deltaXPercent));
-        newHeight = Math.max(2, Math.min(96, initialHeight - deltaYPercent));
-        newY = initialY + deltaYPercent / 2;
+        if (isImageOrLogo && initialAspect > 0) {
+          const newHeightPx = (newWidth / 100 * rect.width) / initialAspect;
+          newHeight = Math.max(2, Math.min(96, (newHeightPx / rect.height) * 100));
+          newY = initialY - (newHeight - initialHeight) / 2;
+        } else {
+          newHeight = Math.max(2, Math.min(96, initialHeight - deltaYPercent));
+          newY = initialY + deltaYPercent / 2;
+        }
       } else if (handle === 'nw') {
         newWidth = Math.max(4, Math.min(96, initialWidth - deltaXPercent));
-        newHeight = Math.max(2, Math.min(96, initialHeight - deltaYPercent));
+        if (isImageOrLogo && initialAspect > 0) {
+          const newHeightPx = (newWidth / 100 * rect.width) / initialAspect;
+          newHeight = Math.max(2, Math.min(96, (newHeightPx / rect.height) * 100));
+          newY = initialY - (newHeight - initialHeight) / 2;
+        } else {
+          newHeight = Math.max(2, Math.min(96, initialHeight - deltaYPercent));
+          newY = initialY + deltaYPercent / 2;
+        }
         newX = initialX + deltaXPercent / 2;
-        newY = initialY + deltaYPercent / 2;
       }
 
       // Calculate proportional font size if text/signature
@@ -1650,14 +1714,18 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
                           width: `${elWidthPx}px`,
                           height: `${elHeightPx}px`
                         }}
-                        className="flex items-center justify-center border border-dashed border-neutral-300 rounded bg-white/80 p-1 overflow-hidden"
+                        className={`flex items-center justify-center overflow-hidden ${
+                          el.content && (el.content.startsWith('http') || el.content.startsWith('data:'))
+                            ? 'bg-transparent'
+                            : 'border border-dashed border-neutral-300 rounded bg-white/80 p-1'
+                        }`}
                       >
                         {el.content && (el.content.startsWith('http') || el.content.startsWith('data:')) ? (
                           <img 
                             src={el.content} 
                             alt="Logo" 
                             draggable={false}
-                            className="w-full h-full object-contain pointer-events-none select-none" 
+                            className="max-w-full max-h-full w-full h-full object-contain pointer-events-none select-none" 
                           />
                         ) : (
                           <div className="flex flex-col items-center justify-center text-neutral-400">
@@ -1852,6 +1920,35 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
                     placeholder="https://... image URL"
                     className="w-full px-2.5 py-1.5 text-xs border border-neutral-300 rounded-lg focus:outline-none focus:border-black font-medium"
                   />
+
+                  {selectedElement.content && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const img = new Image();
+                        img.onload = () => {
+                          const naturalW = img.naturalWidth || 100;
+                          const naturalH = img.naturalHeight || 100;
+                          const aspect = naturalW / naturalH;
+                          const cWidth = template.width || 842;
+                          const cHeight = template.height || 595;
+                          const canvasAspect = cWidth / cHeight;
+                          let targetHeightPercent = selectedElement.height || 8;
+                          let targetWidthPercent = Math.round((targetHeightPercent / canvasAspect) * aspect * 10) / 10;
+                          if (targetWidthPercent > 50) {
+                            targetWidthPercent = 50;
+                            targetHeightPercent = Math.round((targetWidthPercent * canvasAspect / aspect) * 10) / 10;
+                          }
+                          handleUpdateSelected({ width: targetWidthPercent, height: targetHeightPercent });
+                        };
+                        img.src = selectedElement.content;
+                      }}
+                      className="w-full py-2 px-3 bg-neutral-100 hover:bg-neutral-200 text-black text-xs font-bold rounded-lg flex items-center justify-center gap-1.5 transition-colors border border-neutral-200 shadow-2xs"
+                    >
+                      <Maximize2 className="w-3.5 h-3.5" />
+                      <span>📐 Auto-Fit to Logo Proportions</span>
+                    </button>
+                  )}
                   
                   {/* Preset logo picker */}
                   <div>
