@@ -46,7 +46,10 @@ import {
   ChevronDown,
   Layout,
   AlignCenterHorizontal,
-  AlignCenterVertical
+  AlignCenterVertical,
+  Palette,
+  RefreshCw,
+  X
 } from 'lucide-react';
 import { Template, TemplateElement, ElementType } from '../../types';
 import { generateCertificatePreviewDataUrl } from '../../services/pdfGenerator';
@@ -60,6 +63,110 @@ import {
 } from '../../data/certificateFields';
 import { SignaturePadModal } from './SignaturePadModal';
 import { SaveTemplateModal } from './SaveTemplateModal';
+
+interface BackgroundPresetItem {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  color: string;
+  gradient?: string;
+  borderStyle: 'classic' | 'modern' | 'gold_double' | 'minimal' | 'none';
+  borderColor?: string;
+  patternType?: 'none' | 'guilloche' | 'dots' | 'geometric';
+  badge: string;
+}
+
+const BACKGROUND_PRESETS: BackgroundPresetItem[] = [
+  {
+    id: 'gold-crest',
+    name: 'Executive Gold Crest',
+    category: 'Luxury',
+    description: 'Gold double border on ivory parchment with guilloche waves',
+    color: '#FFFCF5',
+    borderStyle: 'gold_double',
+    borderColor: '#B45309',
+    patternType: 'guilloche',
+    badge: 'LUXURY'
+  },
+  {
+    id: 'diplomatic-navy',
+    name: 'Diplomatic Royal Navy',
+    category: 'Corporate',
+    description: 'Crisp pearl white with double navy borders for official charters',
+    color: '#FFFFFF',
+    borderStyle: 'classic',
+    borderColor: '#0F172A',
+    patternType: 'none',
+    badge: 'POPULAR'
+  },
+  {
+    id: 'vintage-parchment',
+    name: 'Academic Parchment',
+    category: 'Academic',
+    description: 'Warm cream vintage diploma feel with ornate framing',
+    color: '#FEF3C7',
+    borderStyle: 'classic',
+    borderColor: '#78350F',
+    patternType: 'guilloche',
+    badge: 'DIPLOMA'
+  },
+  {
+    id: 'obsidian-dark',
+    name: 'Obsidian Dark Luxe',
+    category: 'Modern',
+    description: 'Premium dark obsidian with metallic gold accent bar',
+    color: '#090D16',
+    borderStyle: 'modern',
+    borderColor: '#D97706',
+    patternType: 'dots',
+    badge: 'DARK'
+  },
+  {
+    id: 'emerald-tech',
+    name: 'Emerald Innovation',
+    category: 'Modern',
+    description: 'Clean high-tech emerald bar with subtle matrix lattice',
+    color: '#F0FDF4',
+    borderStyle: 'modern',
+    borderColor: '#059669',
+    patternType: 'dots',
+    badge: 'TECH'
+  },
+  {
+    id: 'midnight-gradient',
+    name: 'Midnight Sapphire',
+    category: 'Gradient',
+    description: 'Deep modern sapphire to midnight gradient backdrop',
+    color: '#0A0F1D',
+    gradient: 'linear-gradient(135deg, #0A0F1D 0%, #1E1B4B 50%, #0F172A 100%)',
+    borderStyle: 'none',
+    patternType: 'none',
+    badge: 'GRADIENT'
+  },
+  {
+    id: 'champagne-glow',
+    name: 'Champagne Amber',
+    category: 'Gradient',
+    description: 'Soft champagne amber gradient for luxury celebrations',
+    color: '#FFFBEB',
+    gradient: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 50%, #FFFBEB 100%)',
+    borderStyle: 'none',
+    patternType: 'none',
+    badge: 'WARM'
+  },
+  {
+    id: 'minimal-studio',
+    name: 'Minimal Pure Studio',
+    category: 'Clean',
+    description: 'Pure clean white canvas with minimal precision hairline',
+    color: '#FFFFFF',
+    borderStyle: 'minimal',
+    borderColor: '#CBD5E1',
+    patternType: 'none',
+    badge: 'MINIMAL'
+  }
+];
 
 interface CertificateDesignerProps {
   initialTemplate: Template;
@@ -99,7 +206,7 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'unsaved'>('saved');
 
   // Left sidebar active tab
-  const [sidebarTab, setSidebarTab] = useState<'core' | 'optional' | 'signatories' | 'decor'>('core');
+  const [sidebarTab, setSidebarTab] = useState<'core' | 'optional' | 'signatories' | 'decor' | 'background'>('core');
 
   // Modals
   const [saveModalOpen, setSaveModalOpen] = useState(false);
@@ -108,6 +215,7 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
   // Hidden File Inputs for PC Uploads
   const logoFileInputRef = useRef<HTMLInputElement>(null);
   const signatureFileInputRef = useRef<HTMLInputElement>(null);
+  const bgFileInputRef = useRef<HTMLInputElement>(null);
 
   // History for Undo / Redo
   const [history, setHistory] = useState<Template[]>([initialTemplate]);
@@ -325,6 +433,76 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
     };
     reader.readAsDataURL(file);
     e.target.value = '';
+  };
+
+  const handleSetOrientation = (orientation: 'landscape' | 'portrait') => {
+    if (template.orientation === orientation) return;
+    const isTargetPortrait = orientation === 'portrait';
+    const newWidth = isTargetPortrait ? 595 : 842;
+    const newHeight = isTargetPortrait ? 842 : 595;
+    const updated: Template = {
+      ...template,
+      orientation,
+      width: newWidth,
+      height: newHeight
+    };
+    setTemplate(updated);
+    pushHistory(updated);
+  };
+
+  const handleBackgroundUpload = (file: File) => {
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string;
+      if (dataUrl) {
+        const updated: Template = {
+          ...template,
+          backgroundStyle: {
+            ...template.backgroundStyle,
+            type: 'image',
+            imageUrl: dataUrl,
+            imageFit: template.backgroundStyle.imageFit || 'cover',
+            imageOpacity: template.backgroundStyle.imageOpacity ?? 1,
+            borderStyle: 'none' // Auto-clean border so it doesn't clash with institute design
+          }
+        };
+        setTemplate(updated);
+        pushHistory(updated);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveBackground = () => {
+    const updated: Template = {
+      ...template,
+      backgroundStyle: {
+        ...template.backgroundStyle,
+        imageUrl: undefined,
+        type: template.backgroundStyle.gradient ? 'gradient' : 'color'
+      }
+    };
+    setTemplate(updated);
+    pushHistory(updated);
+  };
+
+  const handleApplyBackgroundPreset = (preset: BackgroundPresetItem) => {
+    const updated: Template = {
+      ...template,
+      backgroundStyle: {
+        ...template.backgroundStyle,
+        color: preset.color,
+        gradient: preset.gradient,
+        borderStyle: preset.borderStyle,
+        borderColor: preset.borderColor,
+        patternType: preset.patternType,
+        imageUrl: undefined,
+        type: preset.gradient ? 'gradient' : 'color'
+      }
+    };
+    setTemplate(updated);
+    pushHistory(updated);
   };
 
   const handleAddCoreElement = (field: FieldDefinition) => {
@@ -981,6 +1159,17 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
         onChange={(e) => handleLocalImageUpload(e, 'signature')}
         className="hidden"
       />
+      <input
+        type="file"
+        ref={bgFileInputRef}
+        accept="image/png,image/jpeg,image/webp,image/svg+xml"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) handleBackgroundUpload(file);
+          e.target.value = '';
+        }}
+        className="hidden"
+      />
 
       {/* 1. TOP TOOLBAR */}
       <div className="h-14 bg-white border-b border-neutral-200 px-4 sm:px-6 flex items-center justify-between z-20 shrink-0">
@@ -1003,9 +1192,34 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
                 onChange={(e) => setTemplate({ ...template, name: e.target.value })}
                 className="font-black text-sm text-black bg-transparent border-b border-transparent hover:border-neutral-300 focus:border-black focus:outline-none transition-colors"
               />
-              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-neutral-100 text-neutral-700 border border-neutral-200">
-                {template.orientation}
-              </span>
+              <div className="flex items-center bg-neutral-100 p-0.5 rounded-lg border border-neutral-200 text-[11px] font-bold">
+                <button
+                  type="button"
+                  onClick={() => handleSetOrientation('landscape')}
+                  className={`flex items-center gap-1 px-2 py-0.5 rounded-md transition-all ${
+                    template.orientation === 'landscape'
+                      ? 'bg-black text-white shadow-xs'
+                      : 'text-neutral-600 hover:text-black'
+                  }`}
+                  title="A4 Landscape (842 x 595 px)"
+                >
+                  <Layout className="w-3 h-3" />
+                  <span>Landscape</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSetOrientation('portrait')}
+                  className={`flex items-center gap-1 px-2 py-0.5 rounded-md transition-all ${
+                    template.orientation === 'portrait'
+                      ? 'bg-black text-white shadow-xs'
+                      : 'text-neutral-600 hover:text-black'
+                  }`}
+                  title="A4 Portrait (595 x 842 px)"
+                >
+                  <FileText className="w-3 h-3" />
+                  <span>Portrait</span>
+                </button>
+              </div>
             </div>
             <p className="text-[10px] text-neutral-400 font-medium">
               Status: {saveStatus === 'saved' ? 'Saved' : saveStatus === 'saving' ? 'Saving...' : 'Unsaved changes'}
@@ -1141,14 +1355,14 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
               3. Signatures
             </button>
             <button
-              onClick={() => setSidebarTab('decor')}
+              onClick={() => setSidebarTab('background')}
               className={`py-1.5 px-1 rounded-md text-center transition-all ${
-                sidebarTab === 'decor' 
+                sidebarTab === 'background' || sidebarTab === 'decor'
                   ? 'bg-black text-white shadow-xs' 
                   : 'text-neutral-600 hover:bg-neutral-200/60'
               }`}
             >
-              4. Borders
+              4. Background
             </button>
           </div>
 
@@ -1419,31 +1633,328 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
               </div>
             )}
 
-            {/* TAB 4: DECOR & BORDERS */}
-            {sidebarTab === 'decor' && (
-              <div className="space-y-4">
+            {/* TAB 4: BACKGROUND STUDIO (CUSTOM INSTITUTE BG, PRESETS, ORIENTATION, BORDERS) */}
+            {(sidebarTab === 'background' || sidebarTab === 'decor') && (
+              <div className="space-y-5">
                 <div className="border-b border-neutral-100 pb-2">
-                  <h3 className="text-xs font-black text-black uppercase tracking-wide">
-                    Accents & Borders
+                  <h3 className="text-xs font-black text-black uppercase tracking-wide flex items-center gap-1.5">
+                    <Palette className="w-3.5 h-3.5 text-black" />
+                    <span>Background & Orientation</span>
                   </h3>
                   <p className="text-[11px] text-neutral-500 mt-0.5">
-                    Frame your certificate with prestigious double borders, official crest seals, and divider lines.
+                    Upload your institute's ready-made certificate design or choose from luxury presets.
                   </p>
                 </div>
 
-                {/* Border Styles */}
-                {/* Certificate Border Styles & Color */}
-                <div className="space-y-3">
+                {/* 1. Canvas Orientation: Landscape vs Portrait */}
+                <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400">
-                      Certificate Border Style
+                      Certificate Orientation
+                    </h4>
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-600">
+                      A4 Standard
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleSetOrientation('landscape')}
+                      className={`p-2.5 rounded-xl border text-left transition-all ${
+                        template.orientation === 'landscape'
+                          ? 'border-black bg-neutral-900 text-white shadow-xs'
+                          : 'border-neutral-200 hover:border-neutral-300 bg-white text-neutral-800'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <Layout className="w-4 h-4 shrink-0" />
+                        <span className="text-xs font-bold">Landscape</span>
+                      </div>
+                      <p className={`text-[10px] ${template.orientation === 'landscape' ? 'text-neutral-300' : 'text-neutral-500'}`}>
+                        842 × 595 px (Classic Diploma)
+                      </p>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleSetOrientation('portrait')}
+                      className={`p-2.5 rounded-xl border text-left transition-all ${
+                        template.orientation === 'portrait'
+                          ? 'border-black bg-neutral-900 text-white shadow-xs'
+                          : 'border-neutral-200 hover:border-neutral-300 bg-white text-neutral-800'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <FileText className="w-4 h-4 shrink-0" />
+                        <span className="text-xs font-bold">Portrait</span>
+                      </div>
+                      <p className={`text-[10px] ${template.orientation === 'portrait' ? 'text-neutral-300' : 'text-neutral-500'}`}>
+                        595 × 842 px (Vertical Award)
+                      </p>
+                    </button>
+                  </div>
+                </div>
+
+                {/* 2. Institute Custom Background Upload */}
+                <div className="space-y-2.5 p-3 rounded-2xl bg-neutral-50 border border-neutral-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <Upload className="w-3.5 h-3.5 text-black" />
+                      <h4 className="text-[10px] font-black uppercase tracking-wider text-black">
+                        Institute Custom Background
+                      </h4>
+                    </div>
+                    {template.backgroundStyle.imageUrl && (
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1">
+                        <Check className="w-2.5 h-2.5" />
+                        Active BG
+                      </span>
+                    )}
+                  </div>
+
+                  {template.backgroundStyle.imageUrl ? (
+                    <div className="space-y-3">
+                      {/* Active Background Thumbnail & Actions */}
+                      <div className="relative rounded-xl overflow-hidden border border-neutral-300 bg-white shadow-xs">
+                        <div 
+                          className="h-28 w-full bg-contain bg-center bg-no-repeat"
+                          style={{
+                            backgroundImage: `url(${template.backgroundStyle.imageUrl})`,
+                            backgroundColor: '#F8FAFC'
+                          }}
+                        />
+                        <div className="p-2 bg-white/95 border-t border-neutral-200 flex items-center justify-between gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => bgFileInputRef.current?.click()}
+                            className="flex-1 py-1.5 px-2 bg-neutral-100 hover:bg-neutral-200 text-black text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1"
+                          >
+                            <RefreshCw className="w-3 h-3" />
+                            <span>Replace File</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleRemoveBackground}
+                            className="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1"
+                            title="Remove uploaded background"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                            <span>Remove</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Image Fit Mode */}
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-bold text-neutral-600">Image Fit Mode</span>
+                        <div className="grid grid-cols-3 gap-1">
+                          {(['cover', 'contain', 'stretch'] as const).map(fit => (
+                            <button
+                              key={fit}
+                              type="button"
+                              onClick={() => {
+                                const updated = {
+                                  ...template,
+                                  backgroundStyle: { ...template.backgroundStyle, imageFit: fit }
+                                };
+                                setTemplate(updated);
+                                pushHistory(updated);
+                              }}
+                              className={`py-1 px-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider text-center transition-all ${
+                                (template.backgroundStyle.imageFit || 'cover') === fit
+                                  ? 'bg-black text-white shadow-xs'
+                                  : 'bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-100'
+                              }`}
+                            >
+                              {fit}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Opacity Slider */}
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between text-[10px]">
+                          <span className="font-bold text-neutral-600">Background Opacity</span>
+                          <span className="font-mono font-bold text-black">
+                            {Math.round((template.backgroundStyle.imageOpacity ?? 1) * 100)}%
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min="10"
+                          max="100"
+                          step="5"
+                          value={Math.round((template.backgroundStyle.imageOpacity ?? 1) * 100)}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value, 10) / 100;
+                            const updated = {
+                              ...template,
+                              backgroundStyle: { ...template.backgroundStyle, imageOpacity: val }
+                            };
+                            setTemplate(updated);
+                          }}
+                          onMouseUp={() => pushHistory(template)}
+                          className="w-full h-1.5 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-black"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div 
+                      onClick={() => bgFileInputRef.current?.click()}
+                      className="border-2 border-dashed border-neutral-300 hover:border-black rounded-xl p-4 text-center cursor-pointer bg-white transition-all group"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-neutral-100 group-hover:bg-black group-hover:text-white text-neutral-600 mx-auto flex items-center justify-center transition-colors mb-2">
+                        <Upload className="w-5 h-5" />
+                      </div>
+                      <p className="text-xs font-bold text-black group-hover:underline">
+                        Upload Institute Background
+                      </p>
+                      <p className="text-[10px] text-neutral-500 mt-1 leading-relaxed">
+                        PNG, JPG, SVG stationery or Canva design. Certificate text &amp; QR will sit on top.
+                      </p>
+                      <span className="inline-block mt-2 px-2.5 py-1 bg-neutral-100 group-hover:bg-neutral-200 rounded-md text-[10px] font-bold text-neutral-800">
+                        Browse File from PC
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* 3. Ready-Made Background Presets */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400">
+                      Ready-Made BG Presets
+                    </h4>
+                    <span className="text-[9px] text-neutral-500 font-medium">8 Styles</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    {BACKGROUND_PRESETS.map((preset) => {
+                      const isActive = 
+                        !template.backgroundStyle.imageUrl && 
+                        template.backgroundStyle.color === preset.color && 
+                        template.backgroundStyle.borderStyle === preset.borderStyle;
+
+                      return (
+                        <button
+                          key={preset.id}
+                          type="button"
+                          onClick={() => handleApplyBackgroundPreset(preset)}
+                          className={`p-2 rounded-xl border text-left transition-all flex flex-col justify-between ${
+                            isActive
+                              ? 'border-black ring-2 ring-black bg-neutral-50 shadow-xs'
+                              : 'border-neutral-200 hover:border-neutral-300 bg-white'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span 
+                              className="w-3.5 h-3.5 rounded-full border border-black/20 shrink-0"
+                              style={{ 
+                                backgroundColor: preset.color,
+                                backgroundImage: preset.gradient 
+                              }}
+                            />
+                            <span className="text-[8px] font-extrabold uppercase px-1 py-0.2 rounded bg-neutral-100 text-neutral-600">
+                              {preset.badge}
+                            </span>
+                          </div>
+                          <div>
+                            <div className="text-[11px] font-bold text-black line-clamp-1">
+                              {preset.name}
+                            </div>
+                            <p className="text-[9px] text-neutral-500 mt-0.5 line-clamp-1">
+                              {preset.description}
+                            </p>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* 4. Solid Colors & Swatches */}
+                <div className="space-y-2 p-3 rounded-2xl bg-neutral-50 border border-neutral-200">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-black">
+                      Background Color &amp; Tint
+                    </h4>
+                    <span className="text-[9px] font-mono font-bold text-neutral-600">
+                      {template.backgroundStyle.color || '#FFFFFF'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {[
+                      { name: 'Pure White', hex: '#FFFFFF' },
+                      { name: 'Warm Ivory', hex: '#FFFBEB' },
+                      { name: 'Academic Cream', hex: '#FEF3C7' },
+                      { name: 'Soft Linen', hex: '#F8FAFC' },
+                      { name: 'Pale Mint', hex: '#F0FDF4' },
+                      { name: 'Midnight Dark', hex: '#090D16' },
+                      { name: 'Navy Deep', hex: '#0F172A' },
+                    ].map(c => (
+                      <button
+                        key={c.hex}
+                        type="button"
+                        title={c.name}
+                        onClick={() => {
+                          const updated = {
+                            ...template,
+                            backgroundStyle: {
+                              ...template.backgroundStyle,
+                              color: c.hex,
+                              gradient: undefined
+                            }
+                          };
+                          setTemplate(updated);
+                          pushHistory(updated);
+                        }}
+                        style={{ backgroundColor: c.hex }}
+                        className={`w-6 h-6 rounded-lg border transition-transform ${
+                          template.backgroundStyle.color === c.hex && !template.backgroundStyle.gradient
+                            ? 'scale-110 border-black ring-2 ring-black/30'
+                            : 'border-neutral-300 hover:scale-105'
+                        }`}
+                      />
+                    ))}
+                    <input
+                      type="color"
+                      value={template.backgroundStyle.color || '#FFFFFF'}
+                      onChange={(e) => {
+                        const updated = {
+                          ...template,
+                          backgroundStyle: {
+                            ...template.backgroundStyle,
+                            color: e.target.value,
+                            gradient: undefined
+                          }
+                        };
+                        setTemplate(updated);
+                      }}
+                      onBlur={() => pushHistory(template)}
+                      title="Custom Hex Picker"
+                      className="w-6 h-6 rounded-lg border border-neutral-300 cursor-pointer p-0 bg-transparent"
+                    />
+                  </div>
+                </div>
+
+                {/* 5. Border Styles */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400">
+                      Certificate Border Framing
                     </h4>
                     {template.backgroundStyle.borderStyle && template.backgroundStyle.borderStyle !== 'none' && (
                       <button
-                        onClick={() => setTemplate({
-                          ...template,
-                          backgroundStyle: { ...template.backgroundStyle, borderStyle: 'none' }
-                        })}
+                        type="button"
+                        onClick={() => {
+                          const updated = {
+                            ...template,
+                            backgroundStyle: { ...template.backgroundStyle, borderStyle: 'none' as const }
+                          };
+                          setTemplate(updated);
+                          pushHistory(updated);
+                        }}
                         className="text-[10px] font-bold text-red-600 hover:underline"
                       >
                         Remove Border
@@ -1454,17 +1965,22 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
                   <div className="grid grid-cols-3 gap-1.5">
                     {([
                       { id: 'none', label: 'None (Clean)' },
-                      { id: 'classic', label: 'Classic' },
+                      { id: 'classic', label: 'Classic Navy' },
                       { id: 'gold_double', label: 'Gold Double' },
                       { id: 'modern', label: 'Modern Bar' },
                       { id: 'minimal', label: 'Minimal Thin' }
                     ] as const).map((b) => (
                       <button
                         key={b.id}
-                        onClick={() => setTemplate({
-                          ...template,
-                          backgroundStyle: { ...template.backgroundStyle, borderStyle: b.id }
-                        })}
+                        type="button"
+                        onClick={() => {
+                          const updated = {
+                            ...template,
+                            backgroundStyle: { ...template.backgroundStyle, borderStyle: b.id }
+                          };
+                          setTemplate(updated);
+                          pushHistory(updated);
+                        }}
                         className={`p-2 rounded-xl text-[10px] font-bold border text-center transition-all ${
                           (template.backgroundStyle.borderStyle || 'classic') === b.id
                             ? 'border-black bg-black text-white shadow-xs'
@@ -1497,11 +2013,16 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
                         ].map(c => (
                           <button
                             key={c.hex}
+                            type="button"
                             title={c.name}
-                            onClick={() => setTemplate({
-                              ...template,
-                              backgroundStyle: { ...template.backgroundStyle, borderColor: c.hex }
-                            })}
+                            onClick={() => {
+                              const updated = {
+                                ...template,
+                                backgroundStyle: { ...template.backgroundStyle, borderColor: c.hex }
+                              };
+                              setTemplate(updated);
+                              pushHistory(updated);
+                            }}
                             style={{ backgroundColor: c.hex }}
                             className={`w-5 h-5 rounded-full border transition-transform ${
                               (template.backgroundStyle.borderColor || '#4F46E5') === c.hex
@@ -1515,13 +2036,48 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
                   )}
                 </div>
 
-                {/* Decorative Elements */}
+                {/* 6. Security Patterns */}
                 <div className="space-y-1.5">
+                  <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400">
+                    Security Texture Overlays
+                  </h4>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {([
+                      { id: 'none', label: 'None' },
+                      { id: 'guilloche', label: 'Guilloche Waves' },
+                      { id: 'dots', label: 'Micro Lattice' }
+                    ] as const).map(p => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => {
+                          const updated = {
+                            ...template,
+                            backgroundStyle: { ...template.backgroundStyle, patternType: p.id }
+                          };
+                          setTemplate(updated);
+                          pushHistory(updated);
+                        }}
+                        className={`p-2 rounded-xl text-[10px] font-bold border text-center transition-all ${
+                          (template.backgroundStyle.patternType || 'none') === p.id
+                            ? 'border-black bg-black text-white shadow-xs'
+                            : 'border-neutral-200 hover:bg-neutral-50 text-neutral-700'
+                        }`}
+                      >
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 7. Decorative Seal / Divider Elements */}
+                <div className="space-y-1.5 pt-2 border-t border-neutral-100">
                   <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-neutral-400">
                     Graphic Elements
                   </h4>
 
                   <button
+                    type="button"
                     onClick={() => handleAddElement('seal', 'OFFICIAL', undefined, { width: 12, height: 12, x: 50, y: 50 })}
                     className="w-full p-2.5 rounded-xl border border-neutral-200 hover:border-black text-left text-xs font-bold text-neutral-800 hover:bg-neutral-50 flex items-center justify-between"
                   >
@@ -1533,6 +2089,7 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
                   </button>
 
                   <button
+                    type="button"
                     onClick={() => handleAddElement('line', '', undefined, { width: 50, height: 1, backgroundColor: '#D97706', x: 50, y: 50 })}
                     className="w-full p-2.5 rounded-xl border border-neutral-200 hover:border-black text-left text-xs font-bold text-neutral-800 hover:bg-neutral-50 flex items-center justify-between"
                   >
@@ -1544,6 +2101,7 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
                   </button>
 
                   <button
+                    type="button"
                     onClick={() => handleAddElement('text', 'YOUR CUSTOM TEXT BLOCK', undefined, { width: 50, height: 6, x: 50, y: 50 })}
                     className="w-full p-2.5 rounded-xl border border-neutral-200 hover:border-black text-left text-xs font-bold text-neutral-800 hover:bg-neutral-50 flex items-center justify-between"
                   >
@@ -1591,6 +2149,7 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
                 width: `${template.width}px`,
                 height: `${template.height}px`,
                 backgroundColor: template.backgroundStyle.color || '#FFFFFF',
+                backgroundImage: template.backgroundStyle.gradient || undefined,
               }}
               className={`relative shadow-2xl rounded-xs transition-all select-none overflow-hidden ${
                 showGrid ? 'canvas-grid-dots' : ''
@@ -1602,6 +2161,43 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
                 ''
               }`}
             >
+              {/* Custom Institute Background Image Layer */}
+              {template.backgroundStyle.imageUrl && (
+                <div 
+                  className="absolute inset-0 pointer-events-none z-0"
+                  style={{
+                    backgroundImage: `url(${template.backgroundStyle.imageUrl})`,
+                    backgroundSize: template.backgroundStyle.imageFit === 'stretch' 
+                      ? '100% 100%' 
+                      : template.backgroundStyle.imageFit === 'contain' 
+                        ? 'contain' 
+                        : 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                    opacity: template.backgroundStyle.imageOpacity ?? 1
+                  }}
+                />
+              )}
+
+              {/* Security Pattern Texture Overlay */}
+              {template.backgroundStyle.patternType === 'guilloche' && (
+                <div 
+                  className="absolute inset-0 pointer-events-none z-0 opacity-15"
+                  style={{
+                    backgroundImage: `repeating-radial-gradient(circle at 50% 50%, transparent, transparent 15px, rgba(180, 83, 9, 0.25) 16px, transparent 17px)`
+                  }}
+                />
+              )}
+              {template.backgroundStyle.patternType === 'dots' && (
+                <div 
+                  className="absolute inset-0 pointer-events-none z-0 opacity-20"
+                  style={{
+                    backgroundImage: `radial-gradient(rgba(100, 116, 139, 0.4) 1px, transparent 1px)`,
+                    backgroundSize: '20px 20px'
+                  }}
+                />
+              )}
+
               {/* Modern Top Accent Bar Preview */}
               {template.backgroundStyle.borderStyle === 'modern' && (
                 <div 

@@ -26,6 +26,7 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
   onDeleteTemplate
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedOrientation, setSelectedOrientation] = useState<'all' | 'landscape' | 'portrait'>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
   const customCount = templates.filter(t => t.isCustom).length;
@@ -47,9 +48,13 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
         : selectedCategory === 'custom' 
           ? Boolean(t.isCustom) 
           : t.category === selectedCategory;
+    const matchesOrientation = 
+      selectedOrientation === 'all' 
+        ? true 
+        : t.orientation === selectedOrientation;
     const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           t.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+    return matchesCategory && matchesOrientation && matchesSearch;
   });
 
   return (
@@ -93,15 +98,53 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
           ))}
         </div>
 
-        <div className="relative w-full md:w-72">
-          <Search className="w-4 h-4 text-neutral-400 absolute left-3 top-2.5" />
-          <input
-            type="text"
-            placeholder="Search templates..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 text-xs bg-white border border-neutral-300 rounded-xl focus:outline-none focus:border-black font-medium"
-          />
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+          {/* Orientation Filter */}
+          <div className="flex items-center bg-neutral-100 p-0.5 rounded-xl border border-neutral-200 text-xs font-bold shrink-0">
+            <button
+              onClick={() => setSelectedOrientation('all')}
+              className={`px-2.5 py-1 rounded-lg transition-all ${
+                selectedOrientation === 'all'
+                  ? 'bg-black text-white shadow-xs'
+                  : 'text-neutral-600 hover:text-black'
+              }`}
+            >
+              All
+            </button>
+            <button
+              onClick={() => setSelectedOrientation('landscape')}
+              className={`px-2.5 py-1 rounded-lg transition-all ${
+                selectedOrientation === 'landscape'
+                  ? 'bg-black text-white shadow-xs'
+                  : 'text-neutral-600 hover:text-black'
+              }`}
+              title="Landscape Templates"
+            >
+              Landscape
+            </button>
+            <button
+              onClick={() => setSelectedOrientation('portrait')}
+              className={`px-2.5 py-1 rounded-lg transition-all ${
+                selectedOrientation === 'portrait'
+                  ? 'bg-black text-white shadow-xs'
+                  : 'text-neutral-600 hover:text-black'
+              }`}
+              title="Portrait Templates"
+            >
+              Portrait
+            </button>
+          </div>
+
+          <div className="relative w-full sm:w-64">
+            <Search className="w-4 h-4 text-neutral-400 absolute left-3 top-2.5" />
+            <input
+              type="text"
+              placeholder="Search templates..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-white border border-neutral-300 rounded-xl focus:outline-none focus:border-black font-medium"
+            />
+          </div>
         </div>
       </div>
 
@@ -120,25 +163,40 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
             className="bg-white rounded-2xl border border-neutral-200 shadow-card hover:border-black transition-all overflow-hidden flex flex-col justify-between group"
           >
             {/* Visual Preview Thumbnail Box */}
-            <div className="p-4 bg-neutral-50 border-b border-neutral-100 flex items-center justify-center">
+            <div className="p-4 bg-neutral-50 border-b border-neutral-100 flex items-center justify-center min-h-[190px]">
               <div 
-                className="w-full aspect-[1.414/1] rounded-lg border-2 bg-white p-5 shadow-sm flex flex-col items-center justify-center text-center relative overflow-hidden group-hover:scale-[1.01] transition-transform duration-200"
-                style={{ borderColor: borderColor }}
+                className={`w-full rounded-lg border-2 p-5 shadow-xs flex flex-col items-center justify-center text-center relative overflow-hidden group-hover:scale-[1.01] transition-transform duration-200 ${
+                  template.orientation === 'portrait' ? 'aspect-[1/1.35] max-w-[210px]' : 'aspect-[1.414/1]'
+                }`}
+                style={{ 
+                  borderColor: borderColor,
+                  backgroundColor: template.backgroundStyle?.color || '#FFFFFF',
+                  backgroundImage: template.backgroundStyle?.imageUrl 
+                    ? `url(${template.backgroundStyle.imageUrl})` 
+                    : template.backgroundStyle?.gradient || undefined,
+                  backgroundSize: template.backgroundStyle?.imageFit === 'stretch' 
+                    ? '100% 100%' 
+                    : template.backgroundStyle?.imageFit === 'contain' 
+                      ? 'contain' 
+                      : 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
               >
-                <p className="text-[9px] font-bold tracking-widest text-neutral-500 uppercase line-clamp-1 px-2">
+                <p className="text-[9px] font-bold tracking-widest text-neutral-500 uppercase line-clamp-1 px-2 z-10">
                   {displayOrg}
                 </p>
-                <h4 className="font-serif font-bold text-xs sm:text-sm text-black mt-1 line-clamp-1">
+                <h4 className="font-serif font-bold text-xs sm:text-sm text-black mt-1 line-clamp-1 z-10">
                   {displayTitle}
                 </h4>
-                <div className="w-16 h-0.5 bg-neutral-800 my-1.5" />
-                <p className="text-[9px] text-neutral-500 font-serif italic">
+                <div className="w-16 h-0.5 bg-neutral-800 my-1.5 z-10" />
+                <p className="text-[9px] text-neutral-500 font-serif italic z-10">
                   Presented to Recipient
                 </p>
-                <div className="absolute bottom-2.5 left-3 text-[8px] text-neutral-400 font-mono">
+                <div className="absolute bottom-2.5 left-3 text-[8px] text-neutral-400 font-mono z-10">
                   QR Verified
                 </div>
-                <div className="absolute bottom-2.5 right-3 text-[9px] font-signature text-black font-bold">
+                <div className="absolute bottom-2.5 right-3 text-[9px] font-signature text-black font-bold z-10">
                   Signatory
                 </div>
               </div>

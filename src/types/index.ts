@@ -71,6 +71,9 @@ export interface Template {
     imageUrl?: string;
     borderStyle?: 'classic' | 'modern' | 'gold_double' | 'minimal' | 'none';
     borderColor?: string;
+    imageFit?: 'cover' | 'contain' | 'stretch';
+    imageOpacity?: number;
+    patternType?: 'none' | 'guilloche' | 'dots' | 'geometric';
   };
   elements: TemplateElement[];
   thumbnailUrl?: string;

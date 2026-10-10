@@ -107,31 +107,129 @@ export const renderCertificateToCanvas = async (
 ): Promise<void> => {
   const { template, recipientData, certificateId, fieldMapping = {}, qrBaseUrl = window.location.origin } = context;
 
-  // Background
-  ctx.save();
-  ctx.fillStyle = template.backgroundStyle.color || '#FFFFFF';
-  ctx.fillRect(0, 0, width, height);
+  const isPortrait = template.orientation === 'portrait';
+  const refW = template.width || (isPortrait ? 595 : 842);
+  const refH = template.height || (isPortrait ? 842 : 595);
+  const scaleW = width / refW;
+  const scaleH = height / refH;
 
-  // Borders
+  // 1. Base Solid Color or Gradient
+  ctx.save();
+  if (template.backgroundStyle.gradient) {
+    const grad = ctx.createLinearGradient(0, 0, width, height);
+    const matches = template.backgroundStyle.gradient.match(/#[a-fA-F0-9]{3,8}|rgba?\([^)]+\)/g);
+    if (matches && matches.length >= 2) {
+      grad.addColorStop(0, matches[0]);
+      grad.addColorStop(1, matches[matches.length - 1]);
+      ctx.fillStyle = grad;
+    } else {
+      ctx.fillStyle = template.backgroundStyle.color || '#FFFFFF';
+    }
+  } else {
+    ctx.fillStyle = template.backgroundStyle.color || '#FFFFFF';
+  }
+  ctx.fillRect(0, 0, width, height);
+  ctx.restore();
+
+  // 2. Custom Uploaded Institute Background Image (or preset image)
+  if (template.backgroundStyle.imageUrl) {
+    await new Promise<void>((resolve) => {
+      const bgImg = new Image();
+      bgImg.crossOrigin = 'anonymous';
+      bgImg.onload = () => {
+        ctx.save();
+        if (template.backgroundStyle.imageOpacity !== undefined) {
+          ctx.globalAlpha = Math.max(0.05, Math.min(1, template.backgroundStyle.imageOpacity));
+        }
+
+        const fit = template.backgroundStyle.imageFit || 'cover';
+        const imgW = bgImg.naturalWidth || width;
+        const imgH = bgImg.naturalHeight || height;
+        const imgAspect = imgW / imgH;
+
+        if (fit === 'stretch') {
+          ctx.drawImage(bgImg, 0, 0, width, height);
+        } else if (fit === 'contain') {
+          let drawW = width;
+          let drawH = width / imgAspect;
+          if (drawH > height) {
+            drawH = height;
+            drawW = height * imgAspect;
+          }
+          const drawX = (width - drawW) / 2;
+          const drawY = (height - drawH) / 2;
+          ctx.drawImage(bgImg, drawX, drawY, drawW, drawH);
+        } else {
+          // 'cover' mode
+          let drawW = width;
+          let drawH = width / imgAspect;
+          if (drawH < height) {
+            drawH = height;
+            drawW = height * imgAspect;
+          }
+          const drawX = (width - drawW) / 2;
+          const drawY = (height - drawH) / 2;
+          ctx.drawImage(bgImg, drawX, drawY, drawW, drawH);
+        }
+
+        ctx.restore();
+        resolve();
+      };
+      bgImg.onerror = () => resolve();
+      bgImg.src = template.backgroundStyle.imageUrl!;
+    });
+  }
+
+  // 3. Security Guilloche / Pattern Overlays
+  if (template.backgroundStyle.patternType === 'guilloche') {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(180, 83, 9, 0.08)';
+    ctx.lineWidth = Math.max(1, 1 * scaleW);
+    for (let i = 0; i < height; i += 32 * scaleH) {
+      ctx.beginPath();
+      for (let px = 0; px < width; px += 12 * scaleW) {
+        const py = i + Math.sin((px + i) * 0.015) * 8 * scaleH;
+        if (px === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+    }
+    ctx.restore();
+  } else if (template.backgroundStyle.patternType === 'dots') {
+    ctx.save();
+    ctx.fillStyle = 'rgba(100, 116, 139, 0.07)';
+    const spacing = 28 * scaleW;
+    for (let px = 20 * scaleW; px < width - 20 * scaleW; px += spacing) {
+      for (let py = 20 * scaleH; py < height - 20 * scaleH; py += spacing) {
+        ctx.beginPath();
+        ctx.arc(px, py, 1.4 * scaleW, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    ctx.restore();
+  }
+
+  // 4. Borders
+  ctx.save();
   const borderStyle = template.backgroundStyle.borderStyle || 'classic';
   if (borderStyle === 'gold_double') {
     // Outer border
-    ctx.lineWidth = 14 * (width / 842);
+    ctx.lineWidth = 14 * Math.min(scaleW, scaleH);
     ctx.strokeStyle = '#B45309'; // rich amber gold
-    ctx.strokeRect(20 * (width / 842), 20 * (height / 595), width - 40 * (width / 842), height - 40 * (height / 595));
+    ctx.strokeRect(20 * scaleW, 20 * scaleH, width - 40 * scaleW, height - 40 * scaleH);
 
     // Inner fine border
-    ctx.lineWidth = 2 * (width / 842);
+    ctx.lineWidth = 2 * Math.min(scaleW, scaleH);
     ctx.strokeStyle = '#D97706';
-    ctx.strokeRect(32 * (width / 842), 32 * (height / 595), width - 64 * (width / 842), height - 64 * (height / 595));
+    ctx.strokeRect(32 * scaleW, 32 * scaleH, width - 64 * scaleW, height - 64 * scaleH);
 
     // Corner decorative diamond marks
-    const cornerSize = 10 * (width / 842);
+    const cornerSize = 10 * Math.min(scaleW, scaleH);
     const corners = [
-      [32 * (width / 842), 32 * (height / 595)],
-      [width - 32 * (width / 842), 32 * (height / 595)],
-      [32 * (width / 842), height - 32 * (height / 595)],
-      [width - 32 * (width / 842), height - 32 * (height / 595)]
+      [32 * scaleW, 32 * scaleH],
+      [width - 32 * scaleW, 32 * scaleH],
+      [32 * scaleW, height - 32 * scaleH],
+      [width - 32 * scaleW, height - 32 * scaleH]
     ];
     ctx.fillStyle = '#B45309';
     corners.forEach(([cx, cy]) => {
@@ -142,29 +240,29 @@ export const renderCertificateToCanvas = async (
   } else if (borderStyle === 'classic') {
     // Elegant dual slate navy border
     const primaryColor = template.backgroundStyle.borderColor || '#0F172A';
-    ctx.lineWidth = 10 * (width / 842);
+    ctx.lineWidth = 10 * Math.min(scaleW, scaleH);
     ctx.strokeStyle = primaryColor;
-    ctx.strokeRect(24 * (width / 842), 24 * (height / 595), width - 48 * (width / 842), height - 48 * (height / 595));
+    ctx.strokeRect(24 * scaleW, 24 * scaleH, width - 48 * scaleW, height - 48 * scaleH);
 
-    ctx.lineWidth = 1.5 * (width / 842);
+    ctx.lineWidth = 1.5 * Math.min(scaleW, scaleH);
     ctx.strokeStyle = '#64748B';
-    ctx.strokeRect(36 * (width / 842), 36 * (height / 595), width - 72 * (width / 842), height - 72 * (height / 595));
+    ctx.strokeRect(36 * scaleW, 36 * scaleH, width - 72 * scaleW, height - 72 * scaleH);
   } else if (borderStyle === 'modern') {
     // Modern accent line at top and minimal border
-    ctx.lineWidth = 2 * (width / 842);
+    ctx.lineWidth = 2 * Math.min(scaleW, scaleH);
     ctx.strokeStyle = '#E2E8F0';
-    ctx.strokeRect(24 * (width / 842), 24 * (height / 595), width - 48 * (width / 842), height - 48 * (height / 595));
+    ctx.strokeRect(24 * scaleW, 24 * scaleH, width - 48 * scaleW, height - 48 * scaleH);
 
-    // Top vibrant color bar (customizable borderColor or default luxury indigo)
+    // Top vibrant color bar
     const accentColor = template.backgroundStyle.borderColor || '#4F46E5';
     ctx.fillStyle = accentColor;
-    ctx.fillRect(24 * (width / 842), 24 * (height / 595), width - 48 * (width / 842), 10 * (height / 595));
+    ctx.fillRect(24 * scaleW, 24 * scaleH, width - 48 * scaleW, 10 * scaleH);
   } else if (borderStyle === 'minimal') {
-    ctx.lineWidth = 2 * (width / 842);
+    ctx.lineWidth = 2 * Math.min(scaleW, scaleH);
     ctx.strokeStyle = template.backgroundStyle.borderColor || '#CBD5E1';
-    ctx.strokeRect(24 * (width / 842), 24 * (height / 595), width - 48 * (width / 842), height - 48 * (height / 595));
+    ctx.strokeRect(24 * scaleW, 24 * scaleH, width - 48 * scaleW, height - 48 * scaleH);
   } else if (borderStyle === 'none') {
-    // Clean borderless certificate
+    // Clean borderless certificate (ideal for custom institute uploaded background)
   }
   ctx.restore();
 
@@ -220,15 +318,15 @@ export const renderCertificateToCanvas = async (
         continue;
       }
 
-      // Scale font size proportionally to canvas width
-      const scaledSize = fs.size * (width / 842);
+      // Scale font size proportionally to base template dimensions
+      const scaledSize = fs.size * scaleW;
       const fontStyle = fs.fontStyle || 'normal';
       ctx.font = `${fontStyle} ${fs.weight} ${scaledSize}px "${fs.family}", sans-serif`;
       ctx.fillStyle = fs.color;
       ctx.textAlign = fs.align;
       ctx.textBaseline = 'middle';
       if ('letterSpacing' in ctx) {
-        const scaledLetterSpacing = (fs.letterSpacing || 0) * (width / 842);
+        const scaledLetterSpacing = (fs.letterSpacing || 0) * scaleW;
         (ctx as any).letterSpacing = `${scaledLetterSpacing}px`;
       }
 
@@ -404,9 +502,10 @@ export const generateCertificatePreviewDataUrl = async (context: RenderContext):
     } catch (e) {}
   }
   const canvas = document.createElement('canvas');
-  // High-def preview: 1684 x 1190 (2x scale of 842 x 595)
-  canvas.width = 1684;
-  canvas.height = 1190;
+  const isPortrait = context.template.orientation === 'portrait';
+  // High-def preview (2x scale):
+  canvas.width = isPortrait ? 1190 : 1684;
+  canvas.height = isPortrait ? 1684 : 1190;
   const ctx = canvas.getContext('2d');
   if (!ctx) return '';
 
@@ -424,24 +523,26 @@ export const generateCertificatePdfBlob = async (context: RenderContext): Promis
     } catch (e) {}
   }
   const canvas = document.createElement('canvas');
-  // 300 DPI print quality: 2480 x 1754 (A4 at 300 DPI)
-  canvas.width = 2480;
-  canvas.height = 1754;
+  const isPortrait = context.template.orientation === 'portrait';
+  // 300 DPI print quality:
+  canvas.width = isPortrait ? 1754 : 2480;
+  canvas.height = isPortrait ? 2480 : 1754;
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('Could not create canvas context');
 
   await renderCertificateToCanvas(ctx, canvas.width, canvas.height, context);
   const imgData = canvas.toDataURL('image/jpeg', 0.98);
 
-  // A4 Landscape is 297mm x 210mm
   const pdf = new jsPDF({
-    orientation: 'landscape',
+    orientation: isPortrait ? 'portrait' : 'landscape',
     unit: 'mm',
     format: 'a4',
     compress: true
   });
 
-  pdf.addImage(imgData, 'JPEG', 0, 0, 297, 210, undefined, 'FAST');
+  const pdfWidth = isPortrait ? 210 : 297;
+  const pdfHeight = isPortrait ? 297 : 210;
+  pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
   return pdf.output('blob');
 };
 
