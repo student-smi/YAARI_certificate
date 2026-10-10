@@ -16,7 +16,9 @@ import {
   FolderArchive,
   Copy,
   Share2,
-  Sliders
+  Sliders,
+  AlertTriangle,
+  Zap
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Project, Template, Recipient } from '../../types';
@@ -36,6 +38,7 @@ interface ProjectWizardProps {
   onUpdateProject: (updated: Project) => void;
   onOpenDesigner: (templateId: string) => void;
   onOpenEmailModal: (project: Project) => void;
+  onOpenBilling?: () => void;
 }
 
 export const ProjectWizard: React.FC<ProjectWizardProps> = ({
@@ -44,7 +47,8 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
   onBack,
   onUpdateProject,
   onOpenDesigner,
-  onOpenEmailModal
+  onOpenEmailModal,
+  onOpenBilling
 }) => {
   // Steps: 1. Template & Setup | 2. Upload Data | 3. Map Fields | 4. Live Preview | 5. Generation | 6. Export & Deliver
   const [currentStep, setCurrentStep] = useState<number>(project.status === 'completed' ? 6 : 1);
@@ -217,11 +221,20 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
   };
 
   const handleStartGeneration = async () => {
+    const currentUser = StorageService.getUser();
+    const remainingCredits = Math.max(0, currentUser.usage.certificatesLimit - currentUser.usage.certificatesGenerated);
+    const total = currentProject.recipients.length;
+
+    if (remainingCredits < total) {
+      if (onOpenBilling) {
+        onOpenBilling();
+      }
+      return;
+    }
+
     setCurrentStep(5);
     setGenProgress(0);
     setProcessedCount(0);
-
-    const total = currentProject.recipients.length;
 
     try {
       const generated = await batchGenerateCertificates(
@@ -792,6 +805,44 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
             </div>
           </div>
 
+          {/* Credit Check Banner when insufficient or exhausted */}
+          {(() => {
+            const currentUser = StorageService.getUser();
+            const remaining = Math.max(0, currentUser.usage.certificatesLimit - currentUser.usage.certificatesGenerated);
+            const required = currentProject.recipients.length;
+            const isExhausted = remaining < required;
+
+            if (isExhausted) {
+              return (
+                <div className="p-4 rounded-2xl bg-red-50 border-2 border-red-300 text-red-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 my-4 shadow-sm animate-in fade-in duration-200">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-red-600 text-white flex items-center justify-center shrink-0">
+                      <AlertTriangle className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-black text-red-900">
+                        {remaining === 0 ? 'Certificate Credits Khatam (0 Credits Remaining)' : `Insufficient Credits (${remaining} available, ${required} required)`}
+                      </p>
+                      <p className="text-[11px] text-red-700 mt-0.5">
+                        Aapke credits khatam ho chuke hain. In {required} certificates ko generate karne ke liye apna plan upgrade karein.
+                      </p>
+                    </div>
+                  </div>
+                  {onOpenBilling && (
+                    <button
+                      onClick={onOpenBilling}
+                      className="flex items-center gap-1.5 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-black rounded-xl shadow-xs cursor-pointer shrink-0"
+                    >
+                      <Zap className="w-3.5 h-3.5 fill-white" />
+                      <span>Upgrade Plan Now</span>
+                    </button>
+                  )}
+                </div>
+              );
+            }
+            return null;
+          })()}
+
           <div className="pt-6 border-t border-neutral-200 flex justify-between">
             <button
               onClick={() => setCurrentStep(3)}
@@ -801,7 +852,7 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
             </button>
             <button
               onClick={handleStartGeneration}
-              className="flex items-center gap-2 px-7 py-3 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all"
+              className="flex items-center gap-2 px-7 py-3 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer"
             >
               <Play className="w-4 h-4 fill-white" />
               <span>Looks Good — Generate {currentProject.recipients.length} Certificates</span>

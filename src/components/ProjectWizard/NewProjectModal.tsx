@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { X, Award, ArrowRight } from 'lucide-react';
-import { Project, Template } from '../../types';
+import { X, Award, ArrowRight, AlertTriangle, Zap } from 'lucide-react';
+import { Project, Template, UserProfile } from '../../types';
 
 interface NewProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
   templates: Template[];
   organizationName: string;
+  user?: UserProfile;
+  onOpenBilling?: () => void;
   onCreateProject: (project: Project) => void;
 }
 
@@ -15,6 +17,8 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
   onClose,
   templates,
   organizationName,
+  user,
+  onOpenBilling,
   onCreateProject
 }) => {
   const [name, setName] = useState('');
@@ -81,6 +85,31 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          {user?.usage && user.usage.certificatesGenerated >= user.usage.certificatesLimit && (
+            <div className="p-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-950 flex items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2.5">
+                <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
+                <div>
+                  <span className="font-extrabold text-red-900 block">Certificate Credits Khatam</span>
+                  <span className="text-[11px] text-red-700">0 Credits Left in your {user.plan} plan.</span>
+                </div>
+              </div>
+              {onOpenBilling && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenBilling();
+                  }}
+                  className="px-3 py-1.5 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-extrabold text-xs rounded-xl shadow-xs cursor-pointer shrink-0 flex items-center gap-1"
+                >
+                  <Zap className="w-3 h-3 fill-white" />
+                  <span>Upgrade</span>
+                </button>
+              )}
+            </div>
+          )}
+
           <div>
             <label className="block text-xs font-bold text-black mb-1">Campaign Project Name *</label>
             <input

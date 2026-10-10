@@ -12,7 +12,9 @@ import {
   X,
   ChevronDown,
   Sparkles,
-  Code2
+  Code2,
+  AlertTriangle,
+  Zap
 } from 'lucide-react';
 import { UserProfile } from '../types';
 import { StorageService } from '../services/storageService';
@@ -109,20 +111,35 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="hidden md:flex items-center gap-3">
             {isLoggedIn ? (
               <>
-                {/* Usage meter badge */}
-                <button
-                  onClick={onOpenBilling}
-                  className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-neutral-700 bg-neutral-50 hover:bg-neutral-100 rounded-full border border-neutral-200 transition-colors"
-                  title="Click to view billing and usage limits"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-black" />
-                  <span>
-                    <span className="font-bold text-black">{user.usage.certificatesGenerated}</span> / {user.usage.certificatesLimit} Certs
-                  </span>
-                  <span className="text-black font-bold uppercase text-[10px] bg-neutral-200 px-1.5 py-0.2 rounded">
-                    {user.plan}
-                  </span>
-                </button>
+                {/* Usage meter badge with Upgrade option when credits run out */}
+                {user.usage.certificatesGenerated >= user.usage.certificatesLimit ? (
+                  <button
+                    onClick={onOpenBilling}
+                    className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-red-700 bg-red-50 hover:bg-red-100 rounded-full border border-red-300 transition-all shadow-xs animate-pulse cursor-pointer"
+                    title="Credits Khatam! Click to Upgrade Plan"
+                  >
+                    <AlertTriangle className="w-3.5 h-3.5 text-red-600" />
+                    <span>0 Credits Left</span>
+                    <span className="bg-red-600 text-white font-extrabold uppercase text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1 shadow-2xs">
+                      <Zap className="w-3 h-3 fill-white" />
+                      <span>Upgrade Plan</span>
+                    </span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={onOpenBilling}
+                    className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-neutral-700 bg-neutral-50 hover:bg-neutral-100 rounded-full border border-neutral-200 transition-colors cursor-pointer"
+                    title="Click to view billing and usage limits"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-black" />
+                    <span>
+                      <span className="font-bold text-black">{user.usage.certificatesGenerated}</span> / {user.usage.certificatesLimit} Certs
+                    </span>
+                    <span className="text-black font-bold uppercase text-[10px] bg-neutral-200 px-1.5 py-0.2 rounded">
+                      {user.plan}
+                    </span>
+                  </button>
+                )}
 
                 {/* Primary CTA: + Create Certificate Project */}
                 <button
@@ -306,10 +323,20 @@ export const Navbar: React.FC<NavbarProps> = ({
                     onOpenBilling();
                     setMobileMenuOpen(false);
                   }}
-                  className="w-full flex items-center justify-between px-3 py-2 text-xs text-neutral-700 hover:bg-neutral-50 rounded-lg"
+                  className={`w-full flex items-center justify-between px-3 py-2 text-xs rounded-lg ${
+                    user.usage.certificatesGenerated >= user.usage.certificatesLimit
+                      ? 'bg-red-50 text-red-700 font-bold border border-red-200'
+                      : 'text-neutral-700 hover:bg-neutral-50'
+                  }`}
                 >
-                  <span>Plan: <strong className="uppercase text-black">{user.plan}</strong></span>
-                  <span className="text-[11px] text-neutral-500">{user.usage.certificatesGenerated}/{user.usage.certificatesLimit} Certs</span>
+                  <span>Plan: <strong className="uppercase">{user.plan}</strong></span>
+                  {user.usage.certificatesGenerated >= user.usage.certificatesLimit ? (
+                    <span className="text-[11px] font-black text-red-600 flex items-center gap-1">
+                      <Zap className="w-3 h-3 fill-red-600" /> 0 Credits (Upgrade)
+                    </span>
+                  ) : (
+                    <span className="text-[11px] text-neutral-500">{user.usage.certificatesGenerated}/{user.usage.certificatesLimit} Certs</span>
+                  )}
                 </button>
                 <button
                   onClick={() => {

@@ -385,6 +385,7 @@ export function App() {
             }}
             onOpenDesigner={handleOpenDesigner}
             onOpenEmailModal={handleOpenEmailModal}
+            onOpenBilling={() => setBillingModalOpen(true)}
           />
         )}
 
@@ -392,6 +393,8 @@ export function App() {
           <CertificateDesigner
             key={activeDesignerTemplate.id}
             initialTemplate={activeDesignerTemplate}
+            user={user}
+            onOpenBilling={() => setBillingModalOpen(true)}
             onBack={() => setCurrentView('dashboard')}
             onSaveTemplate={(updated) => {
               setTemplates(StorageService.getTemplates());
@@ -555,6 +558,8 @@ export function App() {
         templates={templates}
         organizationName={user.organizationName}
         onCreateProject={handleCreateProject}
+        user={user}
+        onOpenBilling={() => setBillingModalOpen(true)}
       />
 
       <BillingModal

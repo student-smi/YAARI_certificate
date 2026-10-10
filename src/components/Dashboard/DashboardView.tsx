@@ -10,7 +10,8 @@ import {
   FileSpreadsheet, 
   AlertTriangle, 
   Sparkles, 
-  Trash2 
+  Trash2,
+  Zap
 } from 'lucide-react';
 import { Project, UserProfile, Template } from '../../types';
 
@@ -49,6 +50,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const totalSent = projects.reduce((acc, p) => acc + (p.emailedCount || 0), 0);
   const totalVerified = projects.reduce((acc, p) => acc + (p.verifiedCount || 0), 0);
 
+  const remainingCerts = Math.max(0, user.usage.certificatesLimit - user.usage.certificatesGenerated);
+  const isCreditsExhausted = remainingCerts <= 0;
   const usageCertPercent = Math.round((user.usage.certificatesGenerated / user.usage.certificatesLimit) * 100);
   const isCloseToLimit = usageCertPercent >= 75;
 
@@ -99,8 +102,36 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* 2. Usage Warning Banner if approaching quota */}
-      {isCloseToLimit && (
+      {/* 2. Usage Warning Banner / Credits Exhausted Alert */}
+      {isCreditsExhausted ? (
+        <div className="p-5 rounded-2xl bg-red-50 border-2 border-red-300 text-red-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm animate-in fade-in duration-200">
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+              <AlertTriangle className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h4 className="text-sm font-black text-red-900 uppercase tracking-wide">
+                  Certificate Credits Exhausted (0 Credits Remaining)
+                </h4>
+                <span className="text-[10px] font-extrabold bg-red-200 text-red-900 px-2 py-0.5 rounded-full uppercase">
+                  Limit Reached
+                </span>
+              </div>
+              <p className="text-xs text-red-700 mt-0.5 font-medium">
+                Aapne is mahine ke sabhi {user.usage.certificatesLimit} certificate credits use kar liye hain ({user.usage.certificatesGenerated}/{user.usage.certificatesLimit}). Naye certificates generate karne ke liye apna plan upgrade karein.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onOpenBilling}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 active:scale-95 text-white text-xs font-black transition-all shadow-md shrink-0 cursor-pointer"
+          >
+            <Zap className="w-4 h-4 fill-white" />
+            <span>Upgrade Plan Now</span>
+          </button>
+        </div>
+      ) : isCloseToLimit ? (
         <div className="p-4 rounded-xl bg-neutral-100 border border-neutral-300 text-black flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-black text-white flex items-center justify-center shrink-0">
@@ -115,12 +146,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
           <button
             onClick={onOpenBilling}
-            className="px-4 py-1.5 rounded-lg bg-black hover:bg-neutral-800 text-white text-xs font-bold transition-all shadow-xs shrink-0"
+            className="px-4 py-1.5 rounded-lg bg-black hover:bg-neutral-800 text-white text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
           >
             Upgrade Plan
           </button>
         </div>
-      )}
+      ) : null}
 
       {/* 3. Top Metrics Row (Crisp White Cards with 20% Black accents) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">

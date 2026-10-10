@@ -49,9 +49,11 @@ import {
   AlignCenterVertical,
   Palette,
   RefreshCw,
-  X
+  X,
+  AlertTriangle,
+  Zap
 } from 'lucide-react';
-import { Template, TemplateElement, ElementType } from '../../types';
+import { Template, TemplateElement, ElementType, UserProfile } from '../../types';
 import { generateCertificatePreviewDataUrl } from '../../services/pdfGenerator';
 import { StorageService } from '../../services/storageService';
 import { 
@@ -174,6 +176,8 @@ interface CertificateDesignerProps {
   onSaveTemplate: (updated: Template) => void;
   onNavigateToTemplates?: () => void;
   onNavigateToWizard?: (templateId: string) => void;
+  user?: UserProfile;
+  onOpenBilling?: () => void;
 }
 
 type ResizeHandle = 'nw' | 'ne' | 'se' | 'sw' | 'e' | 'w';
@@ -194,8 +198,11 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
   onBack,
   onSaveTemplate,
   onNavigateToTemplates,
-  onNavigateToWizard
+  onNavigateToWizard,
+  user,
+  onOpenBilling
 }) => {
+  const isCreditsExhausted = user?.usage ? (user.usage.certificatesGenerated >= user.usage.certificatesLimit) : false;
   const [template, setTemplate] = useState<Template>(initialTemplate);
   const [selectedElementId, setSelectedElementId] = useState<string | null>(
     initialTemplate.elements[0]?.id || null
@@ -1315,6 +1322,19 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
 
         {/* Right: Preview & Save CTAs */}
         <div className="flex items-center gap-2">
+          {isCreditsExhausted && onOpenBilling && (
+            <button
+              type="button"
+              onClick={onOpenBilling}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-black shadow-xs animate-pulse transition-all cursor-pointer"
+              title="Certificate credits khatam ho gaye hain. Plan upgrade karne ke liye click karein."
+            >
+              <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+              <span>0 Credits — Upgrade Plan</span>
+              <Zap className="w-3 h-3 shrink-0" />
+            </button>
+          )}
+
           <button
             onClick={handleOpenLivePreview}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50 text-black text-xs font-bold shadow-xs"
