@@ -191,34 +191,36 @@ export const Navbar: React.FC<NavbarProps> = ({
                         </button>
                       </div>
 
-                      {/* Multi-Tenant Switcher */}
-                      <div className="border-t border-neutral-100 py-2 px-3 bg-neutral-50">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-neutral-500 block mb-1.5">
-                          Switch Tenant (Data Isolated)
-                        </span>
-                        <div className="space-y-1">
-                          {StorageService.getAllUsers().map((acc) => (
-                            <button
-                              key={acc.id}
-                              type="button"
-                              onClick={() => onSwitchAccount(acc.id)}
-                              className={`w-full text-left px-2 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors ${
-                                acc.id === user.id ? 'bg-black text-white shadow-xs' : 'hover:bg-neutral-200 text-neutral-800'
-                              }`}
-                            >
-                              <div className="truncate max-w-[120px]">
-                                <span className="block truncate font-bold">{acc.name}</span>
-                                <span className="text-[9px] opacity-75 font-mono truncate block">{acc.organizationName}</span>
-                              </div>
-                              <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${
-                                acc.id === user.id ? 'bg-neutral-800 text-white' : 'bg-neutral-200 text-black'
-                              }`}>
-                                {acc.role === 'admin' ? '👑 ADMIN' : acc.role}
-                              </span>
-                            </button>
-                          ))}
+                      {/* Multi-Tenant Switcher (Admin Only) */}
+                      {user.role === 'admin' && (
+                        <div className="border-t border-neutral-100 py-2 px-3 bg-neutral-50">
+                          <span className="text-[10px] font-black uppercase tracking-wider text-neutral-500 block mb-1.5">
+                            Switch Tenant (Admin Only)
+                          </span>
+                          <div className="space-y-1">
+                            {StorageService.getAllUsers().map((acc) => (
+                              <button
+                                key={acc.id}
+                                type="button"
+                                onClick={() => onSwitchAccount(acc.id)}
+                                className={`w-full text-left px-2 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors ${
+                                  acc.id === user.id ? 'bg-black text-white shadow-xs' : 'hover:bg-neutral-200 text-neutral-800'
+                                }`}
+                              >
+                                <div className="truncate max-w-[120px]">
+                                  <span className="block truncate font-bold">{acc.name}</span>
+                                  <span className="text-[9px] opacity-75 font-mono truncate block">{acc.organizationName}</span>
+                                </div>
+                                <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${
+                                  acc.id === user.id ? 'bg-neutral-800 text-white' : 'bg-neutral-200 text-black'
+                                }`}>
+                                  {acc.role === 'admin' ? '👑 ADMIN' : acc.role}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
                         </div>
-                      </div>
+                      )}
 
                       <div className="border-t border-neutral-100 pt-1">
                         <button
