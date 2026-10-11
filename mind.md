@@ -713,11 +713,11 @@ matchMap['phone'] = ['phone', 'contact', 'mobile', 'cell'];
 ---
 
 ### 9.7 SaaS Monetization, Quota Enforcement & Razorpay Simulation
-- **Four Tiered Pricing Plans:**
-  1. **Free Starter:** $0/mo — 10 certs/mo, 1 project, 2 templates, 0.1 GB storage.
-  2. **Starter Pro:** $29/mo (or $24/mo yearly) — 500 certs/mo, 15 projects, 10 templates, 1 GB storage, 500 email credits.
-  3. **Scale & Institute (Most Popular):** $79/mo (or $65/mo yearly) — 3,000 certs/mo, unlimited projects, 15 GB storage, 3,000 email credits, API access.
-  4. **Enterprise Ultra:** $199/mo (or $165/mo yearly) — 25,000 certs/mo, 100 GB storage, white-label verification, dedicated support.
+- **Four Tiered Pricing Plans (Option 2 Balanced Model):**
+  1. **Free Starter:** ₹0/mo — 20 certs/mo, 2 projects, 2 templates, 0.5 GB storage, 0 email credits.
+  2. **Starter Pro:** ₹799/mo (or ₹649/mo yearly) — 250 certs/mo, 8 projects, 5 templates, 2 GB storage, 250 email credits.
+  3. **Scale & Institute (Most Popular):** ₹1,999/mo (or ₹1,599/mo yearly) — 1,200 certs/mo, 25 projects, 15 templates, 10 GB storage, 1,200 email credits, API access.
+  4. **Enterprise Ultra:** ₹4,999/mo (or ₹3,999/mo yearly) — 5,000 certs/mo, 100 projects, 50 templates, 30 GB storage, 5,000 email credits, dedicated support.
 - **Quota Enforcer:**
   - Top navigation bar displays a live indicator: `Certificates Generated / Quota`.
   - When quotas are exhausted, buttons trigger a prominent upgrade alert ("Credits Khatam! Click to Upgrade Plan") and open `BillingModal.tsx`.

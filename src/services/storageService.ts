@@ -5,7 +5,7 @@ import { INITIAL_PROJECTS } from '../data/sampleData';
 const STORAGE_KEYS = {
   USER_PROFILE: 'certiforge_user_profile_v1',
   IS_LOGGED_IN: 'certiforge_is_logged_in_v1',
-  PRICING: 'certiforge_pricing_plans_v1',
+  PRICING: 'certiforge_pricing_plans_v2',
   ACCOUNTS: 'certiforge_all_accounts_v1',
   DEFAULT_TEMPLATES: 'certiforge_system_templates_v1',
 };
@@ -33,11 +33,11 @@ export const ADMIN_TEJAS: UserProfile = {
   isYearlyBilling: true,
   usage: {
     certificatesGenerated: 1420,
-    certificatesLimit: 25000,
+    certificatesLimit: 5000,
     storageUsedMB: 580,
-    storageLimitMB: 102400,
+    storageLimitMB: 30720,
     emailCreditsUsed: 1200,
-    emailCreditsLimit: 25000
+    emailCreditsLimit: 5000
   },
   branding: {
     logoUrl: '',
@@ -60,11 +60,11 @@ export const DEMO_ADMIN: UserProfile = {
   isYearlyBilling: true,
   usage: {
     certificatesGenerated: 1420,
-    certificatesLimit: 25000,
+    certificatesLimit: 5000,
     storageUsedMB: 580,
-    storageLimitMB: 102400,
+    storageLimitMB: 30720,
     emailCreditsUsed: 1200,
-    emailCreditsLimit: 25000
+    emailCreditsLimit: 5000
   },
   branding: {
     logoUrl: '',
@@ -86,11 +86,11 @@ export const DEMO_USER_1: UserProfile = {
   isYearlyBilling: false,
   usage: {
     certificatesGenerated: 42,
-    certificatesLimit: 3000,
+    certificatesLimit: 1200,
     storageUsedMB: 17,
-    storageLimitMB: 15360,
+    storageLimitMB: 10240,
     emailCreditsUsed: 42,
-    emailCreditsLimit: 3000
+    emailCreditsLimit: 1200
   },
   branding: {
     logoUrl: '',
@@ -112,11 +112,11 @@ export const DEMO_USER_2: UserProfile = {
   isYearlyBilling: false,
   usage: {
     certificatesGenerated: 8,
-    certificatesLimit: 500,
+    certificatesLimit: 250,
     storageUsedMB: 3,
-    storageLimitMB: 1024,
+    storageLimitMB: 2048,
     emailCreditsUsed: 8,
-    emailCreditsLimit: 500
+    emailCreditsLimit: 250
   },
   branding: {
     logoUrl: '',
@@ -271,11 +271,11 @@ export class StorageService {
       isYearlyBilling: finalPlan === 'business',
       usage: {
         certificatesGenerated: 0,
-        certificatesLimit: finalPlan === 'business' ? 25000 : finalPlan === 'pro' ? 3000 : 250,
+        certificatesLimit: finalPlan === 'business' ? 5000 : finalPlan === 'pro' ? 1200 : finalPlan === 'starter' ? 250 : 20,
         storageUsedMB: 0,
-        storageLimitMB: finalPlan === 'business' ? 102400 : finalPlan === 'pro' ? 15360 : 1024,
+        storageLimitMB: finalPlan === 'business' ? 30720 : finalPlan === 'pro' ? 10240 : finalPlan === 'starter' ? 2048 : 500,
         emailCreditsUsed: 0,
-        emailCreditsLimit: finalPlan === 'business' ? 25000 : finalPlan === 'pro' ? 3000 : 250
+        emailCreditsLimit: finalPlan === 'business' ? 5000 : finalPlan === 'pro' ? 1200 : finalPlan === 'starter' ? 250 : 0
       },
       branding: {
         logoUrl: '',

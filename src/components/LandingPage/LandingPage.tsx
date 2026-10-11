@@ -152,7 +152,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     </p>
                     <div className="py-2">
                       <p className="text-2xl sm:text-4xl font-serif font-black text-black tracking-tight">
-                        Ananya Sharma
+                        Riya Sharma
                       </p>
                       <div className="w-32 sm:w-48 h-0.5 bg-black mx-auto mt-2" />
                     </div>

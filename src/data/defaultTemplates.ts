@@ -891,18 +891,18 @@ export const PRICING_PLANS = [
     tagline: 'Ideal for small workshops and testing the platform.',
     isPopular: false,
     limits: {
-      maxCertificatesPerMonth: 50,
-      maxProjects: 3,
+      maxCertificatesPerMonth: 20,
+      maxProjects: 2,
       maxTemplates: 2,
       storageGB: 0.5,
-      maxEmailCredits: 20,
+      maxEmailCredits: 0,
       hasApiAccess: false,
       hasWhiteLabel: false,
       teamSeats: 1
     },
     features: [
-      '50 certificates / month',
-      'Up to 3 active projects',
+      '20 certificates / month',
+      'Up to 2 active projects',
       'Excel & CSV bulk import',
       'Instant ZIP & PDF export',
       'Public QR verification link',
@@ -918,20 +918,20 @@ export const PRICING_PLANS = [
     tagline: 'For educators, trainers, and growing institutes.',
     isPopular: false,
     limits: {
-      maxCertificatesPerMonth: 500,
-      maxProjects: 15,
-      maxTemplates: 10,
-      storageGB: 3,
-      maxEmailCredits: 500,
+      maxCertificatesPerMonth: 250,
+      maxProjects: 8,
+      maxTemplates: 5,
+      storageGB: 2,
+      maxEmailCredits: 250,
       hasApiAccess: false,
       hasWhiteLabel: false,
       teamSeats: 2
     },
     features: [
-      '500 certificates / month',
-      '15 projects with unlimited batches',
+      '250 certificates / month',
+      '8 projects with bulk batches',
       'High-res vector print PDF export',
-      'Automated email delivery (500 credits)',
+      'Automated email delivery (250 credits)',
       'Custom certificate ID prefixes',
       'Priority email support'
     ]
@@ -945,20 +945,20 @@ export const PRICING_PLANS = [
     tagline: 'Best for universities, bootcamps, and mid-sized enterprises.',
     isPopular: true,
     limits: {
-      maxCertificatesPerMonth: 3000,
-      maxProjects: 50,
-      maxTemplates: 30,
-      storageGB: 15,
-      maxEmailCredits: 3000,
+      maxCertificatesPerMonth: 1200,
+      maxProjects: 25,
+      maxTemplates: 15,
+      storageGB: 10,
+      maxEmailCredits: 1200,
       hasApiAccess: true,
       hasWhiteLabel: true,
       teamSeats: 5
     },
     features: [
-      '3,000 certificates / month',
-      '50 active projects',
+      '1,200 certificates / month',
+      '25 active projects',
       'White-label verification portal',
-      'Automated bulk email delivery',
+      'Automated bulk email delivery (1,200 credits)',
       'Team collaboration (5 seats)',
       'Rest API & Webhooks access',
       'Dedicated support'
@@ -973,21 +973,21 @@ export const PRICING_PLANS = [
     tagline: 'For high-scale examination boards and multi-brand corporate teams.',
     isPopular: false,
     limits: {
-      maxCertificatesPerMonth: 25000,
-      maxProjects: 9999,
-      maxTemplates: 9999,
-      storageGB: 100,
-      maxEmailCredits: 25000,
+      maxCertificatesPerMonth: 5000,
+      maxProjects: 100,
+      maxTemplates: 50,
+      storageGB: 30,
+      maxEmailCredits: 5000,
       hasApiAccess: true,
       hasWhiteLabel: true,
-      teamSeats: 25
+      teamSeats: 15
     },
     features: [
-      '25,000+ certificates / month',
-      'Unlimited projects & templates',
+      '5,000 certificates / month',
+      'Up to 100 projects & templates',
       'Full custom domain & white-labeling',
+      'Automated email delivery (5,000 credits)',
       'Priority background generation queue',
-      'Razorpay & Stripe billing integration',
       '24/7 SLA & dedicated account manager'
     ]
   }
