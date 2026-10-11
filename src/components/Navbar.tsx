@@ -12,7 +12,6 @@ import {
   X,
   ChevronDown,
   Sparkles,
-  Code2,
   AlertTriangle,
   Zap
 } from 'lucide-react';
@@ -52,7 +51,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'templates', label: 'Templates', icon: LayoutTemplate, authRequired: false },
     { id: 'analytics', label: 'Analytics', icon: BarChart3, authRequired: true },
     { id: 'verify', label: 'Verify Credential', icon: ShieldCheck, authRequired: false },
-    { id: 'api', label: 'API & Dev', icon: Code2, authRequired: true },
     { id: 'settings', label: 'Settings', icon: Settings, authRequired: true },
     ...(user.role === 'admin' ? [{ id: 'admin', label: '👑 Admin Console', icon: ShieldCheck, authRequired: true }] : []),
   ];

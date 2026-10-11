@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   Check, 
@@ -33,6 +33,24 @@ export const BillingModal: React.FC<BillingModalProps> = ({
   const [paymentMethod, setPaymentMethod] = useState<'upi' | 'card' | 'netbanking'>('upi');
   const [upiId, setUpiId] = useState('user@okaxis');
   const [orderId, setOrderId] = useState('');
+  const [paymentId, setPaymentId] = useState('pay_rzp_nmgz9b2');
+
+  // Reset to plans view when opened
+  useEffect(() => {
+    if (isOpen) {
+      setCheckoutStep('plans');
+    }
+  }, [isOpen]);
+
+  // Show payment success screen for exactly 1 second, then transition back to plans view
+  useEffect(() => {
+    if (checkoutStep === 'success') {
+      const timer = setTimeout(() => {
+        setCheckoutStep('plans');
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [checkoutStep]);
 
   if (!isOpen) return null;
 
@@ -45,6 +63,9 @@ export const BillingModal: React.FC<BillingModalProps> = ({
 
   const handleSimulateRazorpayPay = () => {
     setIsProcessingPayment(true);
+    const newPayId = `pay_rzp_${Math.random().toString(36).substring(2, 9)}`;
+    setPaymentId(newPayId);
+
     setTimeout(() => {
       setIsProcessingPayment(false);
       setCheckoutStep('success');
@@ -337,7 +358,7 @@ export const BillingModal: React.FC<BillingModalProps> = ({
               <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-xl text-left text-xs space-y-1.5 font-mono">
                 <div className="flex justify-between">
                   <span className="text-neutral-400">Payment ID:</span>
-                  <span className="font-bold text-black">pay_rzp_{Math.random().toString(36).substring(2, 9)}</span>
+                  <span className="font-bold text-black">{paymentId}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-neutral-400">Status:</span>
@@ -347,7 +368,7 @@ export const BillingModal: React.FC<BillingModalProps> = ({
 
               <button
                 type="button"
-                onClick={onClose}
+                onClick={() => setCheckoutStep('plans')}
                 className="w-full py-2.5 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-xl shadow-xs"
               >
                 Back to Dashboard
