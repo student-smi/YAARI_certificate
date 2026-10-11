@@ -884,111 +884,136 @@ export const DEFAULT_TEMPLATES: Template[] = [
 export const PRICING_PLANS = [
   {
     id: 'free',
-    name: 'Free Starter',
+    name: 'Free',
     monthlyPrice: 0,
     yearlyPrice: 0,
+    yearlyTotal: 0,
     currency: '₹',
     tagline: 'Ideal for small workshops and testing the platform.',
     isPopular: false,
+    buttonText: 'Start free',
     limits: {
-      maxCertificatesPerMonth: 20,
-      maxProjects: 2,
-      maxTemplates: 2,
-      storageGB: 0.5,
+      maxCertificatesPerMonth: 25,
+      maxProjects: 3,
+      maxTemplates: 3,
+      storageGB: 1,
       maxEmailCredits: 0,
       hasApiAccess: false,
       hasWhiteLabel: false,
       teamSeats: 1
     },
     features: [
-      '20 certificates / month',
-      'Up to 2 active projects',
-      'Excel & CSV bulk import',
-      'Instant ZIP & PDF export',
-      'Public QR verification link',
-      'Community support'
+      '25 certificates / month',
+      'Ready-to-use certificate templates',
+      'Excel & CSV recipient import',
+      'Print-ready PDF & ZIP downloads',
+      'Public verification pages (CertiCraft branding)'
     ]
   },
   {
     id: 'starter',
-    name: 'Starter Pro',
+    name: 'Professional',
     monthlyPrice: 799,
     yearlyPrice: 649,
+    yearlyTotal: 7788,
     currency: '₹',
     tagline: 'For educators, trainers, and growing institutes.',
     isPopular: false,
+    buttonText: 'Choose Professional',
     limits: {
-      maxCertificatesPerMonth: 250,
-      maxProjects: 8,
-      maxTemplates: 5,
-      storageGB: 2,
-      maxEmailCredits: 250,
+      maxCertificatesPerMonth: 500,
+      maxProjects: 15,
+      maxTemplates: 10,
+      storageGB: 5,
+      maxEmailCredits: 500,
       hasApiAccess: false,
-      hasWhiteLabel: false,
-      teamSeats: 2
+      hasWhiteLabel: true,
+      teamSeats: 1
     },
     features: [
-      '250 certificates / month',
-      '8 projects with bulk batches',
-      'High-res vector print PDF export',
-      'Automated email delivery (250 credits)',
+      'Everything in Free, plus:',
+      '500 certificates / month',
+      '500 automated email sends / month',
+      'Removal of CertiCraft branding',
       'Custom certificate ID prefixes',
-      'Priority email support'
+      'Print-ready PDF vector export'
     ]
   },
   {
     id: 'pro',
-    name: 'Scale & Institute',
+    name: 'Institute',
     monthlyPrice: 1999,
     yearlyPrice: 1599,
+    yearlyTotal: 19188,
     currency: '₹',
     tagline: 'Best for universities, bootcamps, and mid-sized enterprises.',
     isPopular: true,
+    badgeText: 'Recommended',
+    buttonText: 'Choose Institute',
     limits: {
-      maxCertificatesPerMonth: 1200,
-      maxProjects: 25,
-      maxTemplates: 15,
-      storageGB: 10,
-      maxEmailCredits: 1200,
-      hasApiAccess: true,
+      maxCertificatesPerMonth: 3000,
+      maxProjects: 50,
+      maxTemplates: 30,
+      storageGB: 20,
+      maxEmailCredits: 3000,
+      hasApiAccess: false,
       hasWhiteLabel: true,
       teamSeats: 5
     },
     features: [
-      '1,200 certificates / month',
-      '25 active projects',
-      'White-label verification portal',
-      'Automated bulk email delivery (1,200 credits)',
-      'Team collaboration (5 seats)',
-      'Rest API & Webhooks access',
-      'Dedicated support'
+      'Everything in Professional, plus:',
+      '3,000 certificates / month',
+      '3,000 automated email sends / month',
+      '5 team collaboration members',
+      'Verification page with your institute branding',
+      'Priority support (stated business hours)'
     ]
   },
   {
     id: 'business',
-    name: 'Enterprise Ultra',
-    monthlyPrice: 4999,
-    yearlyPrice: 3999,
+    name: 'Enterprise',
+    monthlyPrice: 0,
+    yearlyPrice: 0,
+    yearlyTotal: 0,
+    isCustomQuote: true,
     currency: '₹',
-    tagline: 'For high-scale examination boards and multi-brand corporate teams.',
+    tagline: 'For high-scale examination boards and large organizations.',
     isPopular: false,
+    buttonText: 'Contact sales',
     limits: {
-      maxCertificatesPerMonth: 5000,
-      maxProjects: 100,
-      maxTemplates: 50,
-      storageGB: 30,
-      maxEmailCredits: 5000,
+      maxCertificatesPerMonth: 10000,
+      maxProjects: 9999,
+      maxTemplates: 9999,
+      storageGB: 100,
+      maxEmailCredits: 10000,
       hasApiAccess: true,
       hasWhiteLabel: true,
-      teamSeats: 15
+      teamSeats: 25
     },
     features: [
-      '5,000 certificates / month',
-      'Up to 100 projects & templates',
-      'Full custom domain & white-labeling',
-      'Automated email delivery (5,000 credits)',
-      'Priority background generation queue',
-      '24/7 SLA & dedicated account manager'
+      'Everything in Institute, plus:',
+      'Volume agreed in writing',
+      'Custom domain (e.g. certs.yourbrand.edu)',
+      'REST API & Webhooks access',
+      'Tailored onboarding & staff training',
+      'Support terms & SLA agreed in contract'
     ]
   }
 ];
+
+export const WORKSHOP_EVENT_PACK = {
+  name: 'Workshop & Event Pack',
+  price: 499,
+  currency: '₹',
+  certificates: 100,
+  emailSends: 100,
+  tagline: 'Prepaid single batch for workshops, conferences, and events. No recurring subscription.',
+  features: [
+    '100 certificates credit (valid for 1 year)',
+    '100 automated email sends included',
+    'Removal of CertiCraft branding',
+    'Print-ready vector PDF & bulk ZIP export',
+    'Dedicated verification page retention'
+  ]
+};
+

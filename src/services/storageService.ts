@@ -5,7 +5,7 @@ import { INITIAL_PROJECTS } from '../data/sampleData';
 const STORAGE_KEYS = {
   USER_PROFILE: 'certiforge_user_profile_v1',
   IS_LOGGED_IN: 'certiforge_is_logged_in_v1',
-  PRICING: 'certiforge_pricing_plans_v2',
+  PRICING: 'certiforge_pricing_plans_v3',
   ACCOUNTS: 'certiforge_all_accounts_v1',
   DEFAULT_TEMPLATES: 'certiforge_system_templates_v1',
 };
@@ -86,11 +86,11 @@ export const DEMO_USER_1: UserProfile = {
   isYearlyBilling: false,
   usage: {
     certificatesGenerated: 42,
-    certificatesLimit: 1200,
+    certificatesLimit: 3000,
     storageUsedMB: 17,
-    storageLimitMB: 10240,
+    storageLimitMB: 20480,
     emailCreditsUsed: 42,
-    emailCreditsLimit: 1200
+    emailCreditsLimit: 3000
   },
   branding: {
     logoUrl: '',
@@ -112,11 +112,11 @@ export const DEMO_USER_2: UserProfile = {
   isYearlyBilling: false,
   usage: {
     certificatesGenerated: 8,
-    certificatesLimit: 250,
+    certificatesLimit: 500,
     storageUsedMB: 3,
-    storageLimitMB: 2048,
+    storageLimitMB: 5120,
     emailCreditsUsed: 8,
-    emailCreditsLimit: 250
+    emailCreditsLimit: 500
   },
   branding: {
     logoUrl: '',
@@ -271,11 +271,11 @@ export class StorageService {
       isYearlyBilling: finalPlan === 'business',
       usage: {
         certificatesGenerated: 0,
-        certificatesLimit: finalPlan === 'business' ? 5000 : finalPlan === 'pro' ? 1200 : finalPlan === 'starter' ? 250 : 20,
+        certificatesLimit: finalPlan === 'business' ? 10000 : finalPlan === 'pro' ? 3000 : finalPlan === 'starter' ? 500 : 25,
         storageUsedMB: 0,
-        storageLimitMB: finalPlan === 'business' ? 30720 : finalPlan === 'pro' ? 10240 : finalPlan === 'starter' ? 2048 : 500,
+        storageLimitMB: finalPlan === 'business' ? 102400 : finalPlan === 'pro' ? 20480 : finalPlan === 'starter' ? 5120 : 1024,
         emailCreditsUsed: 0,
-        emailCreditsLimit: finalPlan === 'business' ? 5000 : finalPlan === 'pro' ? 1200 : finalPlan === 'starter' ? 250 : 0
+        emailCreditsLimit: finalPlan === 'business' ? 10000 : finalPlan === 'pro' ? 3000 : finalPlan === 'starter' ? 500 : 0
       },
       branding: {
         logoUrl: '',

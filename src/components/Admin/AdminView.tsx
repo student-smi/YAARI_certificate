@@ -321,10 +321,10 @@ export const AdminView: React.FC<AdminViewProps> = ({
                             onChange={(e) => handleUpdateUserPlan(u.id, e.target.value as any)}
                             className="px-2 py-1 rounded-lg border border-neutral-300 bg-white font-bold text-xs uppercase text-neutral-900"
                           >
-                            <option value="free">Free Tier</option>
-                            <option value="starter">Starter Pro</option>
-                            <option value="pro">Pro Scale</option>
-                            <option value="business">Enterprise Ultra</option>
+                            <option value="free">Free</option>
+                            <option value="starter">Professional</option>
+                            <option value="pro">Institute</option>
+                            <option value="business">Enterprise</option>
                           </select>
                         </td>
 

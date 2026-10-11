@@ -348,7 +348,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           <h2 className="text-xs font-bold uppercase tracking-wider text-black mb-1">Transparent Pricing</h2>
           <h3 className="text-3xl font-extrabold text-black tracking-tight">Choose the Plan That Fits Your Scale</h3>
           <p className="text-neutral-600 mt-2 text-sm">
-            Upgrade, downgrade, or cancel anytime. Powered by Razorpay secure billing.
+            Launch with Free, Professional, or Institute. Complete annual charge shown upfront. All prices in INR (excl. applicable GST).
           </p>
 
           {/* Billing Toggle (White/Black segmented switch) */}
@@ -378,21 +378,23 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         {/* Pricing Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {pricingPlans.map((plan) => {
-            const price = billingCycle === 'yearly' ? plan.yearlyPrice : plan.monthlyPrice;
-            const isPopular = plan.isPopular;
+            const isAnnual = billingCycle === 'yearly';
+            const price = isAnnual ? plan.yearlyPrice : plan.monthlyPrice;
+            const isRecommended = plan.isPopular || plan.badgeText === 'Recommended';
+            const isCustom = plan.isCustomQuote || plan.id === 'business';
 
             return (
               <div 
                 key={plan.id}
                 className={`rounded-2xl p-6 transition-all flex flex-col justify-between ${
-                  isPopular 
+                  isRecommended 
                     ? 'bg-white border-2 border-black shadow-elevated relative' 
                     : 'bg-white border border-neutral-300 shadow-card'
                 }`}
               >
-                {isPopular && (
+                {isRecommended && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
-                    Popular
+                    {plan.badgeText || 'Recommended'}
                   </div>
                 )}
 
@@ -401,20 +403,38 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   <p className="text-xs text-neutral-500 mt-1 min-h-[32px]">{plan.tagline}</p>
 
                   <div className="mt-4 mb-6">
-                    <span className="text-3xl font-black text-black">{plan.currency}{price}</span>
-                    <span className="text-xs text-neutral-500 ml-1">/ month</span>
-                    {billingCycle === 'yearly' && price > 0 && (
-                      <p className="text-[11px] text-neutral-700 font-semibold mt-1">Billed annually</p>
+                    {isCustom ? (
+                      <div>
+                        <span className="text-3xl font-black text-black">Custom</span>
+                        <p className="text-[11px] text-neutral-600 font-semibold mt-1">Volume & support agreed in writing</p>
+                      </div>
+                    ) : (
+                      <div>
+                        <span className="text-3xl font-black text-black">{plan.currency}{price}</span>
+                        <span className="text-xs text-neutral-500 ml-1">/ month</span>
+                        {isAnnual && price > 0 && plan.yearlyTotal ? (
+                          <p className="text-[11px] text-neutral-700 font-bold mt-1">
+                            ₹{plan.yearlyTotal.toLocaleString()} billed yearly
+                          </p>
+                        ) : price > 0 ? (
+                          <p className="text-[11px] text-neutral-500 font-medium mt-1">Billed monthly</p>
+                        ) : (
+                          <p className="text-[11px] text-neutral-500 font-medium mt-1">Free forever</p>
+                        )}
+                      </div>
                     )}
                   </div>
 
                   <div className="border-t border-neutral-100 pt-4 space-y-2.5">
-                    {plan.features.map((feat, idx) => (
-                      <div key={idx} className="flex items-start gap-2 text-xs text-neutral-700">
-                        <Check className="w-4 h-4 text-black shrink-0 mt-0.5" />
-                        <span>{feat}</span>
-                      </div>
-                    ))}
+                    {plan.features.map((feat, idx) => {
+                      const isHeader = feat.startsWith('Everything in');
+                      return (
+                        <div key={idx} className={`flex items-start gap-2 text-xs ${isHeader ? 'font-bold text-black pt-1' : 'text-neutral-700'}`}>
+                          <Check className={`w-4 h-4 shrink-0 mt-0.5 ${isHeader ? 'text-black' : 'text-neutral-500'}`} />
+                          <span>{feat}</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -422,17 +442,45 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   <button
                     onClick={onOpenPricing}
                     className={`w-full py-2.5 rounded-xl font-bold text-xs transition-all ${
-                      isPopular
+                      isRecommended
                         ? 'bg-black hover:bg-neutral-800 text-white shadow-sm'
+                        : isCustom
+                        ? 'bg-black hover:bg-neutral-800 text-white shadow-xs'
                         : 'bg-neutral-100 hover:bg-neutral-200 text-black'
                     }`}
                   >
-                    {plan.id === 'free' ? 'Get Started' : 'Upgrade Plan'}
+                    {plan.buttonText || (plan.id === 'free' ? 'Start free' : isCustom ? 'Contact sales' : `Choose ${plan.name}`)}
                   </button>
                 </div>
               </div>
             );
           })}
+        </div>
+
+        {/* Occasional Customer Option: Workshop & Event Pack */}
+        <div className="mt-8 p-5 bg-neutral-50 rounded-2xl border border-neutral-200 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-black text-white flex items-center justify-center font-bold text-base shrink-0">
+              ⚡
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h4 className="font-extrabold text-sm text-black">Workshop & Single Event Pack</h4>
+                <span className="text-[10px] font-bold bg-neutral-200 text-neutral-800 px-2 py-0.5 rounded-full">
+                  One-time • No Subscription
+                </span>
+              </div>
+              <p className="text-xs text-neutral-600 mt-0.5">
+                Need certificates for a single conference or workshop? ₹499 for 100 certificates, 100 email sends, branding removal & print-ready PDF export.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onOpenPricing}
+            className="px-5 py-2.5 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-xl shrink-0 transition-all shadow-xs"
+          >
+            Get Event Pack (₹499)
+          </button>
         </div>
       </section>
 

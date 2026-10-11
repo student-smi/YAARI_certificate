@@ -151,9 +151,13 @@ export interface PricingPlan {
   name: string;
   monthlyPrice: number;
   yearlyPrice: number;
+  yearlyTotal?: number;
+  isCustomQuote?: boolean;
   currency: string;
   tagline: string;
   isPopular?: boolean;
+  badgeText?: string;
+  buttonText?: string;
   limits: PlanLimit;
   features: string[];
 }
