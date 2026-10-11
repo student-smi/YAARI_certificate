@@ -42,11 +42,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   const faqs = [
     {
       q: 'How many certificates can I generate in one batch?',
-      a: 'You can generate from 1 to 25,000+ certificates in a single batch. CertiForge processes jobs asynchronously with real-time progress updates, ensuring smooth execution without browser freezing.'
+      a: 'You can generate from 1 to 25,000+ certificates in a single batch. CertiCraft processes jobs asynchronously with real-time progress updates, ensuring smooth execution without browser freezing.'
     },
     {
       q: 'Can I upload Excel (.xlsx) and CSV files?',
-      a: 'Yes! CertiForge supports .xlsx, .xls, and .csv files. Our intelligent column matcher automatically maps headers like "Full Name" to {{name}} and "Issue Date" to {{date}}.'
+      a: 'Yes! CertiCraft supports .xlsx, .xls, and .csv files. Our intelligent column matcher automatically maps headers like "Full Name" to {{name}} and "Issue Date" to {{date}}.'
     },
     {
       q: 'Can I customize the certificate design completely?',

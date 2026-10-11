@@ -66,17 +66,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={() => setCurrentView(isLoggedIn ? 'dashboard' : 'landing')}
               className="flex items-center gap-2.5 group text-left focus:outline-none"
             >
-              <div className="w-9 h-9 rounded-xl bg-black flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
-                <Award className="w-4 h-4 text-white" />
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-lg tracking-tight text-black group-hover:text-neutral-700 transition-colors">
-                  CertiForge
-                </span>
-                <span className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-neutral-800 bg-neutral-100 border border-neutral-200 rounded">
-                  PRO
-                </span>
-              </div>
+              <img 
+                src="/logo.png" 
+                alt="CertiCraft - Create. Issue. Verify." 
+                className="h-8 sm:h-9 w-auto object-contain group-hover:opacity-90 transition-opacity" 
+              />
             </button>
 
             {/* Desktop Navigation Links */}

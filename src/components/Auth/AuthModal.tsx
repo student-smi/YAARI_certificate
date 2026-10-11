@@ -206,16 +206,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       >
         {/* Header */}
         <div className="p-6 border-b border-neutral-200 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-black flex items-center justify-center text-white">
-              <Award className="w-4 h-4" />
-            </div>
-            <div>
-              <span className="font-extrabold text-base text-black">CertiForge</span>
-              <span className="text-[11px] text-neutral-500 block">
-                {mode === 'login' ? 'Welcome back to your workspace' : mode === 'signup' ? 'Create your free account' : 'Reset your password'}
-              </span>
-            </div>
+          <div className="space-y-1">
+            <img 
+              src="/logo.png" 
+              alt="CertiCraft" 
+              className="h-8 w-auto object-contain" 
+            />
+            <span className="text-[11px] text-neutral-500 block">
+              {mode === 'login' ? 'Welcome back to your workspace' : mode === 'signup' ? 'Create your free account' : 'Reset your password'}
+            </span>
           </div>
           <button 
             onClick={onClose}

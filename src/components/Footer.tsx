@@ -10,10 +10,11 @@ export const Footer: React.FC<{ onNavigate: (view: string) => void }> = ({ onNav
           {/* Brand Bio */}
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-black flex items-center justify-center text-white">
-                <Award className="w-4 h-4" />
-              </div>
-              <span className="font-extrabold text-base text-black">CertiForge</span>
+              <img 
+                src="/logo.png" 
+                alt="CertiCraft - Create. Issue. Verify." 
+                className="h-8 w-auto object-contain" 
+              />
             </div>
             <p className="text-neutral-500 max-w-sm text-xs leading-relaxed font-medium">
               The high-performance bulk certificate generation and verification platform. Empowering schools, universities, bootcamps, and corporate leaders to automate credential issuance at scale.
