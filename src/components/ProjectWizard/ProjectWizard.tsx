@@ -85,8 +85,25 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Selected template
-  const activeTemplate = templates.find(t => t.id === currentProject.templateId) || templates[0];
+  // Orientation filter for Step 1
+  const [selectedOrientationFilter, setSelectedOrientationFilter] = useState<'all' | 'landscape' | 'portrait'>('all');
+  const [cardOrientations, setCardOrientations] = useState<Record<string, 'landscape' | 'portrait'>>({});
+
+  // Selected template with orientation override
+  const rawActiveTemplate = templates.find(t => t.id === currentProject.templateId) || templates[0];
+  const activeOrientation = cardOrientations[rawActiveTemplate.id] || rawActiveTemplate.orientation;
+  const activeTemplate = React.useMemo(() => {
+    if (rawActiveTemplate.orientation !== activeOrientation) {
+      const isPortrait = activeOrientation === 'portrait';
+      return {
+        ...rawActiveTemplate,
+        orientation: activeOrientation,
+        width: isPortrait ? 595 : 842,
+        height: isPortrait ? 842 : 595
+      };
+    }
+    return rawActiveTemplate;
+  }, [rawActiveTemplate, activeOrientation]);
 
   // Certificate dynamic fields required by active template
   const templateRequiredFields = React.useMemo(() => {
@@ -397,74 +414,173 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
             <div>
               <h2 className="text-base font-bold text-black">1. Select Certificate Template</h2>
               <p className="text-xs text-neutral-500 mt-0.5">
-                Choose the foundation layout for this campaign. You can also customize it in the Drag & Drop Studio.
+                Choose the foundation layout for this campaign. You can pick Landscape or Portrait mode and customize in Studio.
               </p>
             </div>
-            <button
-              onClick={() => onOpenDesigner(activeTemplate.id)}
-              className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold text-black bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 transition-colors"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-black" />
-              <span>Customize in Studio</span>
-            </button>
+
+            <div className="flex items-center gap-3 flex-wrap">
+              {/* Orientation Filter (All | Landscape | Portrait) */}
+              <div className="flex items-center bg-neutral-100 p-0.5 rounded-xl border border-neutral-300 text-xs font-bold shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setSelectedOrientationFilter('all')}
+                  className={`px-3 py-1.5 rounded-lg transition-all ${
+                    selectedOrientationFilter === 'all'
+                      ? 'bg-black text-white shadow-xs'
+                      : 'text-neutral-600 hover:text-black'
+                  }`}
+                >
+                  All
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedOrientationFilter('landscape')}
+                  className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
+                    selectedOrientationFilter === 'landscape'
+                      ? 'bg-black text-white shadow-xs'
+                      : 'text-neutral-600 hover:text-black'
+                  }`}
+                  title="Show Landscape Templates"
+                >
+                  <span>Landscape</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedOrientationFilter('portrait')}
+                  className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
+                    selectedOrientationFilter === 'portrait'
+                      ? 'bg-black text-white shadow-xs'
+                      : 'text-neutral-600 hover:text-black'
+                  }`}
+                  title="Show Portrait Templates"
+                >
+                  <span>Portrait</span>
+                </button>
+              </div>
+
+              <button
+                onClick={() => onOpenDesigner(activeTemplate.id)}
+                className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold text-black bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 transition-colors"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-black" />
+                <span>Customize in Studio</span>
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {templates.map((tpl) => {
-              const isSelected = tpl.id === currentProject.templateId;
+            {templates
+              .filter((tpl) => {
+                const effOrientation = cardOrientations[tpl.id] || tpl.orientation;
+                if (selectedOrientationFilter === 'all') return true;
+                return effOrientation === selectedOrientationFilter;
+              })
+              .map((tpl) => {
+                const isSelected = tpl.id === currentProject.templateId;
+                const currentOrientation = cardOrientations[tpl.id] || tpl.orientation;
+                const isPortrait = currentOrientation === 'portrait';
 
-              return (
-                <div
-                  key={tpl.id}
-                  onClick={() => {
-                    const upd = { ...currentProject, templateId: tpl.id };
-                    setCurrentProject(upd);
-                    onUpdateProject(upd);
-                    StorageService.saveProject(upd);
-                  }}
-                  className={`rounded-2xl border p-4 cursor-pointer transition-all flex flex-col justify-between ${
-                    isSelected
-                      ? 'border-2 border-black bg-neutral-50/50 shadow-elevated'
-                      : 'border-neutral-200 hover:border-neutral-400 bg-white hover:shadow-card'
-                  }`}
-                >
-                  <div>
-                    {/* Simulated visual card */}
-                    <div className="aspect-[1.414/1] rounded-lg border border-neutral-300 bg-white p-4 flex flex-col items-center justify-center text-center relative overflow-hidden mb-3">
-                      <div className="text-[8px] font-bold tracking-widest text-neutral-400 uppercase">
-                        {tpl.category}
+                const handleSelect = (orientationOverride?: 'landscape' | 'portrait') => {
+                  const finalOrientation = orientationOverride || currentOrientation;
+                  const finalIsPortrait = finalOrientation === 'portrait';
+
+                  // If orientation was changed on this template, save updated template
+                  if (tpl.orientation !== finalOrientation) {
+                    const updatedTpl: Template = {
+                      ...tpl,
+                      orientation: finalOrientation,
+                      width: finalIsPortrait ? 595 : 842,
+                      height: finalIsPortrait ? 842 : 595
+                    };
+                    StorageService.saveTemplate(updatedTpl);
+                  }
+
+                  const upd = { ...currentProject, templateId: tpl.id };
+                  setCurrentProject(upd);
+                  onUpdateProject(upd);
+                  StorageService.saveProject(upd);
+                };
+
+                return (
+                  <div
+                    key={tpl.id}
+                    onClick={() => handleSelect()}
+                    className={`rounded-2xl border p-4 cursor-pointer transition-all flex flex-col justify-between ${
+                      isSelected
+                        ? 'border-2 border-black bg-neutral-50/50 shadow-elevated'
+                        : 'border-neutral-200 hover:border-neutral-400 bg-white hover:shadow-card'
+                    }`}
+                  >
+                    <div>
+                      {/* Simulated visual card with accurate Landscape / Portrait aspect ratio */}
+                      <div
+                        className={`${
+                          isPortrait ? 'aspect-[1/1.414]' : 'aspect-[1.414/1]'
+                        } rounded-lg border border-neutral-300 bg-white p-4 flex flex-col items-center justify-center text-center relative overflow-hidden mb-3 transition-all duration-200`}
+                      >
+                        <div className="text-[8px] font-bold tracking-widest text-neutral-400 uppercase">
+                          {tpl.category} • {isPortrait ? 'Portrait' : 'Landscape'}
+                        </div>
+                        <div className="font-serif font-bold text-xs text-black mt-1 line-clamp-1">
+                          {tpl.name}
+                        </div>
+                        <div className="w-16 h-0.5 bg-black my-1" />
+                        <div className="text-[9px] text-neutral-500 font-serif italic">
+                          Recipient Full Name
+                        </div>
+                        <div className="absolute bottom-2 left-2 text-[7px] text-neutral-400 font-mono">
+                          QR Verified
+                        </div>
                       </div>
-                      <div className="font-serif font-bold text-xs text-black mt-1 line-clamp-1">
-                        {tpl.name}
-                      </div>
-                      <div className="w-16 h-0.5 bg-black my-1" />
-                      <div className="text-[9px] text-neutral-500 font-serif italic">
-                        Recipient Full Name
-                      </div>
-                      <div className="absolute bottom-2 left-2 text-[7px] text-neutral-400 font-mono">
-                        QR Verified
-                      </div>
+
+                      <h4 className="font-bold text-sm text-black">{tpl.name}</h4>
+                      <p className="text-xs text-neutral-500 mt-1 line-clamp-2">{tpl.description}</p>
                     </div>
 
-                    <h4 className="font-bold text-sm text-black">{tpl.name}</h4>
-                    <p className="text-xs text-neutral-500 mt-1 line-clamp-2">{tpl.description}</p>
-                  </div>
+                    <div className="mt-4 pt-3 border-t border-neutral-100 flex items-center justify-between gap-2">
+                      {/* Per-Card Landscape / Portrait Mode Switcher */}
+                      <div className="flex items-center bg-neutral-100 p-0.5 rounded-lg border border-neutral-200">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCardOrientations((prev) => ({ ...prev, [tpl.id]: 'landscape' }));
+                            handleSelect('landscape');
+                          }}
+                          className={`px-2 py-0.5 text-[9px] font-bold rounded transition-all cursor-pointer ${
+                            !isPortrait ? 'bg-black text-white shadow-2xs' : 'text-neutral-500 hover:text-black'
+                          }`}
+                          title="Switch to Landscape Mode"
+                        >
+                          Landscape
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCardOrientations((prev) => ({ ...prev, [tpl.id]: 'portrait' }));
+                            handleSelect('portrait');
+                          }}
+                          className={`px-2 py-0.5 text-[9px] font-bold rounded transition-all cursor-pointer ${
+                            isPortrait ? 'bg-black text-white shadow-2xs' : 'text-neutral-500 hover:text-black'
+                          }`}
+                          title="Switch to Portrait Mode"
+                        >
+                          Portrait
+                        </button>
+                      </div>
 
-                  <div className="mt-4 pt-3 border-t border-neutral-100 flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase text-black bg-neutral-100 border border-neutral-200 px-2 py-0.5 rounded">
-                      {tpl.orientation}
-                    </span>
-                    {isSelected ? (
-                      <span className="text-xs font-bold text-black flex items-center gap-1">
-                        <Check className="w-3.5 h-3.5" /> Selected
-                      </span>
-                    ) : (
-                      <span className="text-xs font-medium text-neutral-400">Select</span>
-                    )}
+                      {isSelected ? (
+                        <span className="text-xs font-bold text-black flex items-center gap-1 shrink-0">
+                          <Check className="w-3.5 h-3.5" /> Selected
+                        </span>
+                      ) : (
+                        <span className="text-xs font-medium text-neutral-400 shrink-0">Select</span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
 
           <div className="pt-6 border-t border-neutral-200 flex justify-end">

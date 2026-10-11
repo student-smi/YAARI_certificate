@@ -878,6 +878,747 @@ export const DEFAULT_TEMPLATES: Template[] = [
     ],
     createdAt: '2026-02-10T10:00:00Z',
     updatedAt: '2026-03-01T12:00:00Z'
+  },
+  {
+    id: 'tpl-portrait-academic',
+    name: 'Prestige Academic Honors (Portrait)',
+    description: 'Tall vertical university diploma with classic Latinate serifs, double gold borders, and verified institutional seal.',
+    category: 'academic',
+    orientation: 'portrait',
+    width: 595,
+    height: 842,
+    backgroundStyle: {
+      type: 'color',
+      color: '#FCFBF7',
+      borderStyle: 'classic',
+      borderColor: '#B45309'
+    },
+    elements: [
+      {
+        id: 'el-p-acad-org',
+        type: 'text',
+        x: 50,
+        y: 11,
+        width: 80,
+        height: 5,
+        zIndex: 1,
+        content: 'GLOBAL LEADERSHIP INSTITUTE',
+        fontSettings: {
+          family: 'Cinzel',
+          size: 14,
+          weight: '700',
+          color: '#B45309',
+          align: 'center',
+          letterSpacing: 3,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-p-acad-title',
+        type: 'text',
+        x: 50,
+        y: 20,
+        width: 85,
+        height: 7,
+        zIndex: 1,
+        content: 'DIPLOMA OF EXCELLENCE',
+        fontSettings: {
+          family: 'Cinzel',
+          size: 24,
+          weight: '700',
+          color: '#1E293B',
+          align: 'center',
+          letterSpacing: 2,
+          lineHeight: 1.1
+        }
+      },
+      {
+        id: 'el-p-acad-pres',
+        type: 'text',
+        x: 50,
+        y: 30,
+        width: 80,
+        height: 4,
+        zIndex: 1,
+        content: 'THIS CREDENTIAL IS PROUDLY CONFERRED UPON',
+        fontSettings: {
+          family: 'Plus Jakarta Sans',
+          size: 9,
+          weight: '600',
+          color: '#64748B',
+          align: 'center',
+          letterSpacing: 2,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-p-acad-name',
+        type: 'dynamic_field',
+        fieldKey: 'recipient_name',
+        x: 50,
+        y: 39,
+        width: 85,
+        height: 9,
+        zIndex: 1,
+        content: '{{recipient_name}}',
+        fontSettings: {
+          family: 'Playfair Display',
+          size: 32,
+          weight: '700',
+          color: '#0F172A',
+          align: 'center',
+          letterSpacing: 0.5,
+          lineHeight: 1.1
+        }
+      },
+      {
+        id: 'el-p-acad-desc',
+        type: 'text',
+        x: 50,
+        y: 49,
+        width: 80,
+        height: 7,
+        zIndex: 1,
+        content: 'For successfully completing all rigorous examination modules with distinguished academic honors in',
+        fontSettings: {
+          family: 'Plus Jakarta Sans',
+          size: 11,
+          weight: '400',
+          color: '#475569',
+          align: 'center',
+          letterSpacing: 0.5,
+          lineHeight: 1.4
+        }
+      },
+      {
+        id: 'el-p-acad-course',
+        type: 'dynamic_field',
+        fieldKey: 'course',
+        x: 50,
+        y: 58,
+        width: 85,
+        height: 7,
+        zIndex: 1,
+        content: '{{course}}',
+        fontSettings: {
+          family: 'Cinzel',
+          size: 18,
+          weight: '700',
+          color: '#B45309',
+          align: 'center',
+          letterSpacing: 1.5,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-p-acad-date',
+        type: 'dynamic_field',
+        fieldKey: 'issue_date',
+        x: 50,
+        y: 67,
+        width: 80,
+        height: 4,
+        zIndex: 1,
+        content: 'Conferred on {{issue_date}}',
+        fontSettings: {
+          family: 'Plus Jakarta Sans',
+          size: 10,
+          weight: '600',
+          color: '#64748B',
+          align: 'center',
+          letterSpacing: 1,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-p-acad-sig1',
+        type: 'signature',
+        x: 28,
+        y: 77,
+        width: 28,
+        height: 7,
+        zIndex: 1,
+        content: 'Dean of Faculty',
+        fontSettings: {
+          family: 'Great Vibes',
+          size: 24,
+          weight: '400',
+          color: '#0F172A',
+          align: 'center',
+          letterSpacing: 1,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-p-acad-sig2',
+        type: 'signature',
+        x: 72,
+        y: 77,
+        width: 28,
+        height: 7,
+        zIndex: 1,
+        content: 'Chancellor',
+        fontSettings: {
+          family: 'Great Vibes',
+          size: 24,
+          weight: '400',
+          color: '#0F172A',
+          align: 'center',
+          letterSpacing: 1,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-p-acad-qr',
+        type: 'qr',
+        fieldKey: 'qr',
+        x: 50,
+        y: 86,
+        width: 14,
+        height: 10,
+        zIndex: 1,
+        content: '{{verification_url}}'
+      },
+      {
+        id: 'el-p-acad-id',
+        type: 'certificate_id',
+        fieldKey: 'certificate_id',
+        x: 50,
+        y: 94,
+        width: 60,
+        height: 4,
+        zIndex: 1,
+        content: 'OFFICIAL ID: {{certificate_id}}',
+        fontSettings: {
+          family: 'JetBrains Mono',
+          size: 9,
+          weight: '500',
+          color: '#64748B',
+          align: 'center',
+          letterSpacing: 1,
+          lineHeight: 1.2
+        }
+      }
+    ],
+    createdAt: '2026-03-01T10:00:00Z',
+    updatedAt: '2026-03-10T12:00:00Z'
+  },
+  {
+    id: 'tpl-portrait-corporate',
+    name: 'Executive Leadership Award (Portrait)',
+    description: 'Prestigious vertical layout with deep navy & gold accents for corporate recognition and leadership milestones.',
+    category: 'corporate',
+    orientation: 'portrait',
+    width: 595,
+    height: 842,
+    backgroundStyle: {
+      type: 'color',
+      color: '#FFFFFF',
+      borderStyle: 'gold_double',
+      borderColor: '#0F172A'
+    },
+    elements: [
+      {
+        id: 'el-p-corp-org',
+        type: 'text',
+        x: 50,
+        y: 11,
+        width: 80,
+        height: 5,
+        zIndex: 1,
+        content: 'ENTERPRISE LEADERSHIP COUNCIL',
+        fontSettings: {
+          family: 'Plus Jakarta Sans',
+          size: 13,
+          weight: '800',
+          color: '#0F172A',
+          align: 'center',
+          letterSpacing: 2.5,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-p-corp-title',
+        type: 'text',
+        x: 50,
+        y: 20,
+        width: 85,
+        height: 7,
+        zIndex: 1,
+        content: 'EXECUTIVE LEADERSHIP HONORS',
+        fontSettings: {
+          family: 'Plus Jakarta Sans',
+          size: 22,
+          weight: '800',
+          color: '#0F172A',
+          align: 'center',
+          letterSpacing: 1.5,
+          lineHeight: 1.1
+        }
+      },
+      {
+        id: 'el-p-corp-pres',
+        type: 'text',
+        x: 50,
+        y: 30,
+        width: 80,
+        height: 4,
+        zIndex: 1,
+        content: 'PRESENTED WITH HIGHEST DISTINCTION TO',
+        fontSettings: {
+          family: 'Plus Jakarta Sans',
+          size: 9,
+          weight: '600',
+          color: '#64748B',
+          align: 'center',
+          letterSpacing: 2,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-p-corp-name',
+        type: 'dynamic_field',
+        fieldKey: 'recipient_name',
+        x: 50,
+        y: 39,
+        width: 85,
+        height: 9,
+        zIndex: 1,
+        content: '{{recipient_name}}',
+        fontSettings: {
+          family: 'Playfair Display',
+          size: 30,
+          weight: '700',
+          color: '#0F172A',
+          align: 'center',
+          letterSpacing: 0.5,
+          lineHeight: 1.1
+        }
+      },
+      {
+        id: 'el-p-corp-desc',
+        type: 'text',
+        x: 50,
+        y: 50,
+        width: 80,
+        height: 7,
+        zIndex: 1,
+        content: 'In recognition of outstanding vision, transformative leadership, and exceptional contributions to',
+        fontSettings: {
+          family: 'Plus Jakarta Sans',
+          size: 11,
+          weight: '400',
+          color: '#475569',
+          align: 'center',
+          letterSpacing: 0.5,
+          lineHeight: 1.4
+        }
+      },
+      {
+        id: 'el-p-corp-course',
+        type: 'dynamic_field',
+        fieldKey: 'course',
+        x: 50,
+        y: 59,
+        width: 85,
+        height: 7,
+        zIndex: 1,
+        content: '{{course}}',
+        fontSettings: {
+          family: 'Plus Jakarta Sans',
+          size: 17,
+          weight: '700',
+          color: '#D97706',
+          align: 'center',
+          letterSpacing: 1,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-p-corp-sig',
+        type: 'signature',
+        x: 50,
+        y: 73,
+        width: 35,
+        height: 7,
+        zIndex: 1,
+        content: 'Managing Director',
+        fontSettings: {
+          family: 'Great Vibes',
+          size: 26,
+          weight: '400',
+          color: '#0F172A',
+          align: 'center',
+          letterSpacing: 1,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-p-corp-qr',
+        type: 'qr',
+        fieldKey: 'qr',
+        x: 50,
+        y: 84,
+        width: 14,
+        height: 10,
+        zIndex: 1,
+        content: '{{verification_url}}'
+      },
+      {
+        id: 'el-p-corp-id',
+        type: 'certificate_id',
+        fieldKey: 'certificate_id',
+        x: 50,
+        y: 93,
+        width: 60,
+        height: 4,
+        zIndex: 1,
+        content: 'CREDENTIAL ID: {{certificate_id}}',
+        fontSettings: {
+          family: 'JetBrains Mono',
+          size: 9,
+          weight: '500',
+          color: '#64748B',
+          align: 'center',
+          letterSpacing: 1,
+          lineHeight: 1.2
+        }
+      }
+    ],
+    createdAt: '2026-03-01T10:00:00Z',
+    updatedAt: '2026-03-10T12:00:00Z'
+  },
+  {
+    id: 'tpl-portrait-tech',
+    name: 'Modern Tech Graduate Diploma (Portrait)',
+    description: 'Sleek minimalist vertical diploma with high-contrast tech typography, fast QR validation, and emerald accents.',
+    category: 'workshop',
+    orientation: 'portrait',
+    width: 595,
+    height: 842,
+    backgroundStyle: {
+      type: 'color',
+      color: '#FFFFFF',
+      borderStyle: 'modern',
+      borderColor: '#4F46E5'
+    },
+    elements: [
+      {
+        id: 'el-p-tech-org',
+        type: 'text',
+        x: 50,
+        y: 11,
+        width: 80,
+        height: 5,
+        zIndex: 1,
+        content: 'ACADEMY OF DIGITAL EXCELLENCE',
+        fontSettings: {
+          family: 'Plus Jakarta Sans',
+          size: 13,
+          weight: '800',
+          color: '#4F46E5',
+          align: 'center',
+          letterSpacing: 2.5,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-p-tech-title',
+        type: 'text',
+        x: 50,
+        y: 20,
+        width: 85,
+        height: 7,
+        zIndex: 1,
+        content: 'PROFESSIONAL CERTIFICATION',
+        fontSettings: {
+          family: 'Plus Jakarta Sans',
+          size: 22,
+          weight: '800',
+          color: '#0F172A',
+          align: 'center',
+          letterSpacing: 1.5,
+          lineHeight: 1.1
+        }
+      },
+      {
+        id: 'el-p-tech-name',
+        type: 'dynamic_field',
+        fieldKey: 'recipient_name',
+        x: 50,
+        y: 38,
+        width: 85,
+        height: 9,
+        zIndex: 1,
+        content: '{{recipient_name}}',
+        fontSettings: {
+          family: 'Plus Jakarta Sans',
+          size: 28,
+          weight: '800',
+          color: '#0F172A',
+          align: 'center',
+          letterSpacing: 0.5,
+          lineHeight: 1.1
+        }
+      },
+      {
+        id: 'el-p-tech-desc',
+        type: 'text',
+        x: 50,
+        y: 49,
+        width: 80,
+        height: 7,
+        zIndex: 1,
+        content: 'Has demonstrated full competency and practical mastery in the capstone curriculum for',
+        fontSettings: {
+          family: 'Plus Jakarta Sans',
+          size: 11,
+          weight: '500',
+          color: '#64748B',
+          align: 'center',
+          letterSpacing: 0.5,
+          lineHeight: 1.4
+        }
+      },
+      {
+        id: 'el-p-tech-course',
+        type: 'dynamic_field',
+        fieldKey: 'course',
+        x: 50,
+        y: 58,
+        width: 85,
+        height: 7,
+        zIndex: 1,
+        content: '{{course}}',
+        fontSettings: {
+          family: 'Plus Jakarta Sans',
+          size: 17,
+          weight: '800',
+          color: '#4F46E5',
+          align: 'center',
+          letterSpacing: 1,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-p-tech-sig',
+        type: 'signature',
+        x: 50,
+        y: 72,
+        width: 35,
+        height: 7,
+        zIndex: 1,
+        content: 'Lead Instructor',
+        fontSettings: {
+          family: 'Great Vibes',
+          size: 26,
+          weight: '400',
+          color: '#0F172A',
+          align: 'center',
+          letterSpacing: 1,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-p-tech-qr',
+        type: 'qr',
+        fieldKey: 'qr',
+        x: 50,
+        y: 83,
+        width: 14,
+        height: 10,
+        zIndex: 1,
+        content: '{{verification_url}}'
+      },
+      {
+        id: 'el-p-tech-id',
+        type: 'certificate_id',
+        fieldKey: 'certificate_id',
+        x: 50,
+        y: 93,
+        width: 60,
+        height: 4,
+        zIndex: 1,
+        content: 'CERT HASH: {{certificate_id}}',
+        fontSettings: {
+          family: 'JetBrains Mono',
+          size: 9,
+          weight: '600',
+          color: '#64748B',
+          align: 'center',
+          letterSpacing: 1,
+          lineHeight: 1.2
+        }
+      }
+    ],
+    createdAt: '2026-03-01T10:00:00Z',
+    updatedAt: '2026-03-10T12:00:00Z'
+  },
+  {
+    id: 'tpl-portrait-appreciation',
+    name: 'Certificate of Appreciation (Portrait)',
+    description: 'Warm gold & slate vertical tribute certificate for volunteers, speakers, and exceptional service contributions.',
+    category: 'appreciation',
+    orientation: 'portrait',
+    width: 595,
+    height: 842,
+    backgroundStyle: {
+      type: 'color',
+      color: '#FFFFFF',
+      borderStyle: 'gold_double',
+      borderColor: '#D97706'
+    },
+    elements: [
+      {
+        id: 'el-p-appr-org',
+        type: 'text',
+        x: 50,
+        y: 11,
+        width: 80,
+        height: 5,
+        zIndex: 1,
+        content: 'NATIONAL FOUNDATION OF DISTINCTION',
+        fontSettings: {
+          family: 'Cinzel',
+          size: 13,
+          weight: '700',
+          color: '#D97706',
+          align: 'center',
+          letterSpacing: 2.5,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-p-appr-title',
+        type: 'text',
+        x: 50,
+        y: 20,
+        width: 85,
+        height: 7,
+        zIndex: 1,
+        content: 'CERTIFICATE OF APPRECIATION',
+        fontSettings: {
+          family: 'Cinzel',
+          size: 22,
+          weight: '700',
+          color: '#1E293B',
+          align: 'center',
+          letterSpacing: 1.5,
+          lineHeight: 1.1
+        }
+      },
+      {
+        id: 'el-p-appr-name',
+        type: 'dynamic_field',
+        fieldKey: 'recipient_name',
+        x: 50,
+        y: 39,
+        width: 85,
+        height: 9,
+        zIndex: 1,
+        content: '{{recipient_name}}',
+        fontSettings: {
+          family: 'Playfair Display',
+          size: 30,
+          weight: '700',
+          color: '#0F172A',
+          align: 'center',
+          letterSpacing: 0.5,
+          lineHeight: 1.1
+        }
+      },
+      {
+        id: 'el-p-appr-desc',
+        type: 'text',
+        x: 50,
+        y: 50,
+        width: 80,
+        height: 7,
+        zIndex: 1,
+        content: 'In grateful appreciation for invaluable service, inspiring commitment, and outstanding dedication to',
+        fontSettings: {
+          family: 'Plus Jakarta Sans',
+          size: 11,
+          weight: '400',
+          color: '#475569',
+          align: 'center',
+          letterSpacing: 0.5,
+          lineHeight: 1.4
+        }
+      },
+      {
+        id: 'el-p-appr-course',
+        type: 'dynamic_field',
+        fieldKey: 'course',
+        x: 50,
+        y: 59,
+        width: 85,
+        height: 7,
+        zIndex: 1,
+        content: '{{course}}',
+        fontSettings: {
+          family: 'Cinzel',
+          size: 17,
+          weight: '700',
+          color: '#D97706',
+          align: 'center',
+          letterSpacing: 1,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-p-appr-sig',
+        type: 'signature',
+        x: 50,
+        y: 73,
+        width: 35,
+        height: 7,
+        zIndex: 1,
+        content: 'Executive Director',
+        fontSettings: {
+          family: 'Great Vibes',
+          size: 26,
+          weight: '400',
+          color: '#0F172A',
+          align: 'center',
+          letterSpacing: 1,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-p-appr-qr',
+        type: 'qr',
+        fieldKey: 'qr',
+        x: 50,
+        y: 84,
+        width: 14,
+        height: 10,
+        zIndex: 1,
+        content: '{{verification_url}}'
+      },
+      {
+        id: 'el-p-appr-id',
+        type: 'certificate_id',
+        fieldKey: 'certificate_id',
+        x: 50,
+        y: 93,
+        width: 60,
+        height: 4,
+        zIndex: 1,
+        content: 'RECOGNITION REF: {{certificate_id}}',
+        fontSettings: {
+          family: 'JetBrains Mono',
+          size: 9,
+          weight: '500',
+          color: '#64748B',
+          align: 'center',
+          letterSpacing: 1,
+          lineHeight: 1.2
+        }
+      }
+    ],
+    createdAt: '2026-03-01T10:00:00Z',
+    updatedAt: '2026-03-10T12:00:00Z'
   }
 ];
 
