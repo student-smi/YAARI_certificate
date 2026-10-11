@@ -5,7 +5,9 @@ import {
   Send, 
   Paperclip, 
   CheckCircle2, 
-  RefreshCw 
+  RefreshCw,
+  AlertTriangle,
+  Zap 
 } from 'lucide-react';
 import { Project } from '../../types';
 import { StorageService } from '../../services/storageService';
@@ -15,14 +17,21 @@ interface EmailCampaignModalProps {
   onClose: () => void;
   project: Project;
   onSuccess: (sentCount: number) => void;
+  onOpenBilling?: () => void;
 }
 
 export const EmailCampaignModal: React.FC<EmailCampaignModalProps> = ({
   isOpen,
   onClose,
   project,
-  onSuccess
+  onSuccess,
+  onOpenBilling
 }) => {
+  const currentUser = StorageService.getUser();
+  const remainingEmailCredits = Math.max(0, (currentUser.usage.emailCreditsLimit || 0) - (currentUser.usage.emailCreditsUsed || 0));
+  const requiredCredits = project.recipients.length;
+  const isEmailLimitExceeded = remainingEmailCredits < requiredCredits;
+
   const [subject, setSubject] = useState(`Your Certificate of Completion: ${project.name}`);
   const [replyTo, setReplyTo] = useState('certificates@institution.edu');
   const [bodyText, setBodyText] = useState(
@@ -37,6 +46,13 @@ export const EmailCampaignModal: React.FC<EmailCampaignModalProps> = ({
   if (!isOpen) return null;
 
   const handleSendEmails = async () => {
+    if (isEmailLimitExceeded) {
+      if (onOpenBilling) {
+        onClose();
+        onOpenBilling();
+      }
+      return;
+    }
     setIsSending(true);
     setSendProgress(0);
     const total = project.recipients.length;
@@ -214,6 +230,39 @@ export const EmailCampaignModal: React.FC<EmailCampaignModalProps> = ({
                 </span>
               </div>
 
+              {isEmailLimitExceeded && (
+                <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-2.5">
+                    <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                    <div>
+                      <p className="font-bold text-amber-900">
+                        {remainingEmailCredits === 0
+                          ? 'Zero Email Credits (Upgrade Required)'
+                          : `Insufficient Email Credits (${remainingEmailCredits} remaining, ${requiredCredits} required)`}
+                      </p>
+                      <p className="text-[11px] text-amber-700 mt-0.5">
+                        {currentUser.plan === 'starter' && currentUser.usage.emailCreditsLimit === 0
+                          ? 'Free starter plan includes PDF/ZIP downloads only. Upgrade to Professional or Institute to send emails.'
+                          : `Upgrade your plan or purchase a Workshop Pack to dispatch this batch.`}
+                      </p>
+                    </div>
+                  </div>
+                  {onOpenBilling && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onClose();
+                        onOpenBilling();
+                      }}
+                      className="flex items-center gap-1 px-3 py-1.5 bg-black hover:bg-neutral-800 text-white font-bold text-[11px] rounded-lg shrink-0 cursor-pointer"
+                    >
+                      <Zap className="w-3 h-3 fill-white" />
+                      <span>Upgrade Plan</span>
+                    </button>
+                  )}
+                </div>
+              )}
+
               <div className="pt-2 flex items-center justify-between">
                 <p className="text-[11px] text-neutral-400">
                   Authenticated transactional delivery.
@@ -221,10 +270,18 @@ export const EmailCampaignModal: React.FC<EmailCampaignModalProps> = ({
                 <button
                   type="button"
                   onClick={handleSendEmails}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all"
+                  className={`flex items-center gap-2 px-6 py-2.5 font-bold text-xs rounded-xl shadow-xs transition-all ${
+                    isEmailLimitExceeded
+                      ? 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300 cursor-pointer'
+                      : 'bg-black hover:bg-neutral-800 text-white cursor-pointer'
+                  }`}
                 >
                   <Send className="w-3.5 h-3.5" />
-                  <span>Send {project.recipients.length} Emails</span>
+                  <span>
+                    {isEmailLimitExceeded
+                      ? `Upgrade to Send (${remainingEmailCredits}/${requiredCredits})`
+                      : `Send ${project.recipients.length} Emails`}
+                  </span>
                 </button>
               </div>
             </div>

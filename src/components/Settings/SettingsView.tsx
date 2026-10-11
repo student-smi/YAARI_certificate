@@ -5,7 +5,9 @@ import {
   Users, 
   DollarSign, 
   Trash2, 
-  Check 
+  Check,
+  AlertTriangle,
+  Zap 
 } from 'lucide-react';
 import { UserProfile, PricingPlan } from '../../types';
 import { StorageService } from '../../services/storageService';
@@ -15,13 +17,15 @@ interface SettingsViewProps {
   plans: PricingPlan[];
   onUpdateUser: (updated: UserProfile) => void;
   onUpdatePlans: (updated: PricingPlan[]) => void;
+  onOpenBilling?: () => void;
 }
 
 export const SettingsView: React.FC<SettingsViewProps> = ({
   user,
   plans,
   onUpdateUser,
-  onUpdatePlans
+  onUpdatePlans,
+  onOpenBilling
 }) => {
   const [activeTab, setActiveTab] = useState<'branding' | 'profile' | 'team' | 'pricing' | 'danger'>('branding');
   const [profileName, setProfileName] = useState(user.name);
@@ -74,9 +78,16 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     setTimeout(() => setSavedNotice(false), 2000);
   };
 
+  const maxTeamMembers = user.plan === 'business' ? 5 : 1;
+  const isTeamLimitReached = teamMembers.length >= maxTeamMembers;
+
   const handleAddMember = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inviteEmail) return;
+    if (isTeamLimitReached) {
+      if (onOpenBilling) onOpenBilling();
+      return;
+    }
     setTeamMembers([
       ...teamMembers,
       { id: Date.now().toString(), name: inviteEmail.split('@')[0], email: inviteEmail, role: inviteRole }
@@ -241,10 +252,42 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           {/* TAB 3: TEAM MEMBERS */}
           {activeTab === 'team' && (
             <div className="space-y-6">
-              <div>
-                <h3 className="font-extrabold text-sm text-black">Team Members & Permissions</h3>
-                <p className="text-xs text-neutral-500 mt-0.5">Invite colleagues to collaborate on certificate templates and batch generation.</p>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h3 className="font-extrabold text-sm text-black">Team Members & Permissions</h3>
+                  <p className="text-xs text-neutral-500 mt-0.5">Invite colleagues to collaborate on certificate templates and batch generation.</p>
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 border border-neutral-300 text-[11px] font-bold text-neutral-800 self-start sm:self-auto">
+                  <Users className="w-3.5 h-3.5 text-neutral-600" />
+                  <span>{teamMembers.length} of {maxTeamMembers} Seats Occupied</span>
+                </div>
               </div>
+
+              {isTeamLimitReached && (
+                <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs animate-in fade-in">
+                  <div className="flex items-center gap-2.5">
+                    <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                    <div>
+                      <p className="font-bold text-amber-900">Team seat limit reached ({teamMembers.length}/{maxTeamMembers})</p>
+                      <p className="text-[11px] text-amber-700 mt-0.5">
+                        {user.plan === 'business'
+                          ? 'You have reached the maximum 5 team members on the Institute plan.'
+                          : 'Team collaboration (up to 5 members) is included in the Institute Plan. Upgrade to invite colleagues.'}
+                      </p>
+                    </div>
+                  </div>
+                  {onOpenBilling && user.plan !== 'business' && (
+                    <button
+                      type="button"
+                      onClick={onOpenBilling}
+                      className="flex items-center gap-1 px-3 py-1.5 bg-black hover:bg-neutral-800 text-white font-bold text-[11px] rounded-lg shrink-0 cursor-pointer"
+                    >
+                      <Zap className="w-3 h-3 fill-white" />
+                      <span>Upgrade to Institute</span>
+                    </button>
+                  )}
+                </div>
+              )}
 
               <form onSubmit={handleAddMember} className="flex flex-col sm:flex-row items-center gap-2 p-3 bg-neutral-50 rounded-xl border border-neutral-200">
                 <input
@@ -252,12 +295,14 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                   placeholder="colleague@institution.edu"
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
-                  className="flex-1 w-full px-3 py-2 text-xs border border-neutral-300 rounded-lg bg-white font-medium"
+                  disabled={isTeamLimitReached}
+                  className="flex-1 w-full px-3 py-2 text-xs border border-neutral-300 rounded-lg bg-white font-medium disabled:opacity-60 disabled:cursor-not-allowed"
                 />
                 <select
                   value={inviteRole}
                   onChange={(e) => setInviteRole(e.target.value as any)}
-                  className="w-full sm:w-32 px-3 py-2 text-xs border border-neutral-300 rounded-lg bg-white font-bold"
+                  disabled={isTeamLimitReached}
+                  className="w-full sm:w-32 px-3 py-2 text-xs border border-neutral-300 rounded-lg bg-white font-bold disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   <option value="Admin">Admin</option>
                   <option value="Editor">Editor</option>
@@ -265,9 +310,14 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 </select>
                 <button
                   type="submit"
-                  className="w-full sm:w-auto px-4 py-2 bg-black text-white font-bold text-xs rounded-lg shadow-xs hover:bg-neutral-800 transition-colors whitespace-nowrap"
+                  disabled={isTeamLimitReached}
+                  className={`w-full sm:w-auto px-4 py-2 font-bold text-xs rounded-lg shadow-xs transition-colors whitespace-nowrap ${
+                    isTeamLimitReached
+                      ? 'bg-neutral-200 text-neutral-400 cursor-not-allowed'
+                      : 'bg-black text-white hover:bg-neutral-800 cursor-pointer'
+                  }`}
                 >
-                  Invite Member
+                  {isTeamLimitReached ? 'Seat Limit Full' : 'Invite Member'}
                 </button>
               </form>
 

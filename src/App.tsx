@@ -489,6 +489,7 @@ export function App() {
             plans={pricingPlans}
             onUpdateUser={(updated) => setUser(updated)}
             onUpdatePlans={(updated) => setPricingPlans(updated)}
+            onOpenBilling={() => setBillingModalOpen(true)}
           />
         )}
 
@@ -578,6 +579,10 @@ export function App() {
           onClose={() => setEmailModalOpen(false)}
           project={emailTargetProject}
           onSuccess={handleEmailSentSuccess}
+          onOpenBilling={() => {
+            setEmailModalOpen(false);
+            setBillingModalOpen(true);
+          }}
         />
       )}
 
