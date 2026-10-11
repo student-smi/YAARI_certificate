@@ -1,5 +1,7 @@
 interface Env {
   DB: D1Database;
+  GOOGLE_CLIENT_ID?: string;
+  GOOGLE_CLIENT_SECRET?: string;
 }
 
 const isAdminEmail = (email: string): boolean => {
@@ -11,6 +13,10 @@ const isAdminEmail = (email: string): boolean => {
     clean.startsWith('admin@') ||
     clean.includes('admin')
   );
+};
+
+export const GOOGLE_AUTH_CONFIG = {
+  clientId: '533193672540-5vlrih0dfvljvkeaa72qf6rfq1hn8pa4.apps.googleusercontent.com'
 };
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
@@ -217,6 +223,66 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
           role: user.role || (isAdmin ? 'admin' : 'owner'),
           plan: user.plan || (isAdmin ? 'business' : 'starter'),
           avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(finalName)}&background=000000&color=ffffff&bold=true`
+        }
+      }), {
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    // 4. GOOGLE SSO ACTION
+    if (action === 'google') {
+      const { googleId, avatar } = body;
+      let user: any = await env.DB.prepare(
+        'SELECT id, email, name, organization_name, role, plan FROM users WHERE email = ?'
+      ).bind(cleanEmail).first();
+
+      const finalRole = isAdmin ? 'admin' : 'owner';
+      const finalPlan = isAdmin ? 'business' : 'starter';
+      const finalName = name?.trim() || autoName;
+      const finalOrg = organizationName?.trim() || autoOrg;
+      const finalAvatar = avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(finalName)}&background=000000&color=ffffff&bold=true`;
+
+      if (!user) {
+        const id = googleId ? `usr-g-${String(googleId).slice(-8)}` : `usr-${Date.now()}`;
+        await env.DB.prepare(
+          'INSERT INTO users (id, email, name, password_hash, organization_name, role, plan, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+        ).bind(
+          id,
+          cleanEmail,
+          finalName,
+          'google_sso_oauth',
+          finalOrg,
+          finalRole,
+          finalPlan,
+          new Date().toISOString()
+        ).run();
+
+        user = {
+          id,
+          email: cleanEmail,
+          name: finalName,
+          organization_name: finalOrg,
+          role: finalRole,
+          plan: finalPlan
+        };
+      } else {
+        if (isAdmin && (user.role !== 'admin' || user.plan !== 'business')) {
+          await env.DB.prepare('UPDATE users SET role = ?, plan = ? WHERE id = ?').bind('admin', 'business', user.id).run();
+          user.role = 'admin';
+          user.plan = 'business';
+        }
+      }
+
+      return new Response(JSON.stringify({
+        success: true,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name || finalName,
+          organizationName: user.organization_name || finalOrg,
+          role: user.role || finalRole,
+          plan: user.plan || finalPlan,
+          avatar: finalAvatar
         }
       }), {
         headers: { 'Content-Type': 'application/json' }

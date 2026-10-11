@@ -429,6 +429,82 @@ export class StorageService {
     return profile;
   }
 
+  // Google SSO authentication handler
+  public static async loginWithGoogle(googleData: {
+    email: string;
+    name?: string;
+    avatar?: string;
+    googleId?: string;
+  }): Promise<UserProfile> {
+    const cleanEmail = googleData.email.trim().toLowerCase();
+
+    let serverUser: any = null;
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'google',
+          email: cleanEmail,
+          name: googleData.name,
+          avatar: googleData.avatar,
+          googleId: googleData.googleId
+        })
+      });
+
+      const data = await res.json().catch(() => null);
+      if (data?.success && data?.user) {
+        serverUser = data.user;
+      }
+    } catch (err) {
+      console.warn('Backend Google auth sync warning:', err);
+    }
+
+    const all = this.getAllUsers();
+    const existing = all.find(u => u.email.toLowerCase() === cleanEmail);
+
+    let profile: UserProfile;
+    if (serverUser) {
+      profile = this.createProfileForUser({
+        id: serverUser.id,
+        email: serverUser.email,
+        name: serverUser.name,
+        organizationName: serverUser.organizationName,
+        role: serverUser.role,
+        plan: serverUser.plan,
+        avatar: serverUser.avatar || googleData.avatar
+      });
+
+      if (existing) {
+        const idx = all.findIndex(u => u.id === existing.id || u.email.toLowerCase() === cleanEmail);
+        if (idx >= 0) all[idx] = profile;
+      } else {
+        all.push(profile);
+      }
+      this.saveAccounts(all);
+    } else if (existing) {
+      profile = {
+        ...existing,
+        avatar: googleData.avatar || existing.avatar
+      };
+      const idx = all.findIndex(u => u.id === existing.id);
+      if (idx >= 0) all[idx] = profile;
+      this.saveAccounts(all);
+    } else {
+      profile = this.createProfileForUser({
+        email: cleanEmail,
+        name: googleData.name,
+        avatar: googleData.avatar
+      });
+      all.push(profile);
+      this.saveAccounts(all);
+    }
+
+    this.saveUser(profile);
+    this.setLoggedIn(true);
+    return profile;
+  }
+
   // Current Active User Session
   public static getUser(): UserProfile {
     try {
