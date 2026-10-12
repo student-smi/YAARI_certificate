@@ -46,47 +46,47 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ projects }) => {
       {/* 4 Core Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         
-        <div className="p-5 rounded-2xl bg-white border border-neutral-200 shadow-card hover:border-black transition-all">
+        <div className="p-5 rounded-2xl bg-white border border-neutral-200 shadow-card hover:border-teal-500/80 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">Generated</span>
-            <div className="w-8 h-8 rounded-lg bg-neutral-100 text-black border border-neutral-200 flex items-center justify-center">
-              <Award className="w-4 h-4 text-black" />
+            <div className="w-8 h-8 rounded-lg bg-teal-50 text-teal-600 border border-teal-200/80 flex items-center justify-center">
+              <Award className="w-4 h-4 text-teal-600" />
             </div>
           </div>
           <p className="text-2xl sm:text-3xl font-black text-black mt-2">{totalGenerated.toLocaleString()}</p>
-          <div className="flex items-center gap-1 text-[11px] font-bold text-black mt-1">
+          <div className="flex items-center gap-1 text-[11px] font-bold text-teal-700 mt-1">
             <TrendingUp className="w-3.5 h-3.5" />
             <span>+24.8% vs last month</span>
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white border border-neutral-200 shadow-card hover:border-black transition-all">
+        <div className="p-5 rounded-2xl bg-white border border-neutral-200 shadow-card hover:border-sky-500/80 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">Emailed Directly</span>
-            <div className="w-8 h-8 rounded-lg bg-neutral-100 text-black border border-neutral-200 flex items-center justify-center">
-              <Mail className="w-4 h-4 text-black" />
+            <div className="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 border border-sky-200/80 flex items-center justify-center">
+              <Mail className="w-4 h-4 text-sky-600" />
             </div>
           </div>
           <p className="text-2xl sm:text-3xl font-black text-black mt-2">{totalEmailed.toLocaleString()}</p>
           <p className="text-[11px] text-neutral-500 mt-1 font-medium">98.4% delivery inbox rate</p>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white border border-neutral-200 shadow-card hover:border-black transition-all">
+        <div className="p-5 rounded-2xl bg-white border border-neutral-200 shadow-card hover:border-teal-500/80 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">QR Scans Verified</span>
-            <div className="w-8 h-8 rounded-lg bg-neutral-100 text-black border border-neutral-200 flex items-center justify-center">
-              <ShieldCheck className="w-4 h-4 text-black" />
+            <div className="w-8 h-8 rounded-lg bg-teal-50 text-teal-600 border border-teal-200/80 flex items-center justify-center">
+              <ShieldCheck className="w-4 h-4 text-teal-600" />
             </div>
           </div>
           <p className="text-2xl sm:text-3xl font-black text-black mt-2">{totalVerified.toLocaleString()}</p>
           <p className="text-[11px] text-neutral-500 font-medium mt-1">100% cryptographic match</p>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white border border-neutral-200 shadow-card hover:border-black transition-all">
+        <div className="p-5 rounded-2xl bg-white border border-neutral-200 shadow-card hover:border-neutral-400 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">Failed Jobs</span>
-            <div className="w-8 h-8 rounded-lg bg-neutral-100 text-black border border-neutral-200 flex items-center justify-center">
-              <CheckCircle2 className="w-4 h-4 text-black" />
+            <div className="w-8 h-8 rounded-lg bg-neutral-100 text-neutral-600 border border-neutral-200 flex items-center justify-center">
+              <CheckCircle2 className="w-4 h-4 text-neutral-600" />
             </div>
           </div>
           <p className="text-2xl sm:text-3xl font-black text-black mt-2">{totalFailed}</p>
@@ -95,14 +95,14 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ projects }) => {
 
       </div>
 
-      {/* Issuance Volume Chart (Monochrome Pitch Black Bars) */}
+      {/* Issuance Volume Chart (Brand Mint Teal Bars) */}
       <div className="p-6 rounded-2xl bg-white border border-neutral-200 shadow-card space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-black text-sm sm:text-base text-black">Certificate Generation Velocity</h3>
             <p className="text-xs text-neutral-500">Monthly certificate production across all campaigns.</p>
           </div>
-          <span className="text-xs font-bold text-black bg-neutral-100 border border-neutral-300 px-2.5 py-1 rounded-lg">
+          <span className="text-xs font-bold text-teal-900 bg-teal-50 border border-teal-200/80 px-2.5 py-1 rounded-lg">
             Total {monthlyData.reduce((a, b) => a + b, 0)} Certificates
           </span>
         </div>
@@ -119,7 +119,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ projects }) => {
                   {val}
                 </span>
                 <div 
-                  className="w-full max-w-[48px] bg-black group-hover:bg-neutral-800 rounded-t-lg transition-all shadow-xs"
+                  className="w-full max-w-[48px] bg-teal-500 group-hover:bg-teal-600 rounded-t-lg transition-all shadow-sm shadow-teal-500/20"
                   style={{ height: `${heightPct}%` }}
                 />
                 <span className="text-xs font-bold text-neutral-600">{m}</span>

@@ -87,14 +87,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="flex items-center gap-2.5">
           <button
             onClick={() => onOpenDesigner()}
-            className="px-4 py-2 rounded-xl border border-neutral-300 hover:border-black bg-white hover:bg-neutral-50 text-black font-semibold text-xs shadow-xs transition-all"
+            className="px-4 py-2 rounded-xl border border-neutral-300 hover:border-black bg-white hover:bg-neutral-50 text-black font-semibold text-xs shadow-xs transition-all cursor-pointer"
           >
             <span>Open Studio</span>
           </button>
           
           <button
             onClick={onOpenCreateProject}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl font-bold text-xs text-white bg-black hover:bg-neutral-800 active:scale-[0.98] shadow-xs transition-all"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl font-bold text-xs text-white bg-teal-500 hover:bg-teal-600 active:scale-[0.98] shadow-xs shadow-teal-500/25 transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Create Certificate</span>
@@ -146,63 +146,63 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
           <button
             onClick={onOpenBilling}
-            className="px-4 py-1.5 rounded-lg bg-black hover:bg-neutral-800 text-white text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer"
+            className="px-4 py-1.5 rounded-lg bg-teal-500 hover:bg-teal-600 text-white text-xs font-bold transition-all shadow-xs shadow-teal-500/25 shrink-0 cursor-pointer"
           >
             Upgrade Plan
           </button>
         </div>
       ) : null}
 
-      {/* 3. Top Metrics Row (Crisp White Cards with 20% Black accents) */}
+      {/* 3. Top Metrics Row (Crisp White Cards with Brand Accents) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         
-        <div className="p-5 rounded-2xl bg-white border border-neutral-200 shadow-card flex items-center justify-between hover:border-black transition-all">
+        <div className="p-5 rounded-2xl bg-white border border-neutral-200 shadow-card flex items-center justify-between hover:border-teal-500/80 transition-all">
           <div>
             <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">Recipients Queued</p>
             <p className="text-2xl sm:text-3xl font-black text-black mt-1">{totalCreated.toLocaleString()}</p>
             <p className="text-[10px] text-neutral-500 mt-1 font-medium">{projects.length} campaigns</p>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-neutral-100 text-black flex items-center justify-center border border-neutral-200">
-            <Award className="w-5 h-5 text-black" />
+          <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center border border-teal-200/80">
+            <Award className="w-5 h-5 text-teal-600" />
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white border border-neutral-200 shadow-card flex items-center justify-between hover:border-black transition-all">
+        <div className="p-5 rounded-2xl bg-white border border-neutral-200 shadow-card flex items-center justify-between hover:border-emerald-500/80 transition-all">
           <div>
             <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">Generated</p>
             <p className="text-2xl sm:text-3xl font-black text-black mt-1">{totalGenerated.toLocaleString()}</p>
             <p className="text-[10px] text-neutral-500 mt-1 font-medium">300 DPI vector PDFs</p>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-neutral-100 text-black flex items-center justify-center border border-neutral-200">
-            <CheckCircle2 className="w-5 h-5 text-black" />
+          <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200/80">
+            <CheckCircle2 className="w-5 h-5 text-emerald-600" />
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white border border-neutral-200 shadow-card flex items-center justify-between hover:border-black transition-all">
+        <div className="p-5 rounded-2xl bg-white border border-neutral-200 shadow-card flex items-center justify-between hover:border-sky-500/80 transition-all">
           <div>
             <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">Emails Delivered</p>
             <p className="text-2xl sm:text-3xl font-black text-black mt-1">{totalSent.toLocaleString()}</p>
             <p className="text-[10px] text-neutral-500 mt-1 font-medium">PDF inbox attachments</p>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-neutral-100 text-black flex items-center justify-center border border-neutral-200">
-            <Mail className="w-5 h-5 text-black" />
+          <div className="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center border border-sky-200/80">
+            <Mail className="w-5 h-5 text-sky-600" />
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white border border-neutral-200 shadow-card flex items-center justify-between hover:border-black transition-all">
+        <div className="p-5 rounded-2xl bg-white border border-neutral-200 shadow-card flex items-center justify-between hover:border-teal-500/80 transition-all">
           <div>
             <p className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider">QR Scans Verified</p>
             <p className="text-2xl sm:text-3xl font-black text-black mt-1">{totalVerified.toLocaleString()}</p>
             <p className="text-[10px] text-neutral-500 mt-1 font-medium">Instant public trust</p>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-neutral-100 text-black flex items-center justify-center border border-neutral-200">
-            <ShieldCheck className="w-5 h-5 text-black" />
+          <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center border border-teal-200/80">
+            <ShieldCheck className="w-5 h-5 text-teal-600" />
           </div>
         </div>
 
       </div>
 
-      {/* 4. Usage Quota Mini Bar (Sleek Pitch Black Fill) */}
+      {/* 4. Usage Quota Mini Bar (Signature Mint Teal Fills) */}
       <div className="p-5 rounded-2xl bg-white border border-neutral-200 shadow-card flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="w-full md:w-1/3 space-y-1.5">
           <div className="flex justify-between text-xs font-bold text-black">
@@ -211,7 +211,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
           <div className="w-full h-2 rounded-full bg-neutral-100 overflow-hidden border border-neutral-200">
             <div 
-              className="h-full rounded-full bg-black transition-all"
+              className="h-full rounded-full bg-teal-500 transition-all"
               style={{ width: `${Math.min(100, usageCertPercent)}%` }}
             />
           </div>
@@ -224,7 +224,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
           <div className="w-full h-2 rounded-full bg-neutral-100 overflow-hidden border border-neutral-200">
             <div 
-              className="h-full rounded-full bg-black transition-all"
+              className="h-full rounded-full bg-teal-500 transition-all"
               style={{ width: `${Math.min(100, Math.round((user.usage.emailCreditsUsed / user.usage.emailCreditsLimit) * 100))}%` }}
             />
           </div>
@@ -237,14 +237,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
           <div className="w-full h-2 rounded-full bg-neutral-100 overflow-hidden border border-neutral-200">
             <div 
-              className="h-full rounded-full bg-black transition-all"
+              className="h-full rounded-full bg-teal-500 transition-all"
               style={{ width: `${Math.min(100, Math.round((user.usage.storageUsedMB / user.usage.storageLimitMB) * 100))}%` }}
             />
           </div>
         </div>
       </div>
 
-      {/* 5. Recent Projects Table (80% Pure White with crisp black typography) */}
+      {/* 5. Recent Projects Table */}
       <div className="bg-white rounded-2xl border border-neutral-200 shadow-card overflow-hidden">
         <div className="p-5 border-b border-neutral-100 flex items-center justify-between">
           <div>
@@ -253,7 +253,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
           <button
             onClick={onOpenCreateProject}
-            className="text-xs font-bold text-black hover:underline flex items-center gap-1"
+            className="text-xs font-bold text-teal-700 hover:text-teal-800 hover:underline flex items-center gap-1 cursor-pointer"
           >
             <span>+ New Campaign</span>
           </button>
@@ -262,8 +262,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {projects.length === 0 ? (
           /* Enhanced Guided Onboarding Card */
           <div className="py-12 px-6 sm:px-12 text-center max-w-2xl mx-auto space-y-6">
-            <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto border border-emerald-200">
-              <Sparkles className="w-7 h-7" />
+            <div className="w-14 h-14 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center mx-auto border border-teal-200/80">
+              <Sparkles className="w-7 h-7 text-teal-600" />
             </div>
             <div>
               <h4 className="font-black text-lg text-black">Let's issue your first certificate! 🎓</h4>
@@ -275,7 +275,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
               <div className="p-3.5 rounded-xl bg-neutral-50 border border-neutral-200">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-[11px] font-bold flex items-center justify-center shrink-0">1</span>
+                  <span className="w-5 h-5 rounded-full bg-teal-500 text-white text-[11px] font-bold flex items-center justify-center shrink-0">1</span>
                   <span className="font-bold text-xs text-black">Pick Template</span>
                 </div>
                 <p className="text-[11px] text-neutral-500">Select Landscape or Portrait A4 layout.</p>
@@ -283,7 +283,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
               <div className="p-3.5 rounded-xl bg-neutral-50 border border-neutral-200">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-[11px] font-bold flex items-center justify-center shrink-0">2</span>
+                  <span className="w-5 h-5 rounded-full bg-teal-500 text-white text-[11px] font-bold flex items-center justify-center shrink-0">2</span>
                   <span className="font-bold text-xs text-black">Upload Excel</span>
                 </div>
                 <p className="text-[11px] text-neutral-500">Drop attendee list with automatic column match.</p>
@@ -291,7 +291,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
               <div className="p-3.5 rounded-xl bg-neutral-50 border border-neutral-200">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-[11px] font-bold flex items-center justify-center shrink-0">3</span>
+                  <span className="w-5 h-5 rounded-full bg-teal-500 text-white text-[11px] font-bold flex items-center justify-center shrink-0">3</span>
                   <span className="font-bold text-xs text-black">Download ZIP</span>
                 </div>
                 <p className="text-[11px] text-neutral-500">Instant PDF & QR code verification links.</p>
@@ -301,7 +301,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
               <button
                 onClick={onOpenCreateProject}
-                className="w-full sm:w-auto px-6 py-3 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full sm:w-auto px-6 py-3 bg-teal-500 hover:bg-teal-600 text-white font-bold text-xs rounded-xl shadow-md shadow-teal-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
               >
                 <Plus className="w-4 h-4" />
                 <span>Create Your First Campaign</span>
@@ -369,7 +369,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => onOpenProjectWizard(project)}
-                            className="px-3 py-1.5 rounded-lg text-xs font-bold text-black bg-neutral-100 hover:bg-black hover:text-white border border-neutral-200 transition-colors flex items-center gap-1.5"
+                            className="px-3 py-1.5 rounded-lg text-xs font-bold text-teal-900 bg-teal-50 hover:bg-teal-500 hover:text-white border border-teal-200/80 transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
                           >
                             <Eye className="w-3.5 h-3.5" />
                             <span>View / Generate</span>

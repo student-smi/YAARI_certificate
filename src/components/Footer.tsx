@@ -21,11 +21,11 @@ export const Footer: React.FC<{ onNavigate: (view: string) => void }> = ({ onNav
             </p>
             <div className="flex items-center gap-4 text-[11px] text-neutral-500 pt-2 font-medium">
               <span className="flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-black" />
+                <ShieldCheck className="w-3.5 h-3.5 text-teal-600" />
                 ISO 27001 & SOC-2 Ready
               </span>
               <span className="flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-black" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-teal-600" />
                 Cryptographic QR Seals
               </span>
             </div>
@@ -71,7 +71,7 @@ export const Footer: React.FC<{ onNavigate: (view: string) => void }> = ({ onNav
 
         {/* Bottom copyright */}
         <div className="mt-12 pt-8 border-t border-neutral-200 flex flex-col sm:flex-row items-center justify-between text-[11px] text-neutral-400 gap-4 font-medium">
-          <p>© 2026 CertiForge Technologies Inc. All rights reserved.</p>
+          <p>© 2026 CertiCraft Technologies Inc. All rights reserved.</p>
           <div className="flex items-center gap-6 text-neutral-500">
             <span>Server: Mumbai (ap-south-1)</span>
             <span>99.98% Generation Uptime</span>

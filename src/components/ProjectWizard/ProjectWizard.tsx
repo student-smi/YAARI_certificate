@@ -375,16 +375,16 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
                 disabled={currentStep < s.num && currentProject.recipients.length === 0}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
                   isCurrent
-                    ? 'bg-black text-white shadow-xs'
+                    ? 'bg-slate-950 text-white shadow-xs ring-2 ring-teal-500/20'
                     : isCompleted
-                    ? 'bg-neutral-100 text-black border border-neutral-300 hover:bg-neutral-200'
+                    ? 'bg-teal-50 text-teal-900 border border-teal-200/80 hover:bg-teal-100/70'
                     : 'bg-neutral-50 text-neutral-400 cursor-not-allowed border border-neutral-200'
                 }`}
               >
                 <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${
-                  isCurrent ? 'bg-white/20 text-white' : isCompleted ? 'bg-black text-white' : 'bg-neutral-200 text-neutral-600'
+                  isCurrent ? 'bg-teal-500 text-white font-bold' : isCompleted ? 'bg-teal-500 text-white' : 'bg-neutral-200 text-neutral-600'
                 }`}>
-                  {isCompleted ? <Check className="w-2.5 h-2.5" /> : s.num}
+                  {isCompleted ? <Check className="w-2.5 h-2.5 stroke-[3]" /> : s.num}
                 </span>
                 <span>{s.label}</span>
               </button>
@@ -412,7 +412,7 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
                   onClick={() => setSelectedOrientationFilter('all')}
                   className={`px-3 py-1.5 rounded-lg transition-all ${
                     selectedOrientationFilter === 'all'
-                      ? 'bg-black text-white shadow-xs'
+                      ? 'bg-slate-950 text-white shadow-xs'
                       : 'text-neutral-600 hover:text-black'
                   }`}
                 >
@@ -423,7 +423,7 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
                   onClick={() => setSelectedOrientationFilter('landscape')}
                   className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
                     selectedOrientationFilter === 'landscape'
-                      ? 'bg-black text-white shadow-xs'
+                      ? 'bg-slate-950 text-white shadow-xs'
                       : 'text-neutral-600 hover:text-black'
                   }`}
                   title="Show Landscape Templates"
@@ -435,7 +435,7 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
                   onClick={() => setSelectedOrientationFilter('portrait')}
                   className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
                     selectedOrientationFilter === 'portrait'
-                      ? 'bg-black text-white shadow-xs'
+                      ? 'bg-slate-950 text-white shadow-xs'
                       : 'text-neutral-600 hover:text-black'
                   }`}
                   title="Show Portrait Templates"
@@ -475,7 +475,7 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
                     }}
                     className={`rounded-2xl border p-4 cursor-pointer transition-all flex flex-col justify-between ${
                       isSelected
-                        ? 'border-2 border-black bg-neutral-50/50 shadow-elevated'
+                        ? 'border-2 border-teal-500 bg-teal-50/20 shadow-elevated ring-2 ring-teal-500/10'
                         : 'border-neutral-200 hover:border-neutral-400 bg-white hover:shadow-card'
                     }`}
                   >
@@ -514,8 +514,8 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
                         {tpl.orientation}
                       </span>
                       {isSelected ? (
-                        <span className="text-xs font-bold text-black flex items-center gap-1">
-                          <Check className="w-3.5 h-3.5" /> Selected
+                        <span className="text-xs font-bold text-teal-700 flex items-center gap-1">
+                          <Check className="w-3.5 h-3.5 text-teal-600 stroke-[3]" /> Selected
                         </span>
                       ) : (
                         <span className="text-xs font-medium text-neutral-400 hover:text-black">Select</span>
@@ -529,7 +529,7 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
           <div className="pt-6 border-t border-neutral-200 flex justify-end">
             <button
               onClick={() => setCurrentStep(2)}
-              className="flex items-center gap-2 px-6 py-2.5 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all"
+              className="flex items-center gap-2 px-6 py-2.5 bg-teal-500 hover:bg-teal-600 text-white font-bold text-xs rounded-xl shadow-xs shadow-teal-500/25 transition-all cursor-pointer active:scale-[0.98]"
             >
               <span>Next: Upload Recipient Data</span>
               <ArrowRight className="w-4 h-4" />
@@ -596,7 +596,7 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
             <div className="flex flex-wrap items-center justify-center gap-2.5">
               <button
                 type="button"
-                className="px-5 py-2.5 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-xl shadow-xs transition-colors cursor-pointer"
+                className="px-5 py-2.5 bg-teal-500 hover:bg-teal-600 text-white font-bold text-xs rounded-xl shadow-xs shadow-teal-500/25 transition-colors cursor-pointer"
               >
                 Browse Files
               </button>
@@ -606,31 +606,31 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
                   e.stopPropagation();
                   downloadSampleExcel();
                 }}
-                className="flex items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-neutral-100 text-neutral-800 border border-neutral-300 font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-teal-50 text-slate-800 border border-slate-300 font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer"
               >
-                <Download className="w-3.5 h-3.5 text-emerald-600" />
+                <Download className="w-3.5 h-3.5 text-teal-600" />
                 <span>Download Sample Excel (.xlsx)</span>
               </button>
             </div>
           </div>
 
           {/* Instant sample button for easy testing */}
-          <div className="p-4 rounded-xl bg-neutral-50 border border-neutral-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-2 text-neutral-700">
-              <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
+          <div className="p-4 rounded-xl bg-teal-50/50 border border-teal-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2 text-slate-700">
+              <Sparkles className="w-4 h-4 text-teal-600 shrink-0" />
               <span>Don't have a spreadsheet ready? Load pre-configured sample recipients or download the sample format.</span>
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={downloadSampleExcel}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-neutral-100 border border-neutral-300 text-neutral-800 font-bold text-xs rounded-lg shadow-xs transition-all shrink-0 cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-teal-50 border border-teal-300 text-teal-900 font-bold text-xs rounded-lg shadow-xs transition-all shrink-0 cursor-pointer"
               >
-                <Download className="w-3.5 h-3.5 text-emerald-600" />
+                <Download className="w-3.5 h-3.5 text-teal-600" />
                 <span>Download .xlsx</span>
               </button>
               <button
                 onClick={handleLoadSampleRecipients}
-                className="px-3.5 py-1.5 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-lg shadow-xs transition-all shrink-0 cursor-pointer"
+                className="px-3.5 py-1.5 bg-slate-950 hover:bg-slate-900 text-white font-bold text-xs rounded-lg shadow-xs transition-all shrink-0 cursor-pointer"
               >
                 Load 12 Demo Recipients
               </button>
@@ -654,7 +654,7 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
             {currentProject.recipients.length > 0 && (
               <button
                 onClick={() => setCurrentStep(3)}
-                className="flex items-center gap-2 px-6 py-2.5 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all"
+                className="flex items-center gap-2 px-6 py-2.5 bg-teal-500 hover:bg-teal-600 text-white font-bold text-xs rounded-xl shadow-xs shadow-teal-500/25 transition-all cursor-pointer active:scale-[0.98]"
               >
                 <span>Continue with {currentProject.recipients.length} Recipients</span>
                 <ArrowRight className="w-4 h-4" />
@@ -807,7 +807,7 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
             </button>
             <button
               onClick={() => setCurrentStep(4)}
-              className="flex items-center gap-2 px-6 py-2.5 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all"
+              className="flex items-center gap-2 px-6 py-2.5 bg-teal-500 hover:bg-teal-600 text-white font-bold text-xs rounded-xl shadow-xs shadow-teal-500/25 transition-all cursor-pointer active:scale-[0.98]"
             >
               <span>Next: Live Recipient Preview</span>
               <ArrowRight className="w-4 h-4" />
@@ -933,7 +933,7 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
             </button>
             <button
               onClick={handleStartGeneration}
-              className="flex items-center gap-2 px-7 py-3 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer"
+              className="flex items-center gap-2 px-7 py-3 bg-teal-500 hover:bg-teal-600 active:scale-[0.98] text-white font-bold text-xs rounded-xl shadow-md shadow-teal-500/25 transition-all cursor-pointer"
             >
               <Play className="w-4 h-4 fill-white" />
               <span>Looks Good — Generate {currentProject.recipients.length} Certificates</span>
@@ -945,37 +945,37 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
       {/* STEP 5: BULK GENERATION ENGINE */}
       {currentStep === 5 && (
         <div className="max-w-2xl mx-auto py-12 text-center space-y-8">
-          <div className="w-16 h-16 rounded-2xl bg-neutral-100 text-black border border-neutral-200 flex items-center justify-center mx-auto shadow-xs">
-            <RefreshCw className="w-8 h-8 animate-spin text-black" />
+          <div className="w-16 h-16 rounded-2xl bg-teal-50 text-teal-600 border border-teal-200/80 flex items-center justify-center mx-auto shadow-xs">
+            <RefreshCw className="w-8 h-8 animate-spin text-teal-600" />
           </div>
 
           <div className="space-y-1">
-            <h2 className="text-2xl font-black text-black tracking-tight">
+            <h2 className="text-2xl font-black text-slate-950 tracking-tight">
               Generating Certificates...
             </h2>
-            <p className="text-xs text-neutral-500">
-              Processing <strong className="text-black">{currentProcessingName || 'batch items'}</strong>
+            <p className="text-xs text-slate-500">
+              Processing <strong className="text-slate-950">{currentProcessingName || 'batch items'}</strong>
             </p>
           </div>
 
           <div className="space-y-2 max-w-md mx-auto">
-            <div className="w-full h-3 rounded-full bg-neutral-100 overflow-hidden p-0.5 border border-neutral-300">
+            <div className="w-full h-3 rounded-full bg-slate-100 overflow-hidden p-0.5 border border-slate-300">
               <div 
-                className="h-full rounded-full bg-black transition-all duration-150"
+                className="h-full rounded-full bg-teal-500 transition-all duration-150"
                 style={{ width: `${genProgress}%` }}
               />
             </div>
 
-            <div className="flex justify-between text-xs font-bold text-black font-mono">
+            <div className="flex justify-between text-xs font-bold text-slate-950 font-mono">
               <span>{processedCount} / {currentProject.recipients.length} complete</span>
               <span>{genProgress}%</span>
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-neutral-50 border border-neutral-200 max-w-md mx-auto text-left text-xs text-neutral-600 space-y-1 font-mono">
+          <div className="p-4 rounded-xl bg-teal-50/40 border border-teal-200/80 max-w-md mx-auto text-left text-xs text-slate-600 space-y-1 font-mono">
             <p>✓ Initialized 300 DPI vector rendering pipeline</p>
             <p>✓ Injected cryptographic QR verification payloads</p>
-            <p className="text-black font-bold">➔ Rendering PDF batch asynchronously without server lock</p>
+            <p className="text-teal-900 font-bold">➔ Rendering PDF batch asynchronously without server lock</p>
           </div>
         </div>
       )}
@@ -983,16 +983,16 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
       {/* STEP 6: OUTPUT & DELIVERY */}
       {currentStep === 6 && (
         <div className="space-y-8">
-          <div className="p-6 sm:p-8 rounded-3xl bg-neutral-100 border border-neutral-300 text-black flex flex-col sm:flex-row items-center justify-between gap-6 shadow-card">
+          <div className="p-6 sm:p-8 rounded-3xl bg-teal-50/50 border border-teal-200/80 text-slate-950 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-card">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center shrink-0 shadow-xs">
+              <div className="w-12 h-12 rounded-2xl bg-teal-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-teal-500/25">
                 <CheckCircle2 className="w-7 h-7" />
               </div>
               <div>
-                <h2 className="text-xl sm:text-2xl font-black text-black">
+                <h2 className="text-xl sm:text-2xl font-black text-slate-950">
                   {currentProject.generatedCount || currentProject.recipients.length} Certificates Generated Successfully!
                 </h2>
-                <p className="text-xs sm:text-sm text-neutral-600 mt-0.5 font-medium">
+                <p className="text-xs sm:text-sm text-slate-600 mt-0.5 font-medium">
                   All certificates have been rendered in print-ready vector quality with QR verification links.
                 </p>
               </div>
@@ -1002,7 +1002,7 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
               <button
                 onClick={handleDownloadZip}
                 disabled={isZipping}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-teal-500 hover:bg-teal-600 active:scale-[0.98] text-white font-bold text-xs rounded-xl shadow-md shadow-teal-500/25 transition-all cursor-pointer"
               >
                 <FolderArchive className="w-4 h-4" />
                 <span>{isZipping ? 'Compressing ZIP...' : 'Download ZIP Archive'}</span>

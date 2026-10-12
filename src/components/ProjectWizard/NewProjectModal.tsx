@@ -66,8 +66,8 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
         {/* Header */}
         <div className="p-6 border-b border-neutral-200 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-black text-white flex items-center justify-center">
-              <Award className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-xl bg-teal-50 text-teal-600 border border-teal-200/80 flex items-center justify-center">
+              <Award className="w-4 h-4 text-teal-600" />
             </div>
             <div>
               <h3 className="font-extrabold text-base text-black">New Certificate Campaign</h3>
@@ -160,7 +160,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
                   onClick={() => setSelectedTemplateId(tpl.id)}
                   className={`p-2.5 rounded-xl border text-left text-xs transition-all ${
                     selectedTemplateId === tpl.id
-                      ? 'border-2 border-black bg-neutral-50 font-bold text-black'
+                      ? 'border-2 border-teal-500 bg-teal-50/40 font-bold text-slate-950 ring-2 ring-teal-500/10'
                       : 'border-neutral-200 hover:bg-neutral-50 text-neutral-700'
                   }`}
                 >
@@ -175,13 +175,13 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-neutral-300 text-black font-semibold text-xs rounded-xl hover:bg-neutral-50"
+              className="px-4 py-2 border border-neutral-300 text-black font-semibold text-xs rounded-xl hover:bg-neutral-50 cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex items-center gap-2 px-6 py-2 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all"
+              className="flex items-center gap-2 px-6 py-2 bg-teal-500 hover:bg-teal-600 text-white font-bold text-xs rounded-xl shadow-xs shadow-teal-500/25 transition-all cursor-pointer active:scale-[0.98]"
             >
               <span>Create & Launch Wizard</span>
               <ArrowRight className="w-3.5 h-3.5" />

@@ -180,14 +180,14 @@ export const VerificationPortal: React.FC<VerificationPortalProps> = ({ initialC
       
       {/* Header */}
       <div className="text-center space-y-3">
-        <div className="w-12 h-12 rounded-2xl bg-neutral-100 text-black border border-neutral-300 flex items-center justify-center mx-auto shadow-xs">
-          <ShieldCheck className="w-6 h-6 text-black" />
+        <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 border border-teal-200/80 flex items-center justify-center mx-auto shadow-xs">
+          <ShieldCheck className="w-6 h-6 text-teal-600" />
         </div>
-        <h1 className="text-2xl sm:text-3xl font-black text-black tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight">
           Official Credential Verification Portal
         </h1>
-        <p className="text-xs sm:text-sm text-neutral-500 max-w-lg mx-auto">
-          Verify the authenticity of digital certificates issued by certified institutions via CertiForge Cryptographic Infrastructure.
+        <p className="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto">
+          Verify the authenticity of digital certificates issued by certified institutions via CertiCraft Cryptographic Infrastructure.
         </p>
       </div>
 
@@ -198,26 +198,26 @@ export const VerificationPortal: React.FC<VerificationPortalProps> = ({ initialC
             e.preventDefault();
             performSearch(certIdInput);
           }}
-          className="flex items-center gap-2 p-1.5 bg-white border border-neutral-300 rounded-2xl shadow-card focus-within:border-black transition-all"
+          className="flex items-center gap-2 p-1.5 bg-white border border-slate-300 rounded-2xl shadow-card focus-within:border-teal-500 focus-within:ring-2 focus-within:ring-teal-500/20 transition-all"
         >
-          <Search className="w-4 h-4 text-neutral-400 ml-3" />
+          <Search className="w-4 h-4 text-slate-400 ml-3" />
           <input
             type="text"
             value={certIdInput}
             onChange={(e) => setCertIdInput(e.target.value)}
             placeholder="Enter Certificate ID (e.g. CERT-2026-00001)"
-            className="flex-1 px-2 py-2 text-xs sm:text-sm text-black placeholder-neutral-400 focus:outline-none uppercase font-mono font-bold"
+            className="flex-1 px-2 py-2 text-xs sm:text-sm text-slate-950 placeholder-slate-400 focus:outline-none uppercase font-mono font-bold"
           />
           <button
             type="submit"
             disabled={isSearching}
-            className="px-5 py-2.5 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-xl shadow-xs transition-colors shrink-0"
+            className="px-5 py-2.5 bg-teal-500 hover:bg-teal-600 text-white font-bold text-xs rounded-xl shadow-xs shadow-teal-500/25 transition-all cursor-pointer shrink-0 active:scale-[0.98]"
           >
             {isSearching ? 'Verifying...' : 'Verify'}
           </button>
         </form>
 
-        <div className="mt-2 text-center text-xs text-neutral-500">
+        <div className="mt-2 text-center text-xs text-slate-500">
           <span>Try test ID: </span>
           <button 
             type="button"
@@ -225,7 +225,7 @@ export const VerificationPortal: React.FC<VerificationPortalProps> = ({ initialC
               setCertIdInput('CERT-2026-00001');
               performSearch('CERT-2026-00001');
             }}
-            className="font-mono text-black hover:underline font-bold"
+            className="font-mono text-teal-700 hover:text-teal-800 hover:underline font-bold"
           >
             CERT-2026-00001
           </button>
@@ -236,16 +236,16 @@ export const VerificationPortal: React.FC<VerificationPortalProps> = ({ initialC
       {searchResult && (
         <div className="max-w-3xl mx-auto animate-in zoom-in-95 duration-150 space-y-6">
           {searchResult.found ? (
-            <div className="bg-white rounded-3xl border border-neutral-300 shadow-elevated overflow-hidden">
+            <div className="bg-white rounded-3xl border border-slate-300 shadow-elevated overflow-hidden">
               
-              {/* Verified Ribbon Header (20% Black Header) */}
-              <div className="bg-black text-white p-6 sm:p-8 flex items-center justify-between">
+              {/* Verified Ribbon Header (Deep Navy Header with Teal Badge) */}
+              <div className="bg-slate-950 text-white p-6 sm:p-8 flex items-center justify-between border-b border-slate-800">
                 <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-neutral-900 border border-neutral-700 flex items-center justify-center shrink-0">
-                    <CheckCircle2 className="w-6 h-6 text-white" />
+                  <div className="w-10 h-10 rounded-xl bg-teal-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-teal-500/25">
+                    <CheckCircle2 className="w-6 h-6 text-white stroke-[2.5]" />
                   </div>
                   <div>
-                    <span className="text-[10px] font-extrabold tracking-widest uppercase text-neutral-400">
+                    <span className="text-[10px] font-extrabold tracking-widest uppercase text-teal-400">
                       CRYPTOGRAPHIC SEAL CONFIRMED
                     </span>
                     <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">

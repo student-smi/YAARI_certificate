@@ -203,11 +203,11 @@ export const BillingModal: React.FC<BillingModalProps> = ({
 
               {/* Billing Cycle Switcher */}
               <div className="text-center">
-                <div className="inline-flex items-center p-1 bg-neutral-100 rounded-xl border border-neutral-300">
+                <div className="inline-flex items-center p-1 bg-slate-100 rounded-xl border border-slate-300">
                   <button
                     onClick={() => setBillingCycle('monthly')}
                     className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${
-                      billingCycle === 'monthly' ? 'bg-black text-white shadow-xs' : 'text-neutral-600 hover:text-black'
+                      billingCycle === 'monthly' ? 'bg-slate-950 text-white shadow-xs' : 'text-slate-600 hover:text-slate-950'
                     }`}
                   >
                     Monthly Billing
@@ -215,11 +215,11 @@ export const BillingModal: React.FC<BillingModalProps> = ({
                   <button
                     onClick={() => setBillingCycle('yearly')}
                     className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 ${
-                      billingCycle === 'yearly' ? 'bg-black text-white shadow-xs' : 'text-neutral-600 hover:text-black'
+                      billingCycle === 'yearly' ? 'bg-slate-950 text-white shadow-xs' : 'text-slate-600 hover:text-slate-950'
                     }`}
                   >
                     <span>Annual Billing (Save 20%)</span>
-                    <span className="text-[10px] bg-neutral-300 text-black font-extrabold px-1.5 py-0.2 rounded-full">
+                    <span className="text-[10px] bg-teal-500 text-white font-extrabold px-1.5 py-0.2 rounded-full">
                       -20%
                     </span>
                   </button>
@@ -239,23 +239,23 @@ export const BillingModal: React.FC<BillingModalProps> = ({
                       key={plan.id}
                       className={`rounded-2xl p-5 border flex flex-col justify-between transition-all ${
                         isCurrent
-                          ? 'border-2 border-black bg-neutral-50/50'
+                          ? 'border-2 border-slate-950 bg-slate-50/50'
                           : isRecommended
-                          ? 'border-2 border-black bg-white shadow-card relative'
-                          : 'border-neutral-200 bg-white hover:border-neutral-400'
+                          ? 'border-2 border-teal-500 bg-white shadow-card relative ring-2 ring-teal-500/10'
+                          : 'border-slate-200 bg-white hover:border-slate-300'
                       }`}
                     >
                       {isRecommended && !isCurrent && (
-                        <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-black text-white text-[9px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
+                        <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-teal-500 text-white text-[9px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
                           Recommended
                         </div>
                       )}
 
                       <div>
                         <div className="flex items-center justify-between">
-                          <h4 className="font-extrabold text-sm text-black">{plan.name}</h4>
+                          <h4 className="font-extrabold text-sm text-slate-950">{plan.name}</h4>
                           {isCurrent && (
-                            <span className="text-[10px] font-bold text-black uppercase bg-neutral-200 px-2 py-0.5 rounded">
+                            <span className="text-[10px] font-bold text-teal-900 uppercase bg-teal-100 border border-teal-200 px-2 py-0.5 rounded">
                               Current
                             </span>
                           )}
@@ -264,15 +264,15 @@ export const BillingModal: React.FC<BillingModalProps> = ({
                         <div className="my-3">
                           {isCustom ? (
                             <div>
-                              <span className="text-xl font-black text-black">Contact sales</span>
-                              <span className="text-[11px] text-neutral-500 block">Custom volume & SLA</span>
+                              <span className="text-xl font-black text-slate-950">Contact sales</span>
+                              <span className="text-[11px] text-slate-500 block">Custom volume & SLA</span>
                             </div>
                           ) : (
                             <div>
-                              <span className="text-2xl font-black text-black">{plan.currency}{price}</span>
-                              <span className="text-xs text-neutral-500 ml-0.5">/mo</span>
+                              <span className="text-2xl font-black text-slate-950">{plan.currency}{price}</span>
+                              <span className="text-xs text-slate-500 ml-0.5">/mo</span>
                               {billingCycle === 'yearly' && price > 0 && plan.yearlyTotal && (
-                                <p className="text-[10px] text-neutral-700 font-bold mt-0.5">
+                                <p className="text-[10px] text-teal-800 font-bold mt-0.5">
                                   ₹{plan.yearlyTotal.toLocaleString()} billed yearly
                                 </p>
                               )}
@@ -280,8 +280,8 @@ export const BillingModal: React.FC<BillingModalProps> = ({
                           )}
                         </div>
 
-                        <div className="space-y-1.5 border-t border-neutral-100 pt-3 text-xs text-neutral-700">
-                          <div className="font-bold text-black">
+                        <div className="space-y-1.5 border-t border-slate-100 pt-3 text-xs text-slate-700">
+                          <div className="font-bold text-slate-950">
                             {plan.limits.maxCertificatesPerMonth.toLocaleString()} certs / mo
                           </div>
                           <div>{plan.limits.maxEmailCredits.toLocaleString()} email sends / mo</div>
@@ -295,14 +295,14 @@ export const BillingModal: React.FC<BillingModalProps> = ({
                         <button
                           disabled={isCurrent}
                           onClick={() => handleSelectPlan(plan.id)}
-                          className={`w-full py-2 rounded-xl text-xs font-bold transition-all ${
+                          className={`w-full py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                             isCurrent
-                              ? 'bg-neutral-100 text-neutral-400 cursor-not-allowed border border-neutral-200'
+                              ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
                               : isRecommended
-                              ? 'bg-black hover:bg-neutral-800 text-white shadow-xs'
+                              ? 'bg-teal-500 hover:bg-teal-600 active:scale-[0.98] text-white shadow-md shadow-teal-500/25'
                               : isCustom
-                              ? 'bg-black hover:bg-neutral-800 text-white shadow-xs'
-                              : 'bg-neutral-100 hover:bg-neutral-200 text-black'
+                              ? 'bg-slate-950 hover:bg-slate-900 text-white shadow-xs'
+                              : 'bg-slate-100 hover:bg-slate-200 text-slate-950'
                           }`}
                         >
                           {isCurrent 
@@ -320,26 +320,26 @@ export const BillingModal: React.FC<BillingModalProps> = ({
               </div>
 
               {/* Occasional Customer Option: Workshop & Event Pack */}
-              <div className="p-4 bg-neutral-50 rounded-2xl border border-neutral-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="p-4 bg-teal-50/50 rounded-2xl border border-teal-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-black text-white flex items-center justify-center font-bold text-sm shrink-0">
+                  <div className="w-9 h-9 rounded-xl bg-teal-500 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-xs shadow-teal-500/25">
                     ⚡
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h4 className="font-extrabold text-xs text-black">Prepaid Workshop & Event Pack</h4>
-                      <span className="text-[10px] font-bold bg-neutral-200 text-neutral-800 px-2 py-0.5 rounded-full">
+                      <h4 className="font-extrabold text-xs text-slate-950">Prepaid Workshop & Event Pack</h4>
+                      <span className="text-[10px] font-bold bg-teal-100 text-teal-900 px-2 py-0.5 rounded-full border border-teal-200">
                         ₹499 one-time
                       </span>
                     </div>
-                    <p className="text-[11px] text-neutral-600 mt-0.5">
+                    <p className="text-[11px] text-slate-600 mt-0.5">
                       Need credits for a single event? Get 100 certificates + 100 email sends without any recurring subscription.
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={handleSelectEventPack}
-                  className="px-4 py-2 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-xl shrink-0 transition-all shadow-xs"
+                  className="px-4 py-2 bg-slate-950 hover:bg-slate-900 text-white font-bold text-xs rounded-xl shrink-0 transition-all shadow-xs cursor-pointer"
                 >
                   Buy Pack (₹499)
                 </button>

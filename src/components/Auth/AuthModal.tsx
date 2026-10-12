@@ -362,7 +362,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full mt-2 py-2.5 px-4 bg-black hover:bg-neutral-800 disabled:opacity-50 text-white font-bold rounded-xl text-xs shadow-xs transition-all flex items-center justify-center gap-2"
+                  className="w-full mt-2 py-2.5 px-4 bg-teal-500 hover:bg-teal-600 active:scale-[0.98] disabled:opacity-50 text-white font-bold rounded-xl text-xs shadow-xs shadow-teal-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {isLoading ? (
                     <>
@@ -390,7 +390,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setMode('signup')}
-                  className="font-bold text-black hover:underline"
+                  className="font-bold text-teal-700 hover:underline cursor-pointer"
                 >
                   Sign up free
                 </button>
@@ -401,7 +401,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setMode('login')}
-                  className="font-bold text-black hover:underline"
+                  className="font-bold text-teal-700 hover:underline cursor-pointer"
                 >
                   Sign in
                 </button>

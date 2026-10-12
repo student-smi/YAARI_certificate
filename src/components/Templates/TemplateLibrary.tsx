@@ -139,7 +139,7 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
 
         <button
           onClick={handleOpenCreateModal}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs text-white bg-black hover:bg-neutral-800 active:scale-[0.98] shadow-md transition-all cursor-pointer"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs text-white bg-teal-500 hover:bg-teal-600 active:scale-[0.98] shadow-md shadow-teal-500/25 transition-all cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>+ Create Certificate</span>
@@ -355,7 +355,7 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
                 <div className="mt-6 pt-4 border-t border-neutral-100 flex items-center justify-between gap-2">
                   <button
                     onClick={() => onSelectTemplateToCreate(template.id, currentOrientation)}
-                    className="flex-1 py-2 px-3 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="flex-1 py-2 px-3 bg-teal-500 hover:bg-teal-600 active:scale-[0.98] text-white font-bold text-xs rounded-xl shadow-xs shadow-teal-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     <span>Use Template</span>
                     <ArrowRight className="w-3.5 h-3.5" />

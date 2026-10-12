@@ -81,61 +81,62 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       
       {/* 1. HERO SECTION */}
       <section className="relative pt-12 md:pt-20 overflow-hidden bg-white">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-tr from-teal-500/12 via-navy-900/5 to-transparent blur-3xl pointer-events-none rounded-full" />
         
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           
-          {/* Top Pill (Crisp white pill with black text and border) */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-neutral-100 border border-neutral-300 text-black text-xs font-semibold mb-6 shadow-xs animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <span className="w-2 h-2 rounded-full bg-black animate-pulse" />
+          {/* Top Pill (Crisp mint pill with brand teal pulse dot) */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-teal-50 border border-teal-200/80 text-teal-950 text-xs font-bold mb-6 shadow-xs animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
             <span>CertiCraft — Bulk Certificate Infrastructure & QR Verification</span>
           </div>
 
-          {/* Headline (80% White background, 20% Pitch Black typography) */}
-          <h1 className="text-4xl sm:text-6xl font-black text-black tracking-tight max-w-4xl mx-auto leading-[1.12]">
+          {/* Headline (Deep Navy with signature Teal gradient) */}
+          <h1 className="text-4xl sm:text-6xl font-black text-slate-950 tracking-tight max-w-4xl mx-auto leading-[1.12]">
             Create Hundreds of Certificates <br className="hidden sm:inline" />
-            <span className="underline decoration-black decoration-wavy decoration-2 underline-offset-8">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-950 via-teal-700 to-teal-500">
               in Minutes with CertiCraft
             </span>
           </h1>
 
           {/* Supporting text */}
-          <p className="mt-6 text-base sm:text-lg text-neutral-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-6 text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
             CertiCraft is the high-performance bulk certificate platform. Design once, upload your Excel recipient data, and automatically issue verifiable certificates at scale.
           </p>
 
-          {/* CTA Buttons (Black primary button, white secondary button) */}
+          {/* CTA Buttons (Brand Teal primary button, white secondary button) */}
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5">
             <button
               onClick={onStartCreating}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-bold text-white bg-black hover:bg-neutral-800 active:scale-[0.98] shadow-sm transition-all text-sm"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl font-bold text-white bg-teal-500 hover:bg-teal-600 active:scale-[0.98] shadow-md shadow-teal-500/25 transition-all text-sm cursor-pointer"
             >
-              <span>Start Creating</span>
+              <span>Start Creating Free</span>
               <ArrowRight className="w-4 h-4" />
             </button>
             <button
               onClick={onExploreTemplates}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-black hover:text-black bg-white hover:bg-neutral-50 border border-neutral-300 shadow-xs transition-all text-sm"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-slate-800 hover:text-slate-950 bg-white hover:bg-slate-50 border border-slate-300 shadow-xs transition-all text-sm cursor-pointer"
             >
-              <Eye className="w-4 h-4 text-neutral-600" />
+              <Eye className="w-4 h-4 text-slate-500" />
               <span>See How It Works</span>
             </button>
           </div>
 
           {/* Micro assurance tags */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-6 text-xs text-neutral-500 font-medium">
-            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-black" /> Free Certificate Maker India (25 free certs/mo)</span>
-            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-black" /> Bulk Excel Import (.xlsx/.csv)</span>
-            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-black" /> Live QR Code Verification</span>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-600 font-medium">
+            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-teal-600" /> Free Certificate Maker India (25 free certs/mo)</span>
+            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-teal-600" /> Bulk Excel Import (.xlsx/.csv)</span>
+            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-teal-600" /> Live QR Code Verification</span>
           </div>
 
-          {/* Certificate Mockup Preview Card (80% White, 20% Black Frame) */}
+          {/* Certificate Mockup Preview Card (Deep Navy Frame with subtle teal accent) */}
           <div className="mt-14 max-w-5xl mx-auto">
-            <div className="p-3 sm:p-4 rounded-2xl bg-neutral-50 border border-neutral-300/80 shadow-elevated">
-              <div className="relative rounded-xl overflow-hidden border border-neutral-800 bg-black p-6 sm:p-10 text-white shadow-inner">
+            <div className="p-3 sm:p-4 rounded-2xl bg-slate-50 border border-slate-300/80 shadow-elevated">
+              <div className="relative rounded-xl overflow-hidden border border-slate-800 bg-slate-950 p-6 sm:p-10 text-white shadow-inner">
                 
                 {/* Decorative Mockup Badge */}
-                <div className="absolute top-4 right-4 flex items-center gap-2 bg-white/10 border border-white/20 text-white px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md">
-                  <ShieldCheck className="w-3.5 h-3.5 text-white" />
+                <div className="absolute top-4 right-4 flex items-center gap-2 bg-teal-500/20 border border-teal-400/30 text-teal-300 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md">
+                  <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
                   <span>Real-time QR Verified</span>
                 </div>
 
@@ -226,32 +227,32 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           
           {/* Step 1 */}
-          <div className="p-8 rounded-2xl bg-white border border-neutral-300 shadow-card hover:border-black transition-all group">
-            <div className="w-10 h-10 rounded-xl bg-black text-white font-extrabold text-base flex items-center justify-center mb-6 shadow-xs">
+          <div className="p-8 rounded-2xl bg-white border border-slate-200/90 shadow-card hover:border-teal-500 transition-all group">
+            <div className="w-10 h-10 rounded-xl bg-slate-950 text-teal-400 font-extrabold text-base flex items-center justify-center mb-6 shadow-xs ring-1 ring-slate-800">
               1
             </div>
-            <h4 className="text-base font-bold text-black mb-2">Design</h4>
-            <p className="text-neutral-600 text-sm leading-relaxed">
-              Pick from our luxury pre-built certificate designs or customize your layout with custom logos, signatures, and dynamic fields like <code className="text-black font-bold font-mono text-xs">{'{{name}}'}</code>.
+            <h4 className="text-base font-bold text-slate-950 mb-2">Design</h4>
+            <p className="text-slate-600 text-sm leading-relaxed">
+              Pick from our luxury pre-built certificate designs or customize your layout with custom logos, signatures, and dynamic fields like <code className="text-teal-700 font-bold font-mono text-xs bg-teal-50 px-1 py-0.5 rounded">{'{{name}}'}</code>.
             </p>
           </div>
 
           {/* Step 2 */}
-          <div className="p-8 rounded-2xl bg-white border border-neutral-300 shadow-card hover:border-black transition-all group flex flex-col justify-between">
+          <div className="p-8 rounded-2xl bg-white border border-slate-200/90 shadow-card hover:border-teal-500 transition-all group flex flex-col justify-between">
             <div>
-              <div className="w-10 h-10 rounded-xl bg-black text-white font-extrabold text-base flex items-center justify-center mb-6 shadow-xs">
+              <div className="w-10 h-10 rounded-xl bg-slate-950 text-teal-400 font-extrabold text-base flex items-center justify-center mb-6 shadow-xs ring-1 ring-slate-800">
                 2
               </div>
-              <h4 className="text-base font-bold text-black mb-2">Upload Data</h4>
-              <p className="text-neutral-600 text-sm leading-relaxed">
+              <h4 className="text-base font-bold text-slate-950 mb-2">Upload Data</h4>
+              <p className="text-slate-600 text-sm leading-relaxed">
                 Drag and drop your Excel (.xlsx) or CSV file. Our smart heuristic column matcher instantly matches your spreadsheet headers with your certificate fields.
               </p>
             </div>
-            <div className="mt-5 pt-4 border-t border-neutral-100">
+            <div className="mt-5 pt-4 border-t border-slate-100">
               <button
                 type="button"
                 onClick={downloadSampleExcel}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-800 hover:underline cursor-pointer"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-700 hover:text-teal-800 hover:underline cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Download Sample Excel (.xlsx)</span>
@@ -260,12 +261,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </div>
 
           {/* Step 3 */}
-          <div className="p-8 rounded-2xl bg-white border border-neutral-300 shadow-card hover:border-black transition-all group">
-            <div className="w-10 h-10 rounded-xl bg-black text-white font-extrabold text-base flex items-center justify-center mb-6 shadow-xs">
+          <div className="p-8 rounded-2xl bg-white border border-slate-200/90 shadow-card hover:border-teal-500 transition-all group">
+            <div className="w-10 h-10 rounded-xl bg-slate-950 text-teal-400 font-extrabold text-base flex items-center justify-center mb-6 shadow-xs ring-1 ring-slate-800">
               3
             </div>
-            <h4 className="text-base font-bold text-black mb-2">Generate</h4>
-            <p className="text-neutral-600 text-sm leading-relaxed">
+            <h4 className="text-base font-bold text-slate-950 mb-2">Generate</h4>
+            <p className="text-slate-600 text-sm leading-relaxed">
               Preview instantly, click Generate, and watch your batch complete in seconds. Download an organized ZIP file, single combined PDF, or send personalized emails.
             </p>
           </div>
@@ -273,12 +274,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         </div>
       </section>
 
-      {/* 4. FEATURES GRID (80% Crisp White with Black Icons) */}
+      {/* 4. FEATURES GRID (Crisp White with Brand Mint Teal Icons) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-black mb-1">Comprehensive Features</h2>
-          <h3 className="text-3xl font-extrabold text-black tracking-tight">Built for Scale and Speed</h3>
-          <p className="text-neutral-600 mt-2 text-sm">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-teal-700 mb-1">Comprehensive Features</h2>
+          <h3 className="text-3xl font-extrabold text-slate-950 tracking-tight">Built for Scale and Speed</h3>
+          <p className="text-slate-600 mt-2 text-sm">
             Everything your team needs to manage certification programs seamlessly.
           </p>
         </div>
@@ -318,23 +319,23 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           ].map((feat, i) => {
             const Icon = feat.icon;
             return (
-              <div key={i} className="p-6 rounded-2xl bg-white border border-neutral-200/90 shadow-card hover:border-black transition-all">
-                <div className="w-10 h-10 rounded-xl bg-neutral-100 flex items-center justify-center text-black mb-4 border border-neutral-200">
-                  <Icon className="w-5 h-5 text-black" />
+              <div key={i} className="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-card hover:border-teal-500/80 hover:shadow-elevated transition-all">
+                <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center mb-4 border border-teal-200/80">
+                  <Icon className="w-5 h-5 text-teal-600" />
                 </div>
-                <h4 className="font-bold text-black text-base mb-1.5">{feat.title}</h4>
-                <p className="text-neutral-600 text-xs leading-relaxed">{feat.desc}</p>
+                <h4 className="font-bold text-slate-950 text-base mb-1.5">{feat.title}</h4>
+                <p className="text-slate-600 text-xs leading-relaxed">{feat.desc}</p>
               </div>
             );
           })}
         </div>
       </section>
 
-      {/* 5. USE CASES (20% Black Accent Box with White Content) */}
+      {/* 5. USE CASES (Deep Navy Accent Box with Teal Accents) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="p-8 sm:p-12 rounded-3xl bg-black text-white shadow-elevated border border-neutral-800">
+        <div className="p-8 sm:p-12 rounded-3xl bg-slate-950 text-white shadow-elevated border border-slate-800">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-400 mb-2">Tailored Solutions</h2>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-teal-400 mb-2">Tailored Solutions</h2>
             <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Designed for Every Certification Need</h3>
           </div>
 
@@ -342,12 +343,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             {useCases.map((uc, i) => {
               const Icon = uc.icon;
               return (
-                <div key={i} className="p-5 rounded-2xl bg-neutral-900/90 border border-neutral-800 hover:border-neutral-600 transition-colors">
+                <div key={i} className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-teal-500/50 transition-colors">
                   <div className="flex items-center gap-3 mb-2">
-                    <Icon className="w-4 h-4 text-white" />
+                    <Icon className="w-4 h-4 text-teal-400" />
                     <h4 className="font-bold text-white text-sm">{uc.title}</h4>
                   </div>
-                  <p className="text-neutral-400 text-xs leading-relaxed">{uc.desc}</p>
+                  <p className="text-slate-400 text-xs leading-relaxed">{uc.desc}</p>
                 </div>
               );
             })}
@@ -355,21 +356,21 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         </div>
       </section>
 
-      {/* 6. PRICING SECTION (CONFIGURABLE - Crisp White Cards with Black Buttons) */}
+      {/* 6. PRICING SECTION (CONFIGURABLE - Crisp White Cards with Teal/Navy Buttons) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-black mb-1">Transparent Pricing</h2>
-          <h3 className="text-3xl font-extrabold text-black tracking-tight">Choose the Plan That Fits Your Scale</h3>
-          <p className="text-neutral-600 mt-2 text-sm">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-teal-700 mb-1">Transparent Pricing</h2>
+          <h3 className="text-3xl font-extrabold text-slate-950 tracking-tight">Choose the Plan That Fits Your Scale</h3>
+          <p className="text-slate-600 mt-2 text-sm">
             Launch with Free, Professional, or Institute. Complete annual charge shown upfront. All prices in INR (excl. applicable GST).
           </p>
 
-          {/* Billing Toggle (White/Black segmented switch) */}
-          <div className="mt-6 inline-flex items-center p-1 bg-neutral-100 rounded-xl border border-neutral-300">
+          {/* Billing Toggle (Navy/White segmented switch with Teal -20% badge) */}
+          <div className="mt-6 inline-flex items-center p-1 bg-slate-100 rounded-xl border border-slate-300">
             <button
               onClick={() => setBillingCycle('monthly')}
               className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${
-                billingCycle === 'monthly' ? 'bg-black text-white shadow-xs' : 'text-neutral-600 hover:text-black'
+                billingCycle === 'monthly' ? 'bg-slate-950 text-white shadow-xs' : 'text-slate-600 hover:text-slate-950'
               }`}
             >
               Monthly Billing
@@ -377,11 +378,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <button
               onClick={() => setBillingCycle('yearly')}
               className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 ${
-                billingCycle === 'yearly' ? 'bg-black text-white shadow-xs' : 'text-neutral-600 hover:text-black'
+                billingCycle === 'yearly' ? 'bg-slate-950 text-white shadow-xs' : 'text-slate-600 hover:text-slate-950'
               }`}
             >
               <span>Annual Billing</span>
-              <span className="text-[10px] bg-neutral-300 text-black font-extrabold px-1.5 py-0.2 rounded-full">
+              <span className="text-[10px] bg-teal-500 text-white font-extrabold px-1.5 py-0.2 rounded-full">
                 -20%
               </span>
             </button>
@@ -401,49 +402,49 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 key={plan.id}
                 className={`rounded-2xl p-6 transition-all flex flex-col justify-between ${
                   isRecommended 
-                    ? 'bg-white border-2 border-black shadow-elevated relative' 
-                    : 'bg-white border border-neutral-300 shadow-card'
+                    ? 'bg-white border-2 border-teal-500 shadow-elevated relative ring-2 ring-teal-500/10' 
+                    : 'bg-white border border-slate-200/90 shadow-card hover:border-slate-300'
                 }`}
               >
                 {isRecommended && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-teal-500 text-white text-[10px] font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
                     {plan.badgeText || 'Recommended'}
                   </div>
                 )}
 
                 <div>
-                  <h4 className="text-base font-extrabold text-black">{plan.name}</h4>
-                  <p className="text-xs text-neutral-500 mt-1 min-h-[32px]">{plan.tagline}</p>
+                  <h4 className="text-base font-extrabold text-slate-950">{plan.name}</h4>
+                  <p className="text-xs text-slate-500 mt-1 min-h-[32px]">{plan.tagline}</p>
 
                   <div className="mt-4 mb-6">
                     {isCustom ? (
                       <div>
-                        <span className="text-3xl font-black text-black">Custom</span>
-                        <p className="text-[11px] text-neutral-600 font-semibold mt-1">Volume & support agreed in writing</p>
+                        <span className="text-3xl font-black text-slate-950">Custom</span>
+                        <p className="text-[11px] text-slate-600 font-semibold mt-1">Volume & support agreed in writing</p>
                       </div>
                     ) : (
                       <div>
-                        <span className="text-3xl font-black text-black">{plan.currency}{price}</span>
-                        <span className="text-xs text-neutral-500 ml-1">/ month</span>
+                        <span className="text-3xl font-black text-slate-950">{plan.currency}{price}</span>
+                        <span className="text-xs text-slate-500 ml-1">/ month</span>
                         {isAnnual && price > 0 && plan.yearlyTotal ? (
-                          <p className="text-[11px] text-neutral-700 font-bold mt-1">
+                          <p className="text-[11px] text-teal-800 font-bold mt-1">
                             ₹{plan.yearlyTotal.toLocaleString()} billed yearly
                           </p>
                         ) : price > 0 ? (
-                          <p className="text-[11px] text-neutral-500 font-medium mt-1">Billed monthly</p>
+                          <p className="text-[11px] text-slate-500 font-medium mt-1">Billed monthly</p>
                         ) : (
-                          <p className="text-[11px] text-neutral-500 font-medium mt-1">Free forever</p>
+                          <p className="text-[11px] text-slate-500 font-medium mt-1">Free forever</p>
                         )}
                       </div>
                     )}
                   </div>
 
-                  <div className="border-t border-neutral-100 pt-4 space-y-2.5">
+                  <div className="border-t border-slate-100 pt-4 space-y-2.5">
                     {plan.features.map((feat, idx) => {
                       const isHeader = feat.startsWith('Everything in');
                       return (
-                        <div key={idx} className={`flex items-start gap-2 text-xs ${isHeader ? 'font-bold text-black pt-1' : 'text-neutral-700'}`}>
-                          <Check className={`w-4 h-4 shrink-0 mt-0.5 ${isHeader ? 'text-black' : 'text-neutral-500'}`} />
+                        <div key={idx} className={`flex items-start gap-2 text-xs ${isHeader ? 'font-bold text-slate-950 pt-1' : 'text-slate-700'}`}>
+                          <Check className={`w-4 h-4 shrink-0 mt-0.5 ${isHeader ? 'text-teal-600 font-bold' : 'text-teal-500'}`} />
                           <span>{feat}</span>
                         </div>
                       );
@@ -454,12 +455,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 <div className="mt-8 pt-4">
                   <button
                     onClick={onOpenPricing}
-                    className={`w-full py-2.5 rounded-xl font-bold text-xs transition-all ${
+                    className={`w-full py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
                       isRecommended
-                        ? 'bg-black hover:bg-neutral-800 text-white shadow-sm'
+                        ? 'bg-teal-500 hover:bg-teal-600 text-white shadow-md shadow-teal-500/25 active:scale-[0.98]'
                         : isCustom
-                        ? 'bg-black hover:bg-neutral-800 text-white shadow-xs'
-                        : 'bg-neutral-100 hover:bg-neutral-200 text-black'
+                        ? 'bg-slate-950 hover:bg-slate-900 text-white shadow-xs'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-900'
                     }`}
                   >
                     {plan.buttonText || (plan.id === 'free' ? 'Start free' : isCustom ? 'Contact sales' : `Choose ${plan.name}`)}
@@ -471,26 +472,26 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         </div>
 
         {/* Occasional Customer Option: Workshop & Event Pack */}
-        <div className="mt-8 p-5 bg-neutral-50 rounded-2xl border border-neutral-200 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="mt-8 p-5 bg-teal-50/50 rounded-2xl border border-teal-200/80 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-black text-white flex items-center justify-center font-bold text-base shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-teal-500 text-white flex items-center justify-center font-bold text-base shrink-0 shadow-xs shadow-teal-500/25">
               ⚡
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h4 className="font-extrabold text-sm text-black">Workshop & Single Event Pack</h4>
-                <span className="text-[10px] font-bold bg-neutral-200 text-neutral-800 px-2 py-0.5 rounded-full">
+                <h4 className="font-extrabold text-sm text-slate-950">Workshop & Single Event Pack</h4>
+                <span className="text-[10px] font-bold bg-teal-100 text-teal-900 px-2 py-0.5 rounded-full border border-teal-200">
                   One-time • No Subscription
                 </span>
               </div>
-              <p className="text-xs text-neutral-600 mt-0.5">
+              <p className="text-xs text-slate-600 mt-0.5">
                 Need certificates for a single conference or workshop? ₹499 for 100 certificates, 100 email sends, branding removal & print-ready PDF export.
               </p>
             </div>
           </div>
           <button
             onClick={onOpenPricing}
-            className="px-5 py-2.5 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-xl shrink-0 transition-all shadow-xs"
+            className="px-5 py-2.5 bg-slate-950 hover:bg-slate-900 text-white font-bold text-xs rounded-xl shrink-0 transition-all shadow-xs cursor-pointer"
           >
             Get Event Pack (₹499)
           </button>
@@ -500,8 +501,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       {/* 7. FAQ SECTION */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-black mb-1">Have Questions?</h2>
-          <h3 className="text-3xl font-extrabold text-black tracking-tight">Frequently Asked Questions</h3>
+          <h2 className="text-xs font-bold uppercase tracking-wider text-teal-700 mb-1">Have Questions?</h2>
+          <h3 className="text-3xl font-extrabold text-slate-950 tracking-tight">Frequently Asked Questions</h3>
         </div>
 
         <div className="space-y-3">
@@ -510,17 +511,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             return (
               <div 
                 key={idx}
-                className="bg-white rounded-2xl border border-neutral-200 overflow-hidden transition-all shadow-xs"
+                className="bg-white rounded-2xl border border-slate-200 overflow-hidden transition-all shadow-xs"
               >
                 <button
                   onClick={() => setOpenFaq(isOpen ? null : idx)}
-                  className="w-full px-6 py-4 text-left flex items-center justify-between font-bold text-black text-xs hover:text-neutral-700 transition-colors"
+                  className="w-full px-6 py-4 text-left flex items-center justify-between font-bold text-slate-900 text-xs hover:text-teal-700 transition-colors cursor-pointer"
                 >
                   <span>{faq.q}</span>
-                  <ChevronRight className={`w-4 h-4 text-neutral-500 transition-transform ${isOpen ? 'rotate-90 text-black' : ''}`} />
+                  <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? 'rotate-90 text-teal-600' : ''}`} />
                 </button>
                 {isOpen && (
-                  <div className="px-6 pb-4 pt-1 text-neutral-600 text-xs leading-relaxed border-t border-neutral-100">
+                  <div className="px-6 pb-4 pt-1 text-slate-600 text-xs leading-relaxed border-t border-slate-100">
                     {faq.a}
                   </div>
                 )}
@@ -530,26 +531,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         </div>
       </section>
 
-      {/* 8. BOTTOM CALL TO ACTION (Bold Black Accent 20% / White Text 80%) */}
+      {/* 8. BOTTOM CALL TO ACTION (Deep Navy 950 with Brand Teal Glow) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="p-8 sm:p-14 rounded-3xl bg-black text-white text-center shadow-elevated border border-neutral-800 relative overflow-hidden">
+        <div className="p-8 sm:p-14 rounded-3xl bg-slate-950 text-white text-center shadow-elevated border border-slate-800 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
           <div className="relative z-10 max-w-2xl mx-auto space-y-4">
             <h3 className="text-3xl sm:text-4xl font-black tracking-tight">
               Ready to generate your first batch of certificates?
             </h3>
-            <p className="text-neutral-300 text-sm">
+            <p className="text-slate-300 text-sm">
               Join thousands of educators, organizations, and summit directors saving dozens of hours every month.
             </p>
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
               <button
                 onClick={onStartCreating}
-                className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-black bg-white hover:bg-neutral-100 shadow-sm transition-all text-sm"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-white bg-teal-500 hover:bg-teal-600 shadow-lg shadow-teal-500/30 transition-all text-sm cursor-pointer active:scale-[0.98]"
               >
                 Start Creating Free
               </button>
               <button
                 onClick={onVerifyDemo}
-                className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-semibold text-white bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 transition-all text-sm"
+                className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-semibold text-white bg-slate-900 hover:bg-slate-800 border border-slate-700 transition-all text-sm cursor-pointer"
               >
                 Try Public QR Verification
               </button>
