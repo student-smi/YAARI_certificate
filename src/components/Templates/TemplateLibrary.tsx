@@ -40,6 +40,7 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedOrientationFilter, setSelectedOrientationFilter] = useState<'all' | 'landscape' | 'portrait'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Per-card orientation state overrides (key: templateId, value: 'landscape' | 'portrait')
   const [cardOrientations, setCardOrientations] = useState<Record<string, 'landscape' | 'portrait'>>({});
@@ -121,6 +122,23 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
     if (!templateToEdit) return;
     onEditTemplate(templateToEdit.id, editOrientation);
     setEditModalOpen(false);
+  };
+
+  const handleDuplicate = (template: Template) => {
+    onDuplicateTemplate(template);
+    setToastMessage(`✓ Duplicated "${template.name}"! Saved to My Templates.`);
+    setSelectedCategory('custom');
+    setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  const handleDelete = (template: Template) => {
+    if (confirm(`Are you sure you want to delete "${template.name}"?`)) {
+      if (onDeleteTemplate) {
+        onDeleteTemplate(template.id);
+        setToastMessage(`✓ Template "${template.name}" deleted.`);
+        setTimeout(() => setToastMessage(null), 3000);
+      }
+    }
   };
 
   return (
@@ -371,7 +389,7 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
                   </button>
 
                   <button
-                    onClick={() => onDuplicateTemplate(template)}
+                    onClick={() => handleDuplicate(template)}
                     className="p-2 border border-neutral-300 hover:bg-neutral-100 text-black rounded-xl transition-colors cursor-pointer"
                     title="Duplicate Template"
                   >
@@ -380,11 +398,7 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
 
                   {template.isCustom && onDeleteTemplate && (
                     <button
-                      onClick={() => {
-                        if (confirm(`Are you sure you want to delete "${template.name}"?`)) {
-                          onDeleteTemplate(template.id);
-                        }
-                      }}
+                      onClick={() => handleDelete(template)}
                       className="p-2 border border-red-200 hover:bg-red-50 text-red-600 rounded-xl transition-colors cursor-pointer"
                       title="Delete Custom Template"
                     >
@@ -780,6 +794,14 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 bg-black text-white px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 text-xs font-bold animate-in fade-in slide-in-from-bottom-2 duration-200">
+          <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0" />
+          <span>{toastMessage}</span>
         </div>
       )}
 

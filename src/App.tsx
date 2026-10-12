@@ -35,6 +35,7 @@ export function App() {
   const [activeProject, setActiveProject] = useState<Project | null>(projects[0] || null);
   const [activeDesignerTemplate, setActiveDesignerTemplate] = useState<Template>(templates[0]);
   const [verifyInitialId, setVerifyInitialId] = useState<string>('CERT-2026-00001');
+  const [designerSourceView, setDesignerSourceView] = useState<'templates' | 'dashboard' | 'wizard'>('templates');
 
   // Modals
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -102,8 +103,10 @@ export function App() {
     templateId?: string,
     orientation?: 'landscape' | 'portrait',
     customBgUrl?: string,
-    customName?: string
+    customName?: string,
+    sourceView: 'templates' | 'dashboard' | 'wizard' = 'templates'
   ) => {
+    setDesignerSourceView(sourceView);
     let tpl: Template;
     if (templateId === 'blank' || templateId === 'new' || (!templateId && templateId !== undefined && templateId === '')) {
       const isPortrait = orientation === 'portrait';
@@ -246,17 +249,43 @@ export function App() {
       StorageService.saveTemplate(tpl);
       setTemplates(StorageService.getTemplates());
     } else {
-      const found = templates.find(t => t.id === templateId) || templates[0];
-      if (orientation && found.orientation !== orientation) {
-        const isPortrait = orientation === 'portrait';
+      const freshTemplates = StorageService.getTemplates();
+      const found = freshTemplates.find(t => t.id === templateId) || freshTemplates[0];
+      const targetOrientation = orientation || found.orientation;
+      const isTargetPortrait = targetOrientation === 'portrait';
+
+      if (found.isCustom) {
+        if (targetOrientation !== found.orientation) {
+          tpl = {
+            ...found,
+            orientation: targetOrientation,
+            width: isTargetPortrait ? 595 : 842,
+            height: isTargetPortrait ? 842 : 595,
+            updatedAt: new Date().toISOString()
+          };
+          StorageService.saveTemplate(tpl);
+          setTemplates(StorageService.getTemplates());
+        } else {
+          tpl = found;
+        }
+      } else {
+        // User is editing a built-in default template:
+        // Clone into user's ⭐ My Templates so default template remains intact
         tpl = {
           ...found,
-          orientation,
-          width: isPortrait ? 595 : 842,
-          height: isPortrait ? 842 : 595
+          id: `tpl-custom-${Date.now()}`,
+          name: `${found.name} (Custom)`,
+          description: found.description || 'Custom certificate design',
+          isCustom: true,
+          category: 'custom',
+          orientation: targetOrientation,
+          width: isTargetPortrait ? 595 : 842,
+          height: isTargetPortrait ? 842 : 595,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         };
-      } else {
-        tpl = found;
+        StorageService.saveTemplate(tpl);
+        setTemplates(StorageService.getTemplates());
       }
     }
     setActiveDesignerTemplate(tpl);
@@ -281,15 +310,15 @@ export function App() {
   const handleDuplicateTemplate = (tpl: Template) => {
     const dup: Template = {
       ...tpl,
-      id: `tpl-${Date.now()}`,
+      id: `tpl-custom-${Date.now()}`,
       name: `${tpl.name} (Copy)`,
       isCustom: true,
+      category: 'custom',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
     StorageService.saveTemplate(dup);
     setTemplates(StorageService.getTemplates());
-    handleOpenDesigner(dup.id);
   };
 
   const handleOpenEmailModal = (proj: Project) => {
@@ -368,7 +397,7 @@ export function App() {
             templates={templates}
             onOpenCreateProject={() => setNewProjectModalOpen(true)}
             onOpenProjectWizard={handleOpenProjectWizard}
-            onOpenDesigner={handleOpenDesigner}
+            onOpenDesigner={(tplId) => handleOpenDesigner(tplId, undefined, undefined, undefined, 'dashboard')}
             onOpenBilling={() => setBillingModalOpen(true)}
             onDeleteProject={handleDeleteProject}
           />
@@ -383,7 +412,7 @@ export function App() {
               setActiveProject(updated);
               setProjects(StorageService.getProjects());
             }}
-            onOpenDesigner={handleOpenDesigner}
+            onOpenDesigner={(tplId) => handleOpenDesigner(tplId, undefined, undefined, undefined, 'wizard')}
             onOpenEmailModal={handleOpenEmailModal}
             onOpenBilling={() => setBillingModalOpen(true)}
           />
@@ -395,12 +424,20 @@ export function App() {
             initialTemplate={activeDesignerTemplate}
             user={user}
             onOpenBilling={() => setBillingModalOpen(true)}
-            onBack={() => setCurrentView('dashboard')}
+            onBack={() => {
+              const fresh = StorageService.getTemplates();
+              setTemplates(fresh);
+              setCurrentView(designerSourceView);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             onSaveTemplate={(updated) => {
+              StorageService.saveTemplate(updated);
               setTemplates(StorageService.getTemplates());
               setActiveDesignerTemplate(updated);
             }}
             onNavigateToTemplates={() => {
+              const fresh = StorageService.getTemplates();
+              setTemplates(fresh);
               setCurrentView('templates');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
@@ -461,7 +498,7 @@ export function App() {
               handleCreateProject(newProj);
             }}
             onEditTemplate={(tplId, orientation, customBgUrl, customName) => 
-              handleOpenDesigner(tplId, orientation, customBgUrl, customName)
+              handleOpenDesigner(tplId, orientation, customBgUrl, customName, 'templates')
             }
             onDuplicateTemplate={handleDuplicateTemplate}
             onDeleteTemplate={(tplId) => {

@@ -254,13 +254,45 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
   // Selected element helper
   const selectedElement = template.elements.find(el => el.id === selectedElementId);
 
+  // Quick 1-click Save handler
+  const handleQuickSave = () => {
+    const toSave: Template = {
+      ...template,
+      isCustom: true,
+      updatedAt: new Date().toISOString()
+    };
+    setTemplate(toSave);
+    StorageService.saveTemplate(toSave);
+    onSaveTemplate(toSave);
+    setSaveStatus('saved');
+    setToastMessage(`✓ Template "${toSave.name}" saved!`);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  // Immediate save & return handler
+  const handleBack = () => {
+    const toSave: Template = {
+      ...template,
+      isCustom: true,
+      updatedAt: new Date().toISOString()
+    };
+    StorageService.saveTemplate(toSave);
+    onSaveTemplate(toSave);
+    onBack();
+  };
+
   // Autosave trigger with debounce
   useEffect(() => {
     setSaveStatus('unsaved');
     const timer = setTimeout(() => {
       setSaveStatus('saving');
-      StorageService.saveTemplate(template);
-      onSaveTemplate(template);
+      const toSave: Template = {
+        ...template,
+        isCustom: true,
+        updatedAt: new Date().toISOString()
+      };
+      StorageService.saveTemplate(toSave);
+      onSaveTemplate(toSave);
       setTimeout(() => setSaveStatus('saved'), 400);
     }, 800);
 
@@ -270,6 +302,13 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
   // Keyboard micro-alignment & shortcut controls
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+S / Cmd+S global save shortcut
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        handleQuickSave();
+        return;
+      }
+
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName)) {
         return;
       }
@@ -1194,9 +1233,9 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
         {/* Left: Navigation & Meta */}
         <div className="flex items-center gap-3">
           <button
-            onClick={onBack}
-            className="p-1.5 rounded-lg border border-neutral-200 hover:border-black text-black hover:bg-neutral-50 transition-colors"
-            title="Back to Dashboard"
+            onClick={handleBack}
+            className="p-1.5 rounded-lg border border-neutral-200 hover:border-black text-black hover:bg-neutral-50 transition-colors cursor-pointer"
+            title="Save and Go Back"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
@@ -1343,11 +1382,19 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
             <span>Test Preview</span>
           </button>
           <button
-            onClick={() => setSaveModalOpen(true)}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-black hover:bg-neutral-800 text-white text-xs font-bold shadow-xs active:scale-95 transition-transform"
+            onClick={handleQuickSave}
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-teal-500 hover:bg-teal-600 text-white text-xs font-bold shadow-xs active:scale-95 transition-all cursor-pointer"
+            title="Instant 1-Click Save"
           >
             <Save className="w-3.5 h-3.5" />
-            <span>{template.isCustom ? 'Save Changes' : 'Save Template'}</span>
+            <span>Save</span>
+          </button>
+          <button
+            onClick={() => setSaveModalOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-neutral-300 bg-white hover:bg-neutral-50 text-neutral-800 text-xs font-semibold shadow-xs active:scale-95 transition-all cursor-pointer"
+            title="Save as a new copy, rename, or change category"
+          >
+            <span>Save As...</span>
           </button>
         </div>
 

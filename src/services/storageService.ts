@@ -675,15 +675,26 @@ export class StorageService {
       console.warn('Custom templates read failed', e);
     }
 
-    // Always merge built-in templates with the user's isolated custom templates
-    return [...DEFAULT_TEMPLATES, ...customTemplates];
+    // Ensure all custom templates are explicitly marked as isCustom
+    const normalizedCustom = customTemplates.map(t => ({
+      ...t,
+      isCustom: true,
+      category: t.category || 'custom'
+    }));
+
+    // Deduplicate against DEFAULT_TEMPLATES: custom templates take precedence over defaults with the same ID
+    const customIdSet = new Set(normalizedCustom.map(t => t.id));
+    const nonOverriddenDefaults = DEFAULT_TEMPLATES.filter(t => !customIdSet.has(t.id));
+
+    // Custom templates placed at the top so user's custom templates are immediately visible
+    return [...normalizedCustom, ...nonOverriddenDefaults];
   }
 
   public static getTemplateById(id: string, userId?: string): Template | undefined {
     return this.getTemplates(userId).find(t => t.id === id);
   }
 
-  public static saveTemplate(template: Template, userId?: string) {
+  public static saveTemplate(template: Template, userId?: string): Template {
     const targetUserId = userId || template.userId || this.getUser().id;
     const customKey = `certiforge_custom_templates_${targetUserId}`;
     let customTemplates: Template[] = [];
@@ -700,17 +711,29 @@ export class StorageService {
     };
 
     const index = customTemplates.findIndex(t => t.id === template.id);
+    let saved: Template;
     if (index >= 0) {
-      customTemplates[index] = { ...templateWithOwner, updatedAt: new Date().toISOString() };
+      saved = {
+        ...templateWithOwner,
+        createdAt: customTemplates[index].createdAt || template.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      customTemplates[index] = saved;
     } else {
-      customTemplates.unshift({ ...templateWithOwner, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+      saved = {
+        ...templateWithOwner,
+        createdAt: template.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      customTemplates.unshift(saved);
     }
 
     localStorage.setItem(customKey, JSON.stringify(customTemplates));
     this.notify();
+    return saved;
   }
 
-  public static deleteTemplate(id: string, userId?: string) {
+  public static deleteTemplate(id: string, userId?: string): boolean {
     const targetUserId = userId || this.getUser().id;
     const customKey = `certiforge_custom_templates_${targetUserId}`;
     let customTemplates: Template[] = [];
@@ -720,9 +743,11 @@ export class StorageService {
       if (data) customTemplates = JSON.parse(data);
     } catch (e) {}
 
+    const originalLength = customTemplates.length;
     customTemplates = customTemplates.filter(t => t.id !== id);
     localStorage.setItem(customKey, JSON.stringify(customTemplates));
     this.notify();
+    return customTemplates.length !== originalLength;
   }
 
   // Pricing Plans (Configurable from Admin!)
