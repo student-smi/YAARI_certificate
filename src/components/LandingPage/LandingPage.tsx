@@ -47,14 +47,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     },
     {
       q: 'How does this certificate maker with QR code verification protect against fraud?',
-      a: 'Every generated certificate automatically receives a unique tamper-proof cryptographic QR code. When scanned with any smartphone camera, it opens an official verification page on certicraft.upmark.in confirming recipient identity and validity status.'
+      a: 'Every generated certificate automatically receives a unique tamper-proof cryptographic QR code. When scanned with any smartphone camera, it opens an official verification page confirming recipient identity and validity status.'
     },
     {
       q: 'Is CertiCraft a free certificate maker in India?',
       a: 'Yes! CertiCraft offers a 100% Free Starter Plan in India with 25 certificates per month, Excel/CSV upload, and high-resolution PDF/ZIP downloads with zero credit card required.'
     },
     {
-      q: 'Where can I access CertiCraft on upmark?',
+      q: 'How do I get started with CertiCraft?',
       a: 'You can access CertiCraft directly at https://certicraft.upmark.in. Log in with Google SSO or email to start creating certificates.'
     },
     {

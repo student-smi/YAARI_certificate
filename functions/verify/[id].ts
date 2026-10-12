@@ -33,7 +33,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     if (certId === 'CERT-2026-00001') {
       recipientName = 'Khushi Barot';
       courseName = 'AI ML Development';
-      orgName = 'Upmark Digital';
+      orgName = 'CertiCraft Authority';
       issueDate = 'October 15, 2026';
     } else {
       recipientName = 'Aarav Patel';

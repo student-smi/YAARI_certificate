@@ -179,7 +179,7 @@ export const LinkedInEditorModal: React.FC<LinkedInEditorModalProps> = ({
                 type="text"
                 value={formData.organizationName}
                 onChange={(e) => setFormData({ ...formData, organizationName: e.target.value })}
-                placeholder="e.g. Upmark Digital"
+                placeholder="e.g. Global Leadership Institute"
                 className="w-full px-3.5 py-2.5 text-xs sm:text-sm bg-neutral-50 border border-neutral-300 rounded-xl focus:outline-none focus:border-black font-semibold text-black transition-colors"
               />
               <span className="text-[10px] text-neutral-400 mt-1 block">
