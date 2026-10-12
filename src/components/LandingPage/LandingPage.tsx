@@ -41,28 +41,28 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
   const faqs = [
     {
-      q: 'How many certificates can I generate in one batch?',
-      a: 'You can generate from 1 to 25,000+ certificates in a single batch. CertiCraft processes jobs asynchronously with real-time progress updates, ensuring smooth execution without browser freezing.'
+      q: 'How does CertiCraft work as a bulk certificate generator with Excel?',
+      a: 'CertiCraft makes bulk certificate generation effortless. Simply upload your Excel (.xlsx, .xls) or CSV attendee list, our system auto-maps columns like Name and Date, and generates hundreds of certificates with 1 click.'
     },
     {
-      q: 'Can I upload Excel (.xlsx) and CSV files?',
-      a: 'Yes! CertiCraft supports .xlsx, .xls, and .csv files. Our intelligent column matcher automatically maps headers like "Full Name" to {{name}} and "Issue Date" to {{date}}.'
+      q: 'How does this certificate maker with QR code verification protect against fraud?',
+      a: 'Every generated certificate automatically receives a unique tamper-proof cryptographic QR code. When scanned with any smartphone camera, it opens an official verification page on certicraft.upmark.in confirming recipient identity and validity status.'
+    },
+    {
+      q: 'Is CertiCraft a free certificate maker in India?',
+      a: 'Yes! CertiCraft offers a 100% Free Starter Plan in India with 25 certificates per month, Excel/CSV upload, and high-resolution PDF/ZIP downloads with zero credit card required.'
+    },
+    {
+      q: 'Where can I access CertiCraft on upmark?',
+      a: 'You can access CertiCraft directly at https://certicraft.upmark.in. Log in with Google SSO or email to start creating certificates.'
     },
     {
       q: 'Can I customize the certificate design completely?',
-      a: 'Absolutely. Choose from our luxury designer templates or open the Drag & Drop Certificate Studio to customize fonts, colors, seals, borders, signatures, logos, and custom dynamic tags.'
+      a: 'Absolutely. Choose from our luxury landscape & portrait templates or use the Studio Designer to customize fonts, colors, seals, borders, signatures, logos, and custom dynamic tags.'
     },
     {
-      q: 'How does recipient QR verification work?',
-      a: 'Every generated certificate automatically receives a tamper-proof cryptographic QR code. When scanned with any smartphone camera, it opens a verification page confirming the recipient’s credentials, course, and issuance status.'
-    },
-    {
-      q: 'Can I email certificates directly to recipients?',
-      a: 'Yes. With one click, you can send personalized emails containing customized subject lines, greeting messages, and the individual certificate PDF attached.'
-    },
-    {
-      q: 'Can I download all certificates together in a ZIP file?',
-      a: 'Yes! Once generation completes, you can download an organized ZIP archive containing individual named PDFs (e.g. CERT-001-Aarav.pdf) or a single multi-page combined PDF.'
+      q: 'Can I email certificates directly to recipients or download as ZIP?',
+      a: 'Yes! You can dispatch individual certificates directly to candidate emails or download an organized ZIP archive of high-res print-ready PDFs.'
     }
   ];
 
@@ -122,9 +122,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
           {/* Micro assurance tags */}
           <div className="mt-6 flex flex-wrap items-center justify-center gap-6 text-xs text-neutral-500 font-medium">
-            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-black" /> No credit card required</span>
-            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-black" /> Free 50 certificates</span>
-            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-black" /> Instant ZIP download</span>
+            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-black" /> Free Certificate Maker India (25 free certs/mo)</span>
+            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-black" /> Bulk Excel Import (.xlsx/.csv)</span>
+            <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-black" /> Live QR Code Verification</span>
           </div>
 
           {/* Certificate Mockup Preview Card (80% White, 20% Black Frame) */}
@@ -279,8 +279,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             },
             {
               icon: FileSpreadsheet,
-              title: 'Excel & CSV Import',
-              desc: 'Seamless import with automatic validation for missing names, duplicate IDs, and invalid email addresses.'
+              title: 'Bulk Certificate Generator with Excel',
+              desc: 'Seamless import with automatic column mapping for names, courses, and dates from .xlsx, .xls, and .csv spreadsheets.'
             },
             {
               icon: Zap,
@@ -294,7 +294,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             },
             {
               icon: ShieldCheck,
-              title: 'Tamper-Proof QR Verification',
+              title: 'Certificate Maker with QR Code Verification',
               desc: 'Every certificate comes with a scannable QR badge linking to a public, official verification page.'
             },
             {
