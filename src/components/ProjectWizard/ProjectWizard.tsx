@@ -268,7 +268,7 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
       const syncItems = updated.recipients.map(r => ({
         certificateId: r.certificateId || r.id,
         projectId: updated.id,
-        recipientName: r.data[updated.fieldMapping['name'] || 'name'] || r.data['Full Name'] || r.data['Name'] || 'Recipient',
+        recipientName: r.data[updated.fieldMapping['name'] || updated.fieldMapping['recipient_name'] || 'name'] || r.data[updated.fieldMapping['recipient_name'] || 'recipient_name'] || r.data['Full Name'] || r.data['Student Name'] || r.data['Recipient Name'] || r.data['Name'] || 'Recipient',
         recipientEmail: r.data[updated.fieldMapping['email'] || 'email'] || r.data['Email'] || '',
         courseName: r.data[updated.fieldMapping['course'] || 'course'] || r.data['Course Name'] || updated.name,
         organizationName: updated.organizationName || 'CertiForge Institution',
@@ -320,7 +320,7 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
       fieldMapping: currentProject.fieldMapping
     });
 
-    const recName = rec.data[currentProject.fieldMapping['name'] || 'name'] || 'Recipient';
+    const recName = rec.data[currentProject.fieldMapping['name'] || currentProject.fieldMapping['recipient_name'] || 'name'] || rec.data['Full Name'] || rec.data['Student Name'] || rec.data['Name'] || 'Recipient';
     downloadBlobFile(blob, `${rec.certificateId}_${recName.replace(/\s+/g, '_')}.pdf`);
   };
 
@@ -845,7 +845,7 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
                 className="px-3 py-1.5 rounded-lg border border-neutral-300 bg-white text-xs font-bold text-black focus:outline-none"
               >
                 {currentProject.recipients.map((r, i) => {
-                  const rName = r.data[currentProject.fieldMapping['name'] || 'name'] || `Recipient #${i + 1}`;
+                  const rName = r.data[currentProject.fieldMapping['name'] || currentProject.fieldMapping['recipient_name'] || 'name'] || r.data['Full Name'] || r.data['Student Name'] || r.data['Name'] || `Recipient #${i + 1}`;
                   return (
                     <option key={r.id} value={i}>
                       Record {i + 1}: {rName}
@@ -1118,7 +1118,7 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
                 <tbody className="divide-y divide-neutral-100 font-medium">
                   {currentProject.recipients.map((rec) => {
                     const customRec = customRecipientLinkedInMap[rec.id];
-                    const name = rec.data[currentProject.fieldMapping['name'] || 'name'] || rec.data['Full Name'] || 'Recipient';
+                    const name = rec.data[currentProject.fieldMapping['name'] || currentProject.fieldMapping['recipient_name'] || 'name'] || rec.data['Full Name'] || rec.data['Student Name'] || rec.data['Recipient Name'] || rec.data['Name'] || 'Recipient';
                     const email = rec.data[currentProject.fieldMapping['email'] || 'email'] || rec.data['Email Address'] || '—';
                     const course = customRec?.name || rec.data[currentProject.fieldMapping['course'] || 'course'] || rec.data['Course Name'] || currentProject.name;
                     const org = customRec?.organizationName || currentProject.organizationName || 'CertiForge Verified Issuer';

@@ -120,6 +120,8 @@ export const VerificationPortal: React.FC<VerificationPortalProps> = ({ initialC
       const template = searchResult.project?.template || DEFAULT_TEMPLATES[0];
       const recipientData: Record<string, string> = {
         name: searchResult.recipientName || 'Recipient',
+        recipient_name: searchResult.recipientName || 'Recipient',
+        student_name: searchResult.recipientName || 'Recipient',
         'Full Name': searchResult.recipientName || 'Recipient',
         course: activeLinkedInName,
         'Course Name': activeLinkedInName,

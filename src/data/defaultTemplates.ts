@@ -954,13 +954,13 @@ export const DEFAULT_TEMPLATES: Template[] = [
       {
         id: 'el-p-acad-name',
         type: 'dynamic_field',
-        fieldKey: 'recipient_name',
+        fieldKey: 'name',
         x: 50,
         y: 39,
         width: 85,
         height: 9,
         zIndex: 1,
-        content: '{{recipient_name}}',
+        content: '{{name}}',
         fontSettings: {
           family: 'Playfair Display',
           size: 32,
@@ -1178,13 +1178,13 @@ export const DEFAULT_TEMPLATES: Template[] = [
       {
         id: 'el-p-corp-name',
         type: 'dynamic_field',
-        fieldKey: 'recipient_name',
+        fieldKey: 'name',
         x: 50,
         y: 39,
         width: 85,
         height: 9,
         zIndex: 1,
-        content: '{{recipient_name}}',
+        content: '{{name}}',
         fontSettings: {
           family: 'Playfair Display',
           size: 30,
@@ -1344,13 +1344,13 @@ export const DEFAULT_TEMPLATES: Template[] = [
       {
         id: 'el-p-tech-name',
         type: 'dynamic_field',
-        fieldKey: 'recipient_name',
+        fieldKey: 'name',
         x: 50,
         y: 38,
         width: 85,
         height: 9,
         zIndex: 1,
-        content: '{{recipient_name}}',
+        content: '{{name}}',
         fontSettings: {
           family: 'Plus Jakarta Sans',
           size: 28,
@@ -1510,13 +1510,13 @@ export const DEFAULT_TEMPLATES: Template[] = [
       {
         id: 'el-p-appr-name',
         type: 'dynamic_field',
-        fieldKey: 'recipient_name',
+        fieldKey: 'name',
         x: 50,
         y: 39,
         width: 85,
         height: 9,
         zIndex: 1,
-        content: '{{recipient_name}}',
+        content: '{{name}}',
         fontSettings: {
           family: 'Playfair Display',
           size: 30,

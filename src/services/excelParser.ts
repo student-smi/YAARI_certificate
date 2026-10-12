@@ -129,6 +129,8 @@ export const suggestFieldMappings = (
   matchMap['email'] = ['email', 'email address', 'recipient email', 'mail', 'work email'];
   matchMap['phone'] = ['phone', 'contact', 'mobile', 'cell'];
   matchMap['date'] = ['issue date', 'completion date', 'date', 'awarded on'];
+  matchMap['recipient_name'] = ['name', 'full name', 'student name', 'recipient name', 'candidate name', 'participant', 'attendee', 'student'];
+  matchMap['student_name'] = ['name', 'full name', 'student name', 'recipient name', 'candidate name', 'participant', 'attendee', 'student'];
 
   templateFields.forEach(field => {
     const fLower = field.toLowerCase();

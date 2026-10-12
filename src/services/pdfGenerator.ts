@@ -30,6 +30,8 @@ export const resolveDynamicContent = (
   // Map known fields according to specification
   const fieldKeys = [
     'name', 
+    'recipient_name',
+    'student_name',
     'course', 
     'issue_date', 
     'completion_date', 
@@ -53,7 +55,10 @@ export const resolveDynamicContent = (
   ];
   
   fieldKeys.forEach((key) => {
-    const mappedHeader = fieldMapping[key] || key;
+    const mappedHeader = fieldMapping[key] || 
+      (key === 'recipient_name' || key === 'student_name' ? fieldMapping['name'] : undefined) || 
+      (key === 'name' ? (fieldMapping['recipient_name'] || fieldMapping['student_name']) : undefined) || 
+      key;
     // Find value from recipientData case-insensitively
     let value = recipientData[mappedHeader] || recipientData[key] || '';
     if (!value) {
@@ -67,6 +72,9 @@ export const resolveDynamicContent = (
     }
 
     // Special fallbacks
+    if (!value && (key === 'name' || key === 'recipient_name' || key === 'student_name')) {
+      value = recipientData['Full Name'] || recipientData['full_name'] || recipientData['Student Name'] || recipientData['student_name'] || recipientData['Recipient Name'] || recipientData['recipient_name'] || recipientData['Name'] || recipientData['name'] || '';
+    }
     if (!value && key === 'issue_date') {
       value = recipientData['date'] || recipientData['Date'] || new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
     }
@@ -77,13 +85,19 @@ export const resolveDynamicContent = (
       value = recipientData['issue_date'] || recipientData['completion_date'] || '';
     }
     if (!value && key === 'statement') {
-      const recName = recipientData[fieldMapping['name'] || 'name'] || recipientData['Full Name'] || 'Recipient';
+      const recName = recipientData[fieldMapping['name'] || fieldMapping['recipient_name'] || 'name'] || recipientData['Full Name'] || recipientData['Name'] || 'Recipient';
       const cName = recipientData[fieldMapping['course'] || 'course'] || recipientData['Course Name'] || 'the program';
       value = `This certifies that ${recName} has successfully completed the program ${cName}.`;
     }
 
     const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'gi');
     text = text.replace(regex, value);
+
+    // If key is name, also replace any existing recipient_name / student_name tags with same value
+    if (key === 'name' && value) {
+      text = text.replace(/\{\{recipient_name\}\}/gi, value);
+      text = text.replace(/\{\{student_name\}\}/gi, value);
+    }
   });
 
   // Replace any other custom {{field}} tags from recipientData
