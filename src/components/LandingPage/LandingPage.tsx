@@ -86,20 +86,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           {/* Top Pill (Crisp white pill with black text and border) */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-neutral-100 border border-neutral-300 text-black text-xs font-semibold mb-6 shadow-xs animate-in fade-in slide-in-from-bottom-2 duration-300">
             <span className="w-2 h-2 rounded-full bg-black animate-pulse" />
-            <span>Bulk Certificate Infrastructure for Modern Teams</span>
+            <span>CertiCraft — Bulk Certificate Infrastructure & QR Verification</span>
           </div>
 
           {/* Headline (80% White background, 20% Pitch Black typography) */}
           <h1 className="text-4xl sm:text-6xl font-black text-black tracking-tight max-w-4xl mx-auto leading-[1.12]">
             Create Hundreds of Certificates <br className="hidden sm:inline" />
             <span className="underline decoration-black decoration-wavy decoration-2 underline-offset-8">
-              in Minutes
+              in Minutes with CertiCraft
             </span>
           </h1>
 
           {/* Supporting text */}
           <p className="mt-6 text-base sm:text-lg text-neutral-600 max-w-2xl mx-auto leading-relaxed">
-            Design once, upload your recipient data, and automatically generate personalized certificates at scale.
+            CertiCraft is the high-performance bulk certificate platform. Design once, upload your Excel recipient data, and automatically issue verifiable certificates at scale.
           </p>
 
           {/* CTA Buttons (Black primary button, white secondary button) */}
