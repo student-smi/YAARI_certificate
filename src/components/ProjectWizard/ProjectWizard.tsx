@@ -593,26 +593,48 @@ export const ProjectWizard: React.FC<ProjectWizardProps> = ({
               Supports .xlsx, .xls, and .csv files up to 25,000 rows. No manual row limits.
             </p>
 
-            <button
-              type="button"
-              className="px-4 py-2 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-xl shadow-xs transition-colors"
-            >
-              Browse Files
-            </button>
+            <div className="flex flex-wrap items-center justify-center gap-2.5">
+              <button
+                type="button"
+                className="px-5 py-2.5 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-xl shadow-xs transition-colors cursor-pointer"
+              >
+                Browse Files
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  downloadSampleExcel();
+                }}
+                className="flex items-center gap-1.5 px-4 py-2.5 bg-white hover:bg-neutral-100 text-neutral-800 border border-neutral-300 font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer"
+              >
+                <Download className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Download Sample Excel (.xlsx)</span>
+              </button>
+            </div>
           </div>
 
           {/* Instant sample button for easy testing */}
           <div className="p-4 rounded-xl bg-neutral-50 border border-neutral-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
             <div className="flex items-center gap-2 text-neutral-700">
-              <Sparkles className="w-4 h-4 text-black shrink-0" />
-              <span>Don't have a spreadsheet ready? Load pre-configured sample recipients with 1 click.</span>
+              <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>Don't have a spreadsheet ready? Load pre-configured sample recipients or download the sample format.</span>
             </div>
-            <button
-              onClick={handleLoadSampleRecipients}
-              className="px-4 py-1.5 bg-white hover:bg-neutral-50 border border-neutral-300 text-black font-bold rounded-lg shadow-xs transition-all shrink-0"
-            >
-              Load 12 Sample Recipients
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={downloadSampleExcel}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-neutral-100 border border-neutral-300 text-neutral-800 font-bold text-xs rounded-lg shadow-xs transition-all shrink-0 cursor-pointer"
+              >
+                <Download className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Download .xlsx</span>
+              </button>
+              <button
+                onClick={handleLoadSampleRecipients}
+                className="px-3.5 py-1.5 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-lg shadow-xs transition-all shrink-0 cursor-pointer"
+              >
+                Load 12 Demo Recipients
+              </button>
+            </div>
           </div>
 
           {uploadError && (

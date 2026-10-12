@@ -260,23 +260,59 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {projects.length === 0 ? (
-          /* Empty state */
-          <div className="py-16 text-center space-y-4">
-            <div className="w-12 h-12 bg-neutral-100 text-black rounded-2xl flex items-center justify-center mx-auto border border-neutral-200">
-              <Award className="w-6 h-6" />
+          /* Enhanced Guided Onboarding Card */
+          <div className="py-12 px-6 sm:px-12 text-center max-w-2xl mx-auto space-y-6">
+            <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto border border-emerald-200">
+              <Sparkles className="w-7 h-7" />
             </div>
             <div>
-              <h4 className="font-bold text-sm text-black">No projects yet</h4>
-              <p className="text-xs text-neutral-500 max-w-sm mx-auto mt-1">
-                Create your first certificate project, upload your spreadsheet, and generate certificates in minutes.
+              <h4 className="font-black text-lg text-black">Let's issue your first certificate! 🎓</h4>
+              <p className="text-xs sm:text-sm text-neutral-500 max-w-md mx-auto mt-1">
+                Follow these 3 quick steps to design, upload recipient data, and generate verifiable certificates with QR codes.
               </p>
             </div>
-            <button
-              onClick={onOpenCreateProject}
-              className="px-5 py-2.5 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all"
-            >
-              Create Project
-            </button>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
+              <div className="p-3.5 rounded-xl bg-neutral-50 border border-neutral-200">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-[11px] font-bold flex items-center justify-center shrink-0">1</span>
+                  <span className="font-bold text-xs text-black">Pick Template</span>
+                </div>
+                <p className="text-[11px] text-neutral-500">Select Landscape or Portrait A4 layout.</p>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-neutral-50 border border-neutral-200">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-[11px] font-bold flex items-center justify-center shrink-0">2</span>
+                  <span className="font-bold text-xs text-black">Upload Excel</span>
+                </div>
+                <p className="text-[11px] text-neutral-500">Drop attendee list with automatic column match.</p>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-neutral-50 border border-neutral-200">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-[11px] font-bold flex items-center justify-center shrink-0">3</span>
+                  <span className="font-bold text-xs text-black">Download ZIP</span>
+                </div>
+                <p className="text-[11px] text-neutral-500">Instant PDF & QR code verification links.</p>
+              </div>
+            </div>
+
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button
+                onClick={onOpenCreateProject}
+                className="w-full sm:w-auto px-6 py-3 bg-black hover:bg-neutral-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Create Your First Campaign</span>
+              </button>
+              <button
+                onClick={() => onOpenDesigner()}
+                className="w-full sm:w-auto px-5 py-3 bg-white hover:bg-neutral-50 border border-neutral-300 text-neutral-700 font-bold text-xs rounded-xl transition-all cursor-pointer"
+              >
+                <span>Explore Template Studio</span>
+              </button>
+            </div>
           </div>
         ) : (
           <div className="overflow-x-auto">

@@ -20,6 +20,7 @@ import {
   QrCode
 } from 'lucide-react';
 import { PricingPlan } from '../../types';
+import { downloadSampleExcel } from '../../services/excelParser';
 
 interface LandingPageProps {
   pricingPlans: PricingPlan[];
@@ -236,14 +237,26 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </div>
 
           {/* Step 2 */}
-          <div className="p-8 rounded-2xl bg-white border border-neutral-300 shadow-card hover:border-black transition-all group">
-            <div className="w-10 h-10 rounded-xl bg-black text-white font-extrabold text-base flex items-center justify-center mb-6 shadow-xs">
-              2
+          <div className="p-8 rounded-2xl bg-white border border-neutral-300 shadow-card hover:border-black transition-all group flex flex-col justify-between">
+            <div>
+              <div className="w-10 h-10 rounded-xl bg-black text-white font-extrabold text-base flex items-center justify-center mb-6 shadow-xs">
+                2
+              </div>
+              <h4 className="text-base font-bold text-black mb-2">Upload Data</h4>
+              <p className="text-neutral-600 text-sm leading-relaxed">
+                Drag and drop your Excel (.xlsx) or CSV file. Our smart heuristic column matcher instantly matches your spreadsheet headers with your certificate fields.
+              </p>
             </div>
-            <h4 className="text-base font-bold text-black mb-2">Upload Data</h4>
-            <p className="text-neutral-600 text-sm leading-relaxed">
-              Drag and drop your Excel (.xlsx) or CSV file. Our smart heuristic column matcher instantly matches your spreadsheet headers with your certificate fields.
-            </p>
+            <div className="mt-5 pt-4 border-t border-neutral-100">
+              <button
+                type="button"
+                onClick={downloadSampleExcel}
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-800 hover:underline cursor-pointer"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Download Sample Excel (.xlsx)</span>
+              </button>
+            </div>
           </div>
 
           {/* Step 3 */}

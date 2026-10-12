@@ -241,6 +241,6 @@ export const downloadSampleExcel = () => {
   ];
   worksheet['!cols'] = wscols;
 
-  XLSX.writeFile(workbook, 'certiforge_sample_recipients.xlsx');
+  XLSX.writeFile(workbook, 'certicraft_sample_recipients.xlsx');
 };
 
