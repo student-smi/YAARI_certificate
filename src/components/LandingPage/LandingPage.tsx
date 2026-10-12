@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { PricingPlan } from '../../types';
 import { downloadSampleExcel } from '../../services/excelParser';
+import { CertificateShowcase } from './CertificateShowcase';
 
 interface LandingPageProps {
   pricingPlans: PricingPlan[];
@@ -129,162 +130,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <span className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-teal-600" /> Live QR Code Verification</span>
           </div>
 
-          {/* Certificate Mockup Preview Card (Deep Navy Frame with subtle teal accent) */}
-          <div className="mt-14 max-w-5xl mx-auto">
-            <div className="p-3 sm:p-4 rounded-2xl bg-slate-50 border border-slate-300/80 shadow-elevated">
-              <div className="relative rounded-xl overflow-hidden border border-slate-800 bg-slate-950 p-6 sm:p-10 text-white shadow-inner">
-                
-                {/* Decorative Mockup Badge */}
-                <div className="absolute top-4 right-4 flex items-center gap-2 bg-teal-500/20 border border-teal-400/30 text-teal-300 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md">
-                  <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
-                  <span>Real-time QR Verified</span>
-                </div>
-
-                {/* Inner Mockup Certificate Canvas (Luxury Ivory Parchment with Royal Gold & Navy Accents) */}
-                <div className="max-w-3xl mx-auto bg-gradient-to-b from-[#FCFBF7] via-[#FFFDF9] to-[#FBF8F1] text-slate-900 rounded-xl shadow-2xl border-2 border-[#B45309] relative p-2 sm:p-3 overflow-hidden">
-                  
-                  {/* Inset Gold Guilloche Frame */}
-                  <div className="border border-[#D97706]/50 rounded-lg p-5 sm:p-8 relative bg-white/80 backdrop-blur-xs">
-                    
-                    {/* 4 Regal Corner Filigree Ornaments */}
-                    <div className="absolute top-2 left-2 text-[#B45309]">
-                      <svg className="w-5 h-5 sm:w-7 sm:h-7" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M2 2h20M2 2v20M2 2l10 10M10 2v8h8" strokeLinecap="round" />
-                        <circle cx="2" cy="2" r="2" fill="currentColor" />
-                      </svg>
-                    </div>
-                    <div className="absolute top-2 right-2 text-[#B45309] rotate-90">
-                      <svg className="w-5 h-5 sm:w-7 sm:h-7" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M2 2h20M2 2v20M2 2l10 10M10 2v8h8" strokeLinecap="round" />
-                        <circle cx="2" cy="2" r="2" fill="currentColor" />
-                      </svg>
-                    </div>
-                    <div className="absolute bottom-2 right-2 text-[#B45309] rotate-180">
-                      <svg className="w-5 h-5 sm:w-7 sm:h-7" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M2 2h20M2 2v20M2 2l10 10M10 2v8h8" strokeLinecap="round" />
-                        <circle cx="2" cy="2" r="2" fill="currentColor" />
-                      </svg>
-                    </div>
-                    <div className="absolute bottom-2 left-2 text-[#B45309] -rotate-90">
-                      <svg className="w-5 h-5 sm:w-7 sm:h-7" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M2 2h20M2 2v20M2 2l10 10M10 2v8h8" strokeLinecap="round" />
-                        <circle cx="2" cy="2" r="2" fill="currentColor" />
-                      </svg>
-                    </div>
-
-                    <div className="text-center space-y-2.5 sm:space-y-3 relative z-10">
-                      
-                      {/* Crest & Institute Name */}
-                      <div className="flex items-center justify-center gap-3">
-                        <div className="h-[1px] w-10 sm:w-16 bg-gradient-to-r from-transparent to-[#B45309]/60" />
-                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-amber-100 via-amber-50 to-amber-200 border border-amber-400 shadow-xs flex items-center justify-center text-amber-800">
-                          <Award className="w-4 h-4 sm:w-5 sm:h-5 text-amber-700" />
-                        </div>
-                        <div className="h-[1px] w-10 sm:w-16 bg-gradient-to-l from-transparent to-[#B45309]/60" />
-                      </div>
-
-                      <p className="text-[9px] sm:text-[11px] font-bold uppercase tracking-[0.28em] text-[#854D0E] font-['Cinzel']">
-                        Accredited Institute of Excellence
-                      </p>
-
-                      {/* Certificate Title */}
-                      <h2 className="text-xl sm:text-3xl font-extrabold text-[#0F172A] tracking-[0.08em] uppercase font-['Cinzel'] drop-shadow-xs">
-                        Certificate of Achievement
-                      </h2>
-
-                      {/* Presentation Subtitle */}
-                      <p className="text-xs sm:text-sm text-slate-500 font-serif italic">
-                        This credential is proudly conferred upon
-                      </p>
-
-                      {/* Recipient Name */}
-                      <div className="py-1 sm:py-1.5">
-                        <p className="text-2xl sm:text-4xl md:text-5xl font-serif font-black text-[#1E1B4B] tracking-tight">
-                          Riya Sharma
-                        </p>
-                        <div className="flex items-center justify-center gap-2 max-w-xs sm:max-w-sm mx-auto mt-2">
-                          <div className="h-[1.5px] flex-1 bg-gradient-to-r from-transparent via-[#B45309] to-[#D97706]" />
-                          <div className="w-2 h-2 rotate-45 bg-[#B45309]" />
-                          <div className="h-[1.5px] flex-1 bg-gradient-to-l from-transparent via-[#B45309] to-[#D97706]" />
-                        </div>
-                      </div>
-
-                      {/* Citation text */}
-                      <p className="text-xs sm:text-[13px] text-slate-700 max-w-lg mx-auto leading-relaxed">
-                        for demonstrating exceptional mastery, rigorous engineering discipline, and capstone excellence in{' '}
-                        <strong className="text-[#0F172A] font-bold font-['Cinzel'] tracking-wide">
-                          Full-Stack Architecture & AI Systems
-                        </strong>.
-                      </p>
-
-                      {/* Footer Section: Date, Gold Embossed Seal, QR & Signature */}
-                      <div className="pt-5 sm:pt-6 flex flex-wrap items-end justify-between border-t border-[#E2E8F0] gap-4">
-                        
-                        {/* Left: Conferred Date */}
-                        <div className="text-left min-w-[90px]">
-                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Date Conferred</p>
-                          <p className="text-xs sm:text-sm font-bold text-[#0F172A] mt-0.5">October 15, 2026</p>
-                          <p className="text-[9px] font-mono text-slate-400 mt-0.5">REF: CF-2026-0042</p>
-                        </div>
-
-                        {/* Center: Official Embossed Gold Wax Seal */}
-                        <div className="flex flex-col items-center">
-                          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-[#F59E0B] via-[#D97706] to-[#78350F] p-[2px] shadow-md flex items-center justify-center">
-                            <div className="w-full h-full rounded-full bg-gradient-to-br from-[#FEF3C7] to-[#FDE68A] border border-[#B45309] flex flex-col items-center justify-center text-center p-0.5">
-                              <Sparkles className="w-3.5 h-3.5 text-amber-800" />
-                              <span className="text-[6.5px] font-extrabold tracking-tighter uppercase text-amber-950 leading-tight">
-                                OFFICIAL<br />SEAL
-                              </span>
-                            </div>
-                          </div>
-                          <span className="text-[8px] font-bold uppercase tracking-wider text-amber-800 mt-1">Verified Credential</span>
-                        </div>
-
-                        {/* Center-Right: Tamper-Proof Cryptographic QR */}
-                        <div className="flex items-center gap-2 bg-amber-50/70 border border-amber-200/80 rounded-lg p-1.5 px-2">
-                          <div className="w-8 h-8 sm:w-9 sm:h-9 bg-white border border-slate-300 rounded flex items-center justify-center p-0.5 shadow-2xs">
-                            <QrCode className="w-full h-full text-slate-900" />
-                          </div>
-                          <div className="text-left">
-                            <div className="flex items-center gap-1 text-[8px] font-bold text-emerald-700">
-                              <CheckCircle2 className="w-2.5 h-2.5" />
-                              <span>Live QR Verified</span>
-                            </div>
-                            <p className="text-[8px] font-mono font-bold text-slate-700">Tamper-Proof</p>
-                          </div>
-                        </div>
-
-                        {/* Right: Signature */}
-                        <div className="text-right min-w-[100px]">
-                          <p className="text-lg sm:text-2xl font-signature text-[#0F172A] leading-tight">Arthur Sterling</p>
-                          <div className="w-24 sm:w-28 h-[1px] bg-slate-400/60 ml-auto mt-0.5 mb-1" />
-                          <p className="text-[9px] font-bold text-slate-600 uppercase tracking-wider">Dean of Academics</p>
-                          <p className="text-[8px] text-slate-400">Global Leadership Institute</p>
-                        </div>
-
-                      </div>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-                {/* Floating Generation Badge */}
-                <div className="mt-6 flex flex-wrap items-center justify-between gap-4 text-xs text-neutral-400 px-2 font-medium">
-                  <div className="flex items-center gap-2 text-white">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>Live batch engine: <strong>1,000 certificates generated in 12s</strong></span>
-                  </div>
-                  <div className="flex items-center gap-4 text-neutral-300">
-                    <span>Format: Vector 300 DPI PDF</span>
-                    <span>Output: ZIP Archive</span>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </div>
+          {/* Certificate Showcase with 10 Distinct Sample Designs and Slider */}
+          <CertificateShowcase
+            onVerifyDemo={onVerifyDemo}
+            onExploreTemplates={onExploreTemplates}
+            onStartCreating={onStartCreating}
+          />
 
         </div>
       </section>
