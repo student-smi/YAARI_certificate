@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -6,7 +6,8 @@ import {
   Sparkles, 
   ExternalLink,
   Layers,
-  Maximize2
+  Maximize2,
+  ArrowRightLeft
 } from 'lucide-react';
 import { SAMPLE_CERTIFICATES } from './sampleCertificatesData';
 import { CertificateItem } from './CertificateItem';
@@ -26,10 +27,7 @@ export const CertificateShowcase: React.FC<CertificateShowcaseProps> = ({
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [isHovered, setIsHovered] = useState<boolean>(false);
-  
-  // Refs for thumbnail strip and items
-  const thumbnailStripRef = useRef<HTMLDivElement>(null);
-  const thumbnailRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [scrollDirection, setScrollDirection] = useState<'l2r' | 'r2l'>('l2r'); // Default Left-to-Right
 
   const currentCert = SAMPLE_CERTIFICATES[selectedIndex] || SAMPLE_CERTIFICATES[0];
   const totalCerts = SAMPLE_CERTIFICATES.length;
@@ -54,7 +52,7 @@ export const CertificateShowcase: React.FC<CertificateShowcaseProps> = ({
     handleSelectCertificate(nextIdx);
   }, [selectedIndex, totalCerts, handleSelectCertificate]);
 
-  // Auto-scroll through templates every 3.5s (pauses on hover or when manually paused)
+  // Auto-cycle top preview every 4.5s (pauses on hover or when manually paused)
   useEffect(() => {
     if (isPaused || isHovered) return;
 
@@ -64,27 +62,10 @@ export const CertificateShowcase: React.FC<CertificateShowcaseProps> = ({
       setTimeout(() => {
         setIsTransitioning(false);
       }, 200);
-    }, 3500);
+    }, 4500);
 
     return () => clearInterval(interval);
   }, [isPaused, isHovered, totalCerts]);
-
-  // Automatically scroll thumbnail container to keep selected thumbnail centered
-  useEffect(() => {
-    const container = thumbnailStripRef.current;
-    const activeThumb = thumbnailRefs.current[selectedIndex];
-    if (container && activeThumb) {
-      const containerWidth = container.clientWidth;
-      const thumbOffsetLeft = activeThumb.offsetLeft;
-      const thumbWidth = activeThumb.clientWidth;
-      const targetScrollLeft = thumbOffsetLeft - (containerWidth / 2) + (thumbWidth / 2);
-      
-      container.scrollTo({
-        left: Math.max(0, targetScrollLeft),
-        behavior: 'smooth'
-      });
-    }
-  }, [selectedIndex]);
 
   // Keyboard navigation support: Left / Right arrows
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -112,7 +93,7 @@ export const CertificateShowcase: React.FC<CertificateShowcaseProps> = ({
       onMouseLeave={() => setIsHovered(false)}
       onKeyDown={handleKeyDown}
       tabIndex={0}
-      aria-label="Certificate designs showcase. Auto-scrolling template carousel."
+      aria-label="Certificate designs showcase. Infinite auto-scrolling templates."
     >
       {/* Container with CertiCraft's Signature Deep Navy and Teal Website Branding */}
       <div className="p-3 sm:p-4 md:p-5 rounded-2xl sm:rounded-3xl bg-slate-900/90 border border-slate-800 shadow-2xl relative overflow-hidden backdrop-blur-xl">
@@ -134,10 +115,10 @@ export const CertificateShowcase: React.FC<CertificateShowcaseProps> = ({
               type="button"
               onClick={() => setIsPaused((prev) => !prev)}
               className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-800/90 hover:bg-slate-800 border border-slate-700 hover:border-slate-600 text-[11px] font-medium text-slate-300 transition-colors cursor-pointer"
-              title={isPaused ? "Auto-scroll paused. Click to play." : "Auto-scrolling. Click to pause."}
+              title={isPaused ? "Auto-scroll paused. Click to resume." : "Infinite auto-scroll active. Click to pause."}
             >
               <span className={`w-1.5 h-1.5 rounded-full ${isPaused || isHovered ? 'bg-amber-400' : 'bg-teal-400 animate-pulse'}`} />
-              <span>{isPaused ? 'Paused (Click to play)' : isHovered ? 'Paused on hover' : 'Auto-scrolling'}</span>
+              <span>{isPaused ? 'Paused (Click to play)' : isHovered ? 'Paused on hover' : 'Infinite auto-scroll active'}</span>
             </button>
           </div>
 
@@ -175,7 +156,7 @@ export const CertificateShowcase: React.FC<CertificateShowcaseProps> = ({
           </div>
         </div>
 
-        {/* Dynamic Auto-scroll Progress Indicator Line */}
+        {/* Dynamic Auto-showcase Progress Line */}
         <div className="h-0.5 w-full bg-slate-800/60 overflow-hidden rounded-full mb-1">
           <div 
             key={selectedIndex}
@@ -224,75 +205,92 @@ export const CertificateShowcase: React.FC<CertificateShowcaseProps> = ({
           </div>
         </div>
 
-        {/* 3. THUMBNAIL SLIDER STRIP (10 Templates with Auto-Scroll & Edge Arrows) */}
+        {/* 3. INFINITE MARQUEE TEMPLATE STRIP (Left-to-Right Continuous Auto-Scroll) */}
         <div className="relative pt-1.5 sm:pt-2">
           
-          {/* Header row above thumbnails */}
+          {/* Header row above infinite marquee */}
           <div className="flex items-center justify-between px-1 mb-2">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
                 Select Design Template
               </span>
               <span className="text-[11px] text-teal-400 font-mono font-medium">
-                ({selectedIndex + 1} of 10 selected)
+                (Design {currentCert.id}: {currentCert.title.replace('Certificate of ', '').replace(' Certificate', '')})
               </span>
             </div>
-            <div className="text-[11px] text-slate-400 hidden sm:block">
-              Auto-scrolling 10 templates • Click or swipe any template to inspect
+            
+            {/* Direction & Status Controls */}
+            <div className="flex items-center gap-2 text-[11px] text-slate-400">
+              <button
+                type="button"
+                onClick={() => setScrollDirection((prev) => prev === 'l2r' ? 'r2l' : 'l2r')}
+                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 transition-colors cursor-pointer"
+                title="Toggle scroll direction"
+              >
+                <ArrowRightLeft className="w-3 h-3 text-teal-400" />
+                <span>Scroll: <strong>{scrollDirection === 'l2r' ? 'Left → Right' : 'Right → Left'}</strong></span>
+              </button>
+              <span className="hidden md:inline text-slate-600">•</span>
+              <span className="hidden md:inline text-slate-400">Hover to pause • Click to inspect</span>
             </div>
           </div>
 
-          {/* Relative wrapper for track and floating edge nav arrows */}
-          <div className="relative">
-            {/* Left Track Arrow */}
-            <button
-              type="button"
-              onClick={handlePrev}
-              className="absolute -left-2 sm:-left-3 top-[38%] -translate-y-1/2 z-20 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-900/95 border border-slate-700 hover:border-teal-400 text-slate-200 hover:text-white flex items-center justify-center shadow-lg transition-all hover:scale-105 active:scale-95 cursor-pointer backdrop-blur-xs"
-              aria-label="Previous template"
-              title="Previous template"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
+          {/* Infinite Marquee Wrapper with Smooth Gradient Fade Edges */}
+          <div 
+            className="group relative overflow-hidden rounded-xl py-1"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
+            {/* Left Edge Gradient Blur Fade */}
+            <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 sm:w-14 bg-gradient-to-r from-slate-900 to-transparent z-10" />
 
-            {/* Right Track Arrow */}
-            <button
-              type="button"
-              onClick={handleNext}
-              className="absolute -right-2 sm:-right-3 top-[38%] -translate-y-1/2 z-20 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-900/95 border border-slate-700 hover:border-teal-400 text-slate-200 hover:text-white flex items-center justify-center shadow-lg transition-all hover:scale-105 active:scale-95 cursor-pointer backdrop-blur-xs"
-              aria-label="Next template"
-              title="Next template"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
+            {/* Right Edge Gradient Blur Fade */}
+            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 sm:w-14 bg-gradient-to-l from-slate-900 to-transparent z-10" />
 
-            {/* Scrollable Thumbnail Strip with Touch Swiping and Snap Points */}
+            {/* Seamless Infinite Marquee Track (Set 1 + Set 2 with Equal Padding for 0-Pixel Seam) */}
             <div
-              ref={thumbnailStripRef}
-              className="flex items-start gap-2.5 sm:gap-3.5 overflow-x-auto pb-2 pt-1 px-2.5 sm:px-3 scroll-smooth snap-x snap-mandatory touch-pan-x [scrollbar-width:thin] [scrollbar-color:#334155_transparent]"
+              className={`flex items-start w-max cursor-pointer ${
+                isPaused || isHovered ? '[animation-play-state:paused]' : ''
+              } ${
+                scrollDirection === 'l2r' ? 'animate-marquee-l2r' : 'animate-marquee-r2l'
+              }`}
               style={{
-                WebkitOverflowScrolling: 'touch'
+                willChange: 'transform'
               }}
             >
-              {SAMPLE_CERTIFICATES.map((cert, index) => {
-                const isSelected = index === selectedIndex;
-                return (
-                  <div
-                    key={cert.id}
-                    ref={(el) => {
-                      thumbnailRefs.current[index] = el;
-                    }}
-                    className="shrink-0 snap-center"
-                  >
-                    <CertificateItem
-                      cert={cert}
-                      mode="thumbnail"
-                      isSelected={isSelected}
-                      onClick={() => handleSelectCertificate(index)}
-                    />
-                  </div>
-                );
-              })}
+              {/* Set 1 */}
+              <div className="flex items-start gap-3 sm:gap-4 pr-3 sm:pr-4 shrink-0">
+                {SAMPLE_CERTIFICATES.map((cert) => {
+                  const isSelected = cert.id === currentCert.id;
+                  return (
+                    <div key={`set1-${cert.id}`} className="shrink-0">
+                      <CertificateItem
+                        cert={cert}
+                        mode="thumbnail"
+                        isSelected={isSelected}
+                        onClick={() => handleSelectCertificate(cert.id - 1)}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Set 2 (Identical Clone for 100% Seamless Infinite Loop) */}
+              <div className="flex items-start gap-3 sm:gap-4 pr-3 sm:pr-4 shrink-0" aria-hidden="true">
+                {SAMPLE_CERTIFICATES.map((cert) => {
+                  const isSelected = cert.id === currentCert.id;
+                  return (
+                    <div key={`set2-${cert.id}`} className="shrink-0">
+                      <CertificateItem
+                        cert={cert}
+                        mode="thumbnail"
+                        isSelected={isSelected}
+                        onClick={() => handleSelectCertificate(cert.id - 1)}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
 

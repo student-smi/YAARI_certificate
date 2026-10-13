@@ -66,5 +66,32 @@
 }
 
 .animate-showcase-progress {
-  animation: showcaseProgress 3.5s linear infinite;
+  animation: showcaseProgress 4s linear infinite;
+}
+
+/* Seamless 100% Infinite Marquee Animations */
+@keyframes marqueeL2R {
+  0% {
+    transform: translate3d(-50%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0%, 0, 0);
+  }
+}
+
+@keyframes marqueeR2L {
+  0% {
+    transform: translate3d(0%, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-marquee-l2r {
+  animation: marqueeL2R 32s linear infinite;
+}
+
+.animate-marquee-r2l {
+  animation: marqueeR2L 32s linear infinite;
 }
