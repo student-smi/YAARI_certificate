@@ -120,7 +120,7 @@ export const SAMPLE_CERTIFICATES: SampleCertificate[] = [
     id: 3,
     title: 'Diploma Certificate',
     category: 'Vocational Diploma',
-    orientation: 'portrait',
+    orientation: 'landscape',
     instituteName: "L'Étoile Academy of Aesthetic Arts",
     instituteSubtitle: 'International Conservatory of High Fashion & Cosmetology',
     instituteMonogram: 'LEA',

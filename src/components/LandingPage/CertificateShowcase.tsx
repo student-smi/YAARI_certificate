@@ -88,7 +88,7 @@ export const CertificateShowcase: React.FC<CertificateShowcaseProps> = ({
 
   return (
     <section 
-      className="mt-14 max-w-6xl mx-auto px-2 sm:px-4 focus:outline-hidden"
+      className="mt-10 max-w-5xl mx-auto px-2 sm:px-4 focus:outline-hidden"
       onKeyDown={handleKeyDown}
       tabIndex={0}
       aria-label="Certificate designs showcase. Use left and right arrow keys to browse."
@@ -101,7 +101,7 @@ export const CertificateShowcase: React.FC<CertificateShowcaseProps> = ({
         <div className="absolute -bottom-32 -right-32 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* 1. TOP CONTROL BAR */}
-        <div className="flex flex-wrap items-center justify-between gap-3 px-2 sm:px-4 py-2 border-b border-slate-800/80 pb-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-2 sm:px-4 py-2 border-b border-slate-800/80 pb-3">
           
           {/* Showcase Label & Badge */}
           <div className="flex items-center gap-3">
@@ -149,15 +149,14 @@ export const CertificateShowcase: React.FC<CertificateShowcaseProps> = ({
           </div>
         </div>
 
-        {/* 2. MAIN PREVIEW STAGE */}
-        {/* Stable stage container: Keeps height constant between portrait and landscape to prevent disruptive page jumps */}
-        <div className="relative my-4 sm:my-6 rounded-2xl bg-slate-950 border border-slate-800/80 shadow-inner flex items-center justify-center p-3 sm:p-6 md:p-8 min-h-[460px] sm:min-h-[520px] md:min-h-[580px] lg:min-h-[620px] overflow-hidden">
+        {/* 2. MAIN PREVIEW STAGE (Compact, fits completely within laptop and desktop screens) */}
+        <div className="relative my-3 sm:my-4 rounded-2xl bg-slate-950 border border-slate-800/80 shadow-inner flex items-center justify-center p-2.5 sm:p-4 md:p-5 min-h-[300px] sm:min-h-[360px] md:min-h-[420px] lg:min-h-[460px] overflow-hidden">
           
           {/* Subtle stage grid pattern */}
           <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] opacity-25 pointer-events-none" />
 
           {/* Floating Live Verification Status Tag */}
-          <div className="absolute top-3 right-3 sm:top-5 sm:right-5 z-20 flex items-center gap-2 bg-slate-900/90 border border-teal-500/30 text-teal-300 px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-md shadow-lg">
+          <div className="absolute top-2.5 right-2.5 sm:top-4 sm:right-4 z-20 flex items-center gap-2 bg-slate-900/90 border border-teal-500/30 text-teal-300 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs font-semibold backdrop-blur-md shadow-lg">
             <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
             <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
             <span className="hidden sm:inline">Cryptographic QR Ready</span>
@@ -165,7 +164,7 @@ export const CertificateShowcase: React.FC<CertificateShowcaseProps> = ({
           </div>
 
           {/* Orientation indicator badge */}
-          <div className="absolute top-3 left-3 sm:top-5 sm:left-5 z-20 hidden sm:flex items-center gap-1.5 bg-slate-900/80 border border-slate-700 text-slate-300 px-2.5 py-1 rounded-md text-[11px] font-mono">
+          <div className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 z-20 hidden sm:flex items-center gap-1.5 bg-slate-900/80 border border-slate-700 text-slate-300 px-2.5 py-1 rounded-md text-[11px] font-mono">
             <Layers className="w-3 h-3 text-slate-400" />
             <span>Format: {currentCert.orientation === 'portrait' ? 'A4 Portrait' : 'A4 Landscape'}</span>
           </div>
@@ -184,7 +183,7 @@ export const CertificateShowcase: React.FC<CertificateShowcaseProps> = ({
           </div>
 
           {/* Subtle Disclaimer Pill at bottom of preview stage */}
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] sm:text-xs text-slate-400 bg-slate-950/80 px-3 py-0.5 rounded-full border border-slate-800 text-center pointer-events-none">
+          <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 text-[9px] sm:text-[11px] text-slate-400 bg-slate-950/80 px-3 py-0.5 rounded-full border border-slate-800 text-center pointer-events-none">
             Sample certificate designs • Fictional institutes and recipients for demonstration
           </div>
         </div>
