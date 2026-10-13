@@ -69,7 +69,7 @@ export interface Template {
     color: string;
     gradient?: string;
     imageUrl?: string;
-    borderStyle?: 'classic' | 'modern' | 'gold_double' | 'minimal' | 'none';
+    borderStyle?: 'classic' | 'modern' | 'gold_double' | 'minimal' | 'vintage_ornate' | 'none';
     borderColor?: string;
     imageFit?: 'cover' | 'contain' | 'stretch';
     imageOpacity?: number;

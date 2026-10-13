@@ -37,8 +37,13 @@ export const SignaturePadModal: React.FC<SignaturePadModalProps> = ({
 
   // Font options for typed signature
   const fontOptions = [
+    { name: 'Pinyon Script', label: 'Aristocratic Cursive' },
     { name: 'Great Vibes', label: 'Classic Flowing Script' },
     { name: 'Alex Brush', label: 'Formal Calligraphy' },
+    { name: 'Allura', label: 'Graceful Signature' },
+    { name: 'Dancing Script', label: 'Expressive Cursive' },
+    { name: 'Parisienne', label: 'French Vintage Script' },
+    { name: 'Italianno', label: 'Italian Calligraphy' },
     { name: 'Playfair Display', label: 'Sophisticated Serif' },
     { name: 'Cormorant Garamond', label: 'Diplomatic Italic' }
   ];

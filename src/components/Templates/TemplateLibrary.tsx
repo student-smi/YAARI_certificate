@@ -313,6 +313,25 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
                     backgroundRepeat: 'no-repeat'
                   }}
                 >
+                  {template.backgroundStyle?.borderStyle === 'vintage_ornate' && (
+                    <div className="absolute inset-1.5 border border-[#1E3A8A] rounded-xs pointer-events-none p-0.5">
+                      <div className="w-full h-full border border-[#1E3A8A]/50 rounded-xs relative">
+                        <svg className="absolute top-0 left-0 w-3.5 h-3.5 text-[#1E3A8A]" viewBox="0 0 36 36" fill="none" stroke="currentColor">
+                          <path d="M3 3C12 3 18 9 18 18M3 3V18M3 3H18M9 9C15 9 18 12 18 18" strokeWidth="1.5" strokeLinecap="round" />
+                        </svg>
+                        <svg className="absolute top-0 right-0 w-3.5 h-3.5 text-[#1E3A8A] rotate-90" viewBox="0 0 36 36" fill="none" stroke="currentColor">
+                          <path d="M3 3C12 3 18 9 18 18M3 3V18M3 3H18M9 9C15 9 18 12 18 18" strokeWidth="1.5" strokeLinecap="round" />
+                        </svg>
+                        <svg className="absolute bottom-0 right-0 w-3.5 h-3.5 text-[#1E3A8A] rotate-180" viewBox="0 0 36 36" fill="none" stroke="currentColor">
+                          <path d="M3 3C12 3 18 9 18 18M3 3V18M3 3H18M9 9C15 9 18 12 18 18" strokeWidth="1.5" strokeLinecap="round" />
+                        </svg>
+                        <svg className="absolute bottom-0 left-0 w-3.5 h-3.5 text-[#1E3A8A] -rotate-90" viewBox="0 0 36 36" fill="none" stroke="currentColor">
+                          <path d="M3 3C12 3 18 9 18 18M3 3V18M3 3H18M9 9C15 9 18 12 18 18" strokeWidth="1.5" strokeLinecap="round" />
+                        </svg>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="w-full flex flex-col items-center pt-1 z-10">
                     <p className="text-[8px] font-bold tracking-widest text-neutral-500 uppercase line-clamp-1 px-1">
                       {displayOrg}

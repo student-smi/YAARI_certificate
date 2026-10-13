@@ -1,6 +1,7 @@
 import { jsPDF } from 'jspdf';
 import { Template, TemplateElement } from '../types';
 import { generateQrDataUrl } from './qrService';
+import { drawVintageOrnateBorderToCanvas } from '../components/Designer/VintageOrnateBorder';
 
 export interface RenderContext {
   template: Template;
@@ -226,7 +227,10 @@ export const renderCertificateToCanvas = async (
   // 4. Borders
   ctx.save();
   const borderStyle = template.backgroundStyle.borderStyle || 'classic';
-  if (borderStyle === 'gold_double') {
+  if (borderStyle === 'vintage_ornate') {
+    const primaryColor = template.backgroundStyle.borderColor || '#1E3A8A';
+    drawVintageOrnateBorderToCanvas(ctx, width, height, scaleW, scaleH, primaryColor);
+  } else if (borderStyle === 'gold_double') {
     // Outer border
     ctx.lineWidth = 14 * Math.min(scaleW, scaleH);
     ctx.strokeStyle = '#B45309'; // rich amber gold

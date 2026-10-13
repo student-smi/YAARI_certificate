@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Award, Mail, Lock, User, ArrowRight, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
+import { X, Award, Mail, Lock, Eye, EyeOff, User, ArrowRight, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
 import { UserProfile } from '../../types';
 import { StorageService } from '../../services/storageService';
 
@@ -23,6 +23,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [name, setName] = useState('');
   const [orgName, setOrgName] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [resetSent, setResetSent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [authError, setAuthError] = useState('');
@@ -32,6 +33,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       setMode(initialMode);
       setAuthError('');
       setResetSent(false);
+      setShowPassword(false);
     }
   }, [isOpen, initialMode]);
 
@@ -341,13 +343,26 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     <div className="relative">
                       <Lock className="w-4 h-4 text-neutral-400 absolute left-3 top-2.5" />
                       <input
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
                         required
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="••••••••••••"
-                        className="w-full pl-9 pr-3 py-2 text-xs border border-neutral-300 rounded-lg focus:outline-none focus:border-black font-medium"
+                        className="w-full pl-9 pr-10 py-2 text-xs border border-neutral-300 rounded-lg focus:outline-none focus:border-black font-medium"
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-2.5 text-neutral-400 hover:text-black transition-colors cursor-pointer"
+                        title={showPassword ? 'Hide password' : 'Show password'}
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="w-4 h-4" />
+                        ) : (
+                          <Eye className="w-4 h-4" />
+                        )}
+                      </button>
                     </div>
                   </div>
                 )}

@@ -65,6 +65,8 @@ import {
 } from '../../data/certificateFields';
 import { SignaturePadModal } from './SignaturePadModal';
 import { SaveTemplateModal } from './SaveTemplateModal';
+import { VintageOrnateBorder } from './VintageOrnateBorder';
+import { CERTIFICATE_FONTS, CERTIFICATE_FONT_CATEGORIES } from '../../data/certificateFonts';
 
 interface BackgroundPresetItem {
   id: string;
@@ -73,13 +75,24 @@ interface BackgroundPresetItem {
   description: string;
   color: string;
   gradient?: string;
-  borderStyle: 'classic' | 'modern' | 'gold_double' | 'minimal' | 'none';
+  borderStyle: 'classic' | 'modern' | 'gold_double' | 'minimal' | 'vintage_ornate' | 'none';
   borderColor?: string;
   patternType?: 'none' | 'guilloche' | 'dots' | 'geometric';
   badge: string;
 }
 
 const BACKGROUND_PRESETS: BackgroundPresetItem[] = [
+  {
+    id: 'vintage-ornate-navy',
+    name: 'Vintage Filigree Diploma',
+    category: 'Academic',
+    description: 'Traditional institute diploma with Victorian corner filigree & double navy framing',
+    color: '#FFFFFE',
+    borderStyle: 'vintage_ornate',
+    borderColor: '#1E3A8A',
+    patternType: 'none',
+    badge: 'POPULAR'
+  },
   {
     id: 'gold-crest',
     name: 'Executive Gold Crest',
@@ -2049,6 +2062,7 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
                   <div className="grid grid-cols-3 gap-1.5">
                     {([
                       { id: 'none', label: 'None (Clean)' },
+                      { id: 'vintage_ornate', label: 'Vintage Ornate ✨' },
                       { id: 'classic', label: 'Classic Navy' },
                       { id: 'gold_double', label: 'Gold Double' },
                       { id: 'modern', label: 'Modern Bar' },
@@ -2060,12 +2074,18 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
                         onClick={() => {
                           const updated = {
                             ...template,
-                            backgroundStyle: { ...template.backgroundStyle, borderStyle: b.id }
+                            backgroundStyle: { 
+                              ...template.backgroundStyle, 
+                              borderStyle: b.id,
+                              borderColor: b.id === 'vintage_ornate' && !template.backgroundStyle.borderColor 
+                                ? '#1E3A8A' 
+                                : template.backgroundStyle.borderColor
+                            }
                           };
                           setTemplate(updated);
                           pushHistory(updated);
                         }}
-                        className={`p-2 rounded-xl text-[10px] font-bold border text-center transition-all ${
+                        className={`p-2 rounded-xl text-[10px] font-bold border text-center transition-all cursor-pointer ${
                           (template.backgroundStyle.borderStyle || 'classic') === b.id
                             ? 'border-black bg-black text-white shadow-xs'
                             : 'border-neutral-200 hover:bg-neutral-50 text-neutral-700'
@@ -2076,24 +2096,45 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
                     ))}
                   </div>
 
-                  {/* Modern Accent Bar Color Picker */}
-                  {template.backgroundStyle.borderStyle === 'modern' && (
+                  {/* Border Color Picker for Vintage Ornate, Modern, and Framing Styles */}
+                  {template.backgroundStyle.borderStyle && template.backgroundStyle.borderStyle !== 'none' && (
                     <div className="p-2.5 rounded-xl bg-neutral-50 border border-neutral-200 space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold text-black">Top Accent Bar Color</span>
-                        <span className="text-[9px] font-mono text-neutral-500">
-                          {template.backgroundStyle.borderColor || '#4F46E5'}
+                        <span className="text-[10px] font-bold text-black">
+                          {template.backgroundStyle.borderStyle === 'vintage_ornate' ? 'Filigree Border Color' :
+                           template.backgroundStyle.borderStyle === 'modern' ? 'Top Accent Bar Color' :
+                           'Border Color'}
                         </span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[9px] font-mono text-neutral-500 uppercase">
+                            {template.backgroundStyle.borderColor || (template.backgroundStyle.borderStyle === 'vintage_ornate' ? '#1E3A8A' : '#0F172A')}
+                          </span>
+                          <input
+                            type="color"
+                            value={template.backgroundStyle.borderColor || (template.backgroundStyle.borderStyle === 'vintage_ornate' ? '#1E3A8A' : '#0F172A')}
+                            onChange={(e) => {
+                              const updated = {
+                                ...template,
+                                backgroundStyle: { ...template.backgroundStyle, borderColor: e.target.value }
+                              };
+                              setTemplate(updated);
+                              pushHistory(updated);
+                            }}
+                            className="w-5 h-5 rounded-md border border-neutral-300 cursor-pointer p-0 bg-transparent"
+                            title="Choose custom color"
+                          />
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 flex-wrap">
                         {[
-                          { name: 'Black', hex: '#000000' },
-                          { name: 'Navy', hex: '#0F172A' },
-                          { name: 'Royal', hex: '#2563EB' },
-                          { name: 'Indigo', hex: '#4F46E5' },
-                          { name: 'Gold', hex: '#D97706' },
-                          { name: 'Emerald', hex: '#059669' },
-                          { name: 'Crimson', hex: '#E11D48' }
+                          { name: 'Navy Blue (Photo Match)', hex: '#1E3A8A' },
+                          { name: 'Royal Navy', hex: '#0F172A' },
+                          { name: 'Pure Black', hex: '#000000' },
+                          { name: 'Royal Blue', hex: '#1D4ED8' },
+                          { name: 'Amber Gold', hex: '#B45309' },
+                          { name: 'Emerald Green', hex: '#065F46' },
+                          { name: 'Burgundy Wine', hex: '#881337' },
+                          { name: 'Slate Gray', hex: '#475569' }
                         ].map(c => (
                           <button
                             key={c.hex}
@@ -2108,8 +2149,8 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
                               pushHistory(updated);
                             }}
                             style={{ backgroundColor: c.hex }}
-                            className={`w-5 h-5 rounded-full border transition-transform ${
-                              (template.backgroundStyle.borderColor || '#4F46E5') === c.hex
+                            className={`w-5 h-5 rounded-full border transition-transform cursor-pointer ${
+                              (template.backgroundStyle.borderColor || (template.backgroundStyle.borderStyle === 'vintage_ornate' ? '#1E3A8A' : '#0F172A')) === c.hex
                                 ? 'scale-125 border-black ring-2 ring-black/20'
                                 : 'border-black/10 hover:scale-110'
                             }`}
@@ -2303,6 +2344,15 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
                 />
               )}
               
+              {/* Vintage Ornate Victorian Filigree Border Overlay */}
+              {template.backgroundStyle.borderStyle === 'vintage_ornate' && (
+                <VintageOrnateBorder
+                  width={template.width}
+                  height={template.height}
+                  color={template.backgroundStyle.borderColor || '#1E3A8A'}
+                />
+              )}
+
               {/* Elements on Canvas */}
               {template.elements.map((el) => {
                 const isSelected = el.id === selectedElementId;
@@ -2736,20 +2786,51 @@ export const CertificateDesigner: React.FC<CertificateDesignerProps> = ({
               {selectedElement.fontSettings && (
                 <div className="space-y-3 pt-1 border-t border-neutral-100">
                   <div>
-                    <label className="block text-xs font-bold text-black mb-1">Font Family</label>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-xs font-bold text-black">Font Family</label>
+                      <span className="text-[10px] text-neutral-400 font-medium">
+                        {CERTIFICATE_FONTS.find(f => f.name === selectedElement.fontSettings?.family)?.category || 'Custom'}
+                      </span>
+                    </div>
                     <select
                       value={selectedElement.fontSettings.family}
                       onChange={(e) => handleUpdateFont({ family: e.target.value })}
-                      className="w-full px-2.5 py-1.5 text-xs font-semibold bg-white border border-neutral-300 rounded-lg focus:outline-none focus:border-black"
+                      className="w-full px-2.5 py-1.5 text-xs font-semibold bg-white border border-neutral-300 rounded-lg focus:outline-none focus:border-black cursor-pointer"
                     >
-                      <option value="Plus Jakarta Sans">Plus Jakarta Sans (Modern Clean)</option>
-                      <option value="Inter">Inter (Neutral Sans)</option>
-                      <option value="Playfair Display">Playfair Display (Luxury Serif)</option>
-                      <option value="Cinzel">Cinzel (Diplomatic Title)</option>
-                      <option value="Great Vibes">Great Vibes (Signature Script)</option>
-                      <option value="Alex Brush">Alex Brush (Calligraphy)</option>
-                      <option value="JetBrains Mono">JetBrains Mono (Monospace ID)</option>
+                      {/* If current font is not in predefined list, keep it selectable */}
+                      {!CERTIFICATE_FONTS.some(f => f.name === selectedElement.fontSettings?.family) && (
+                        <option value={selectedElement.fontSettings.family}>
+                          {selectedElement.fontSettings.family}
+                        </option>
+                      )}
+
+                      {CERTIFICATE_FONT_CATEGORIES.map((category) => (
+                        <optgroup key={category} label={category}>
+                          {CERTIFICATE_FONTS.filter((f) => f.category === category).map((f) => (
+                            <option
+                              key={f.name}
+                              value={f.name}
+                              style={{ fontFamily: `"${f.name}", sans-serif` }}
+                            >
+                              {f.label}
+                            </option>
+                          ))}
+                        </optgroup>
+                      ))}
                     </select>
+
+                    {/* Quick Live Typography Sample Card */}
+                    <div className="mt-1.5 p-2 bg-neutral-50 rounded-lg border border-neutral-200 flex items-center justify-between gap-2 overflow-hidden">
+                      <span className="text-[9px] font-extrabold uppercase text-neutral-400 tracking-wider shrink-0">Preview:</span>
+                      <span 
+                        style={{ fontFamily: `"${selectedElement.fontSettings.family}", sans-serif` }}
+                        className="text-sm font-bold text-black truncate text-right"
+                      >
+                        {selectedElement.content && selectedElement.content.length > 20 
+                          ? selectedElement.content.slice(0, 24) + '...' 
+                          : selectedElement.content || 'Certificate of Achievement'}
+                      </span>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">

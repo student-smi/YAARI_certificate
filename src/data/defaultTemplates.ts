@@ -2,6 +2,273 @@ import { Template } from '../types';
 
 export const DEFAULT_TEMPLATES: Template[] = [
   {
+    id: 'tpl-institute-achievement',
+    name: 'Institute Achievement Diploma',
+    description: 'Traditional academic certificate with authentic Victorian filigree corner framing and double royal navy borders.',
+    category: 'academic',
+    orientation: 'landscape',
+    width: 842,
+    height: 595,
+    backgroundStyle: {
+      type: 'color',
+      color: '#FFFFFA',
+      borderStyle: 'vintage_ornate',
+      borderColor: '#1E3A8A'
+    },
+    elements: [
+      {
+        id: 'el-org-name',
+        type: 'text',
+        x: 50,
+        y: 13,
+        width: 85,
+        height: 6,
+        zIndex: 1,
+        content: 'EXXTRA Institute for English & Personality Development',
+        fieldKey: 'organization',
+        fontSettings: {
+          family: 'Cinzel',
+          size: 16,
+          weight: '700',
+          color: '#1E3A8A',
+          align: 'center',
+          letterSpacing: 2,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-org-tagline',
+        type: 'text',
+        x: 50,
+        y: 18,
+        width: 70,
+        height: 4,
+        zIndex: 1,
+        content: 'www.exxtrapersonality.com',
+        fontSettings: {
+          family: 'Plus Jakarta Sans',
+          size: 11,
+          weight: '500',
+          color: '#64748B',
+          align: 'center',
+          letterSpacing: 1,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-title',
+        type: 'text',
+        x: 50,
+        y: 27,
+        width: 80,
+        height: 10,
+        zIndex: 1,
+        content: 'Certificate of Achievement',
+        fieldKey: 'title',
+        fontSettings: {
+          family: 'Playfair Display',
+          size: 32,
+          weight: '700',
+          color: '#0F172A',
+          align: 'center',
+          letterSpacing: 2,
+          lineHeight: 1.1
+        }
+      },
+      {
+        id: 'el-recipient-prefix',
+        type: 'text',
+        x: 50,
+        y: 37,
+        width: 60,
+        height: 5,
+        zIndex: 1,
+        content: 'Mr./Mrs./Miss',
+        fontSettings: {
+          family: 'Plus Jakarta Sans',
+          size: 13,
+          weight: '600',
+          color: '#475569',
+          align: 'center',
+          letterSpacing: 1,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-name',
+        type: 'text',
+        x: 50,
+        y: 44,
+        width: 75,
+        height: 8,
+        zIndex: 2,
+        content: '{{name}}',
+        fieldKey: 'name',
+        fontSettings: {
+          family: 'Dancing Script',
+          size: 30,
+          weight: '700',
+          color: '#1E3A8A',
+          align: 'center',
+          letterSpacing: 1,
+          lineHeight: 1.1
+        }
+      },
+      {
+        id: 'el-name-line',
+        type: 'shape',
+        shapeType: 'line',
+        x: 50,
+        y: 49,
+        width: 55,
+        height: 0.5,
+        zIndex: 1,
+        content: '',
+        backgroundColor: '#CBD5E1'
+      },
+      {
+        id: 'el-statement',
+        type: 'text',
+        x: 50,
+        y: 55,
+        width: 80,
+        height: 6,
+        zIndex: 1,
+        content: 'has been awarded on the completion of English & Personality Development Course, held at the Institute',
+        fieldKey: 'statement',
+        fontSettings: {
+          family: 'Plus Jakarta Sans',
+          size: 13,
+          weight: '400',
+          color: '#334155',
+          align: 'center',
+          letterSpacing: 0.5,
+          lineHeight: 1.4
+        }
+      },
+      {
+        id: 'el-dates',
+        type: 'text',
+        x: 50,
+        y: 63,
+        width: 70,
+        height: 5,
+        zIndex: 1,
+        content: 'from 14th August to 14th October, 2026',
+        fontSettings: {
+          family: 'Plus Jakarta Sans',
+          size: 12,
+          weight: '600',
+          color: '#1E293B',
+          align: 'center',
+          letterSpacing: 1,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-place',
+        type: 'text',
+        x: 23,
+        y: 77,
+        width: 30,
+        height: 4,
+        zIndex: 1,
+        content: 'Place : Ahmedabad',
+        fontSettings: {
+          family: 'Plus Jakarta Sans',
+          size: 11,
+          weight: '600',
+          color: '#475569',
+          align: 'left',
+          letterSpacing: 0.5,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-date',
+        type: 'text',
+        x: 23,
+        y: 82,
+        width: 30,
+        height: 4,
+        zIndex: 1,
+        content: 'Date : {{issue_date}}',
+        fieldKey: 'issue_date',
+        fontSettings: {
+          family: 'Plus Jakarta Sans',
+          size: 11,
+          weight: '600',
+          color: '#475569',
+          align: 'left',
+          letterSpacing: 0.5,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-sig-line',
+        type: 'shape',
+        shapeType: 'line',
+        x: 77,
+        y: 76,
+        width: 25,
+        height: 0.5,
+        zIndex: 1,
+        content: '',
+        backgroundColor: '#94A3B8'
+      },
+      {
+        id: 'el-signatory-name',
+        type: 'text',
+        x: 77,
+        y: 80,
+        width: 30,
+        height: 4,
+        zIndex: 1,
+        content: 'B. M. Dobaria',
+        fontSettings: {
+          family: 'Plus Jakarta Sans',
+          size: 12,
+          weight: '700',
+          color: '#0F172A',
+          align: 'center',
+          letterSpacing: 0.5,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-signatory-title',
+        type: 'text',
+        x: 77,
+        y: 84,
+        width: 30,
+        height: 4,
+        zIndex: 1,
+        content: '(Director, EXXTRA Institute)',
+        fontSettings: {
+          family: 'Plus Jakarta Sans',
+          size: 10,
+          weight: '500',
+          color: '#64748B',
+          align: 'center',
+          letterSpacing: 0.5,
+          lineHeight: 1.2
+        }
+      },
+      {
+        id: 'el-qr',
+        type: 'qr',
+        x: 50,
+        y: 82,
+        width: 6,
+        height: 6,
+        zIndex: 2,
+        content: '{{verification_url}}'
+      }
+    ],
+    createdAt: '2026-02-01T10:00:00Z',
+    updatedAt: '2026-03-01T12:00:00Z'
+  },
+  {
     id: 'tpl-corporate-excellence',
     name: 'Executive Corporate Excellence',
     description: 'Prestigious dark navy & metallic gold border suitable for corporate recognition and leadership honors.',
