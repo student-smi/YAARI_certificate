@@ -116,14 +116,14 @@ export const CertificateItem: React.FC<CertificateItemProps> = ({
   }
 
   // -------------------------------------------------------------
-  // FULL PREVIEW RENDERING (Compact, Perfectly Proportioned for Screen Fit)
+  // FULL PREVIEW RENDERING (Ultra-Compact, Perfectly Fits Full Viewport)
   // -------------------------------------------------------------
   return (
     <div
-      className={`relative mx-auto rounded-xl shadow-2xl transition-all duration-300 overflow-hidden ${cert.theme.bgClass} ${
+      className={`relative mx-auto rounded-xl shadow-xl transition-all duration-300 overflow-hidden ${cert.theme.bgClass} ${
         isPortrait
-          ? 'w-full max-w-xs sm:max-w-sm aspect-[1/1.414] text-neutral-900 border-2'
-          : 'w-full max-w-xl sm:max-w-2xl lg:max-w-[670px] aspect-[1.414/1] text-neutral-900 border-2'
+          ? 'w-full max-w-xs aspect-[1/1.414] text-neutral-900 border-2'
+          : 'w-full max-w-[450px] sm:max-w-[480px] md:max-w-[505px] aspect-[1.414/1] text-neutral-900 border-[1.5px] sm:border-2'
       }`}
       style={{
         borderColor: cert.theme.borderColor,
@@ -134,57 +134,57 @@ export const CertificateItem: React.FC<CertificateItemProps> = ({
       {renderDistinctFrame(cert, isPortrait)}
 
       {/* Main Certificate Content Box */}
-      <div className={`relative z-10 h-full flex flex-col justify-between ${isPortrait ? 'p-4 sm:p-5' : 'p-3.5 sm:p-5 md:p-6'}`}>
+      <div className={`relative z-10 h-full flex flex-col justify-between ${isPortrait ? 'p-3 sm:p-4' : 'p-2.5 sm:p-3.5 md:p-4'}`}>
         
         {/* 1. HEADER SECTION: Monogram / Crest & Academy Name */}
-        <div className="text-center space-y-1 sm:space-y-1.5">
-          <div className="flex items-center justify-center gap-2 sm:gap-3">
-            <div className="h-[1px] w-6 sm:w-12 opacity-40" style={{ backgroundColor: cert.theme.borderColor }} />
+        <div className="text-center space-y-0.5 sm:space-y-1">
+          <div className="flex items-center justify-center gap-1.5 sm:gap-2">
+            <div className="h-[1px] w-4 sm:w-8 opacity-40" style={{ backgroundColor: cert.theme.borderColor }} />
             <InstituteEmblem
               type={cert.theme.sealType}
               monogram={cert.instituteMonogram}
               accent={cert.theme.accentColor}
               primary={cert.theme.primaryText}
-              className="w-7 h-7 sm:w-8 sm:h-8"
+              className="w-5 h-5 sm:w-6 sm:h-6"
             />
-            <div className="h-[1px] w-6 sm:w-12 opacity-40" style={{ backgroundColor: cert.theme.borderColor }} />
+            <div className="h-[1px] w-4 sm:w-8 opacity-40" style={{ backgroundColor: cert.theme.borderColor }} />
           </div>
 
-          <div className="space-y-0.5">
-            <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.22em] font-['Cinzel',serif]" style={{ color: cert.theme.accentColor }}>
+          <div className="space-y-0">
+            <p className="text-[7.5px] sm:text-[8.5px] font-bold uppercase tracking-[0.2em] font-['Cinzel',serif] line-clamp-1" style={{ color: cert.theme.accentColor }}>
               {cert.instituteName}
             </p>
-            <p className="text-[8px] sm:text-[9px] opacity-75 tracking-wider font-sans" style={{ color: cert.theme.secondaryText }}>
+            <p className="text-[6.5px] sm:text-[7.5px] opacity-75 tracking-wider font-sans line-clamp-1" style={{ color: cert.theme.secondaryText }}>
               {cert.instituteSubtitle}
             </p>
           </div>
         </div>
 
         {/* 2. CERTIFICATE TITLE */}
-        <div className="text-center my-auto py-1 sm:py-2 space-y-1 sm:space-y-1.5">
+        <div className="text-center my-auto py-0.5 space-y-0.5 sm:space-y-1">
           <div className="inline-block relative">
             <h2
-              className={`text-lg sm:text-2xl md:text-[26px] font-extrabold uppercase tracking-wide leading-tight drop-shadow-xs ${cert.theme.fontTitle}`}
+              className={`text-sm sm:text-lg md:text-xl font-extrabold uppercase tracking-wide leading-tight drop-shadow-xs ${cert.theme.fontTitle}`}
               style={{ color: cert.theme.primaryText }}
             >
               {cert.title}
             </h2>
             {/* Under-title decorative accent line */}
-            <div className="flex items-center justify-center gap-1.5 max-w-xs mx-auto mt-1 sm:mt-1.5 opacity-80">
+            <div className="flex items-center justify-center gap-1 max-w-[180px] sm:max-w-xs mx-auto mt-0.5 opacity-80">
               <div className="h-[1px] flex-1" style={{ backgroundColor: cert.theme.borderColor }} />
-              <div className="w-1.5 h-1.5 rotate-45" style={{ backgroundColor: cert.theme.accentColor }} />
+              <div className="w-1 h-1 rotate-45" style={{ backgroundColor: cert.theme.accentColor }} />
               <div className="h-[1px] flex-1" style={{ backgroundColor: cert.theme.borderColor }} />
             </div>
           </div>
 
-          <p className="text-[11px] sm:text-xs italic font-serif opacity-80" style={{ color: cert.theme.secondaryText }}>
+          <p className="text-[9px] sm:text-[10px] italic font-serif opacity-80" style={{ color: cert.theme.secondaryText }}>
             This official credential is conferred with honors upon
           </p>
 
           {/* 3. RECIPIENT NAME (Prominent, Sharp, Selectable) */}
-          <div className="py-0.5">
+          <div>
             <h3
-              className="text-xl sm:text-3xl md:text-4xl font-black tracking-tight font-serif select-text"
+              className="text-base sm:text-2xl md:text-[25px] font-black tracking-tight font-serif select-text leading-tight"
               style={{ color: cert.theme.primaryText }}
             >
               {cert.recipientName}
@@ -192,19 +192,19 @@ export const CertificateItem: React.FC<CertificateItemProps> = ({
           </div>
 
           {/* 4. STATEMENT & ACHIEVEMENT */}
-          <div className="max-w-lg mx-auto space-y-0.5 px-2">
-            <p className="text-[10.5px] sm:text-xs leading-relaxed select-text" style={{ color: cert.theme.secondaryText }}>
+          <div className="max-w-sm sm:max-w-md mx-auto space-y-0 px-1">
+            <p className="text-[8.5px] sm:text-[9.5px] leading-snug line-clamp-2 select-text" style={{ color: cert.theme.secondaryText }}>
               {cert.statement}
             </p>
             <p
-              className="text-xs sm:text-sm md:text-base font-bold tracking-normal select-text"
+              className="text-[10.5px] sm:text-xs md:text-[13px] font-bold tracking-normal select-text line-clamp-1 mt-0.5"
               style={{ color: cert.theme.primaryText }}
             >
               {cert.achievementTitle}
             </p>
             {cert.courseDuration && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300 mt-0.5">
-                <Clock className="w-2.5 h-2.5 text-emerald-700" />
+              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded-full text-[7.5px] sm:text-[8px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300 mt-0.5">
+                <Clock className="w-2 h-2 text-emerald-700" />
                 {cert.courseDuration}
               </span>
             )}
@@ -213,29 +213,29 @@ export const CertificateItem: React.FC<CertificateItemProps> = ({
 
         {/* 5. FOOTER: Date/Ref, Official Seal, Tamper-Proof QR, & Signatures */}
         <div
-          className="pt-2 sm:pt-3 flex flex-wrap items-end justify-between gap-2 border-t border-current opacity-90"
+          className="pt-1 sm:pt-1.5 flex items-end justify-between gap-1.5 border-t border-current opacity-90"
           style={{ borderColor: cert.theme.borderColor + '35' }}
         >
           {/* Left: Metadata */}
-          <div className="text-left min-w-[75px] sm:min-w-[85px] space-y-0.5">
-            <p className="text-[8px] font-bold uppercase tracking-widest opacity-60" style={{ color: cert.theme.secondaryText }}>
+          <div className="text-left min-w-[65px] sm:min-w-[75px] space-y-0">
+            <p className="text-[6.5px] sm:text-[7px] font-bold uppercase tracking-widest opacity-60" style={{ color: cert.theme.secondaryText }}>
               Issue Date
             </p>
-            <p className="text-[11px] sm:text-xs font-bold select-text" style={{ color: cert.theme.primaryText }}>
+            <p className="text-[9px] sm:text-[10px] font-bold select-text leading-tight" style={{ color: cert.theme.primaryText }}>
               {cert.issueDate}
             </p>
-            <p className="text-[8px] font-mono select-text opacity-70" style={{ color: cert.theme.secondaryText }}>
+            <p className="text-[6.5px] sm:text-[7.5px] font-mono select-text opacity-70" style={{ color: cert.theme.secondaryText }}>
               {cert.certNumber}
             </p>
           </div>
 
           {/* Center-Left: Official Seal */}
           <div className="hidden sm:flex flex-col items-center">
-            <div className="scale-90 origin-bottom">
+            <div className="scale-75 origin-bottom">
               <OfficialSeal type={cert.theme.sealType} />
             </div>
-            <span className="text-[7px] font-bold uppercase tracking-wider mt-0.5 opacity-80" style={{ color: cert.theme.accentColor }}>
-              Verified Credential
+            <span className="text-[6px] font-bold uppercase tracking-wider mt-0.2 opacity-80" style={{ color: cert.theme.accentColor }}>
+              Verified
             </span>
           </div>
 
@@ -251,39 +251,39 @@ export const CertificateItem: React.FC<CertificateItemProps> = ({
               }
             }}
             title="Click to test live QR verification demo"
-            className="group/qr flex items-center gap-1.5 p-1 px-2 rounded-lg border bg-white/90 backdrop-blur-xs shadow-2xs hover:border-teal-500 transition-all cursor-pointer select-none"
+            className="group/qr flex items-center gap-1 p-0.5 px-1.5 rounded border bg-white/90 backdrop-blur-xs shadow-2xs hover:border-teal-500 transition-all cursor-pointer select-none"
             style={{ borderColor: cert.theme.borderColor + '60' }}
           >
-            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-white border border-slate-300 rounded flex items-center justify-center p-0.5 shadow-2xs group-hover/qr:scale-105 transition-transform">
+            <div className="w-5 h-5 sm:w-6 sm:h-6 bg-white border border-slate-300 rounded flex items-center justify-center p-0.5 shadow-2xs group-hover/qr:scale-105 transition-transform">
               <QrCode className="w-full h-full text-slate-900" />
             </div>
             <div className="text-left">
-              <div className="flex items-center gap-1 text-[7.5px] sm:text-[8px] font-bold text-teal-700">
-                <CheckCircle2 className="w-2.5 h-2.5 text-teal-600" />
+              <div className="flex items-center gap-0.5 text-[6.5px] sm:text-[7px] font-bold text-teal-700">
+                <CheckCircle2 className="w-2 h-2 text-teal-600" />
                 <span>Live QR Verified</span>
               </div>
-              <p className="text-[7px] sm:text-[7.5px] font-mono text-slate-500 group-hover/qr:text-teal-600 flex items-center gap-0.5">
+              <p className="text-[6px] sm:text-[6.5px] font-mono text-slate-500 group-hover/qr:text-teal-600 flex items-center gap-0.5">
                 <span>Tamper-Proof</span>
-                <ExternalLink className="w-2 h-2 opacity-60" />
+                <ExternalLink className="w-1.5 h-1.5 opacity-60" />
               </p>
             </div>
           </div>
 
           {/* Right: Realistic Signatories */}
-          <div className="flex items-end gap-3 text-right">
+          <div className="flex items-end gap-2 text-right">
             {cert.signatories.map((sig, idx) => (
-              <div key={idx} className="flex flex-col items-end min-w-[75px] sm:min-w-[90px]">
+              <div key={idx} className="flex flex-col items-end min-w-[60px] sm:min-w-[75px]">
                 <SignatureSvg
                   type={sig.signatureSvgType || 'classic'}
                   name={sig.name}
                   color={cert.theme.primaryText}
-                  className="h-6 sm:h-7 w-auto"
+                  className="h-4 sm:h-5 w-auto"
                 />
-                <div className="w-16 sm:w-20 h-[1px] my-0.5 opacity-40" style={{ backgroundColor: cert.theme.primaryText }} />
-                <p className="text-[8.5px] sm:text-[9px] font-bold leading-tight select-text" style={{ color: cert.theme.primaryText }}>
+                <div className="w-12 sm:w-16 h-[1px] my-0.2 opacity-40" style={{ backgroundColor: cert.theme.primaryText }} />
+                <p className="text-[7px] sm:text-[8px] font-bold leading-tight select-text" style={{ color: cert.theme.primaryText }}>
                   {sig.name}
                 </p>
-                <p className="text-[7.5px] sm:text-[8px] leading-tight select-text opacity-70" style={{ color: cert.theme.secondaryText }}>
+                <p className="text-[6px] sm:text-[7px] leading-tight select-text opacity-70" style={{ color: cert.theme.secondaryText }}>
                   {sig.role}
                 </p>
               </div>
@@ -305,26 +305,26 @@ function renderDistinctFrame(cert: SampleCertificate, isPortrait: boolean) {
     // Design 1: Classic Ivory, Navy & Gold Double Frame
     case 'double-gold':
       return (
-        <div className="absolute inset-2 sm:inset-3 border-2 border-[#B45309]/80 rounded-lg pointer-events-none p-1 sm:p-1.5">
+        <div className="absolute inset-1.5 sm:inset-2 border-[1.5px] border-[#B45309]/80 rounded-lg pointer-events-none p-1">
           <div className="w-full h-full border border-[#D97706]/40 rounded-sm relative">
             {/* 4 Corner Ornaments */}
-            <div className="absolute top-1 left-1 text-[#B45309]">
-              <svg className="w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <div className="absolute top-0.5 left-0.5 text-[#B45309]">
+              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M2 2H14M2 2V14M2 2L9 9" strokeLinecap="round" />
               </svg>
             </div>
-            <div className="absolute top-1 right-1 text-[#B45309] rotate-90">
-              <svg className="w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <div className="absolute top-0.5 right-0.5 text-[#B45309] rotate-90">
+              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M2 2H14M2 2V14M2 2L9 9" strokeLinecap="round" />
               </svg>
             </div>
-            <div className="absolute bottom-1 right-1 text-[#B45309] rotate-180">
-              <svg className="w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <div className="absolute bottom-0.5 right-0.5 text-[#B45309] rotate-180">
+              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M2 2H14M2 2V14M2 2L9 9" strokeLinecap="round" />
               </svg>
             </div>
-            <div className="absolute bottom-1 left-1 text-[#B45309] -rotate-90">
-              <svg className="w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <div className="absolute bottom-0.5 left-0.5 text-[#B45309] -rotate-90">
+              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M2 2H14M2 2V14M2 2L9 9" strokeLinecap="round" />
               </svg>
             </div>
@@ -337,27 +337,28 @@ function renderDistinctFrame(cert: SampleCertificate, isPortrait: boolean) {
       return (
         <>
           {/* Asymmetric left wine bar */}
-          <div className="absolute left-0 top-0 bottom-0 w-3 sm:w-4 bg-gradient-to-b from-[#881337] via-[#9F1239] to-[#4C0519] pointer-events-none" />
-          <div className="absolute left-3 sm:left-4 top-0 bottom-0 w-[1.5px] bg-[#F43F5E]/60 pointer-events-none" />
-          <div className="absolute inset-3 sm:inset-4 border border-[#881337]/30 rounded pointer-events-none" />
+          <div className="absolute left-0 top-0 bottom-0 w-2.5 sm:w-3 bg-gradient-to-b from-[#881337] via-[#9F1239] to-[#4C0519] pointer-events-none" />
+          <div className="absolute left-2.5 sm:left-3 top-0 bottom-0 w-[1px] bg-[#F43F5E]/60 pointer-events-none" />
+          <div className="absolute inset-2 sm:inset-2.5 border border-[#881337]/30 rounded pointer-events-none" />
         </>
       );
 
-    // Design 3: Portrait Parchment with Victorian Corner Filigree
+    // Design 3: Classical Parchment with Victorian Corner Filigree
     case 'portrait-parchment':
+    case 'classical-parchment':
       return (
-        <div className="absolute inset-2 sm:inset-3 border-2 border-[#A16207]/70 rounded pointer-events-none p-1">
+        <div className="absolute inset-1.5 sm:inset-2 border-[1.5px] border-[#A16207]/70 rounded pointer-events-none p-0.5 sm:p-1">
           <div className="w-full h-full border border-[#CA8A04]/40 rounded relative">
-            <svg className="absolute top-1 left-1 w-7 h-7 sm:w-9 sm:h-9 text-[#854D0E]" viewBox="0 0 36 36" fill="none" stroke="currentColor">
+            <svg className="absolute top-0.5 left-0.5 w-4 h-4 sm:w-5 sm:h-5 text-[#854D0E]" viewBox="0 0 36 36" fill="none" stroke="currentColor">
               <path d="M3 3C12 3 18 9 18 18M3 3V18M3 3H18M9 9C15 9 18 12 18 18" strokeWidth="1.2" strokeLinecap="round" />
             </svg>
-            <svg className="absolute top-1 right-1 w-7 h-7 sm:w-9 sm:h-9 text-[#854D0E] rotate-90" viewBox="0 0 36 36" fill="none" stroke="currentColor">
+            <svg className="absolute top-0.5 right-0.5 w-4 h-4 sm:w-5 sm:h-5 text-[#854D0E] rotate-90" viewBox="0 0 36 36" fill="none" stroke="currentColor">
               <path d="M3 3C12 3 18 9 18 18M3 3V18M3 3H18M9 9C15 9 18 12 18 18" strokeWidth="1.2" strokeLinecap="round" />
             </svg>
-            <svg className="absolute bottom-1 right-1 w-7 h-7 sm:w-9 sm:h-9 text-[#854D0E] rotate-180" viewBox="0 0 36 36" fill="none" stroke="currentColor">
+            <svg className="absolute bottom-0.5 right-0.5 w-4 h-4 sm:w-5 sm:h-5 text-[#854D0E] rotate-180" viewBox="0 0 36 36" fill="none" stroke="currentColor">
               <path d="M3 3C12 3 18 9 18 18M3 3V18M3 3H18M9 9C15 9 18 12 18 18" strokeWidth="1.2" strokeLinecap="round" />
             </svg>
-            <svg className="absolute bottom-1 left-1 w-7 h-7 sm:w-9 sm:h-9 text-[#854D0E] -rotate-90" viewBox="0 0 36 36" fill="none" stroke="currentColor">
+            <svg className="absolute bottom-0.5 left-0.5 w-4 h-4 sm:w-5 sm:h-5 text-[#854D0E] -rotate-90" viewBox="0 0 36 36" fill="none" stroke="currentColor">
               <path d="M3 3C12 3 18 9 18 18M3 3V18M3 3H18M9 9C15 9 18 12 18 18" strokeWidth="1.2" strokeLinecap="round" />
             </svg>
           </div>
