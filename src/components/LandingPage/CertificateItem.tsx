@@ -116,14 +116,14 @@ export const CertificateItem: React.FC<CertificateItemProps> = ({
   }
 
   // -------------------------------------------------------------
-  // FULL PREVIEW RENDERING (Ultra-Compact, Perfectly Fits Full Viewport)
+  // FULL PREVIEW RENDERING (Ultra-Compact Mockup Size)
   // -------------------------------------------------------------
   return (
     <div
-      className={`relative mx-auto rounded-xl shadow-xl transition-all duration-300 overflow-hidden ${cert.theme.bgClass} ${
+      className={`relative mx-auto rounded-lg sm:rounded-xl shadow-lg transition-all duration-300 overflow-hidden ${cert.theme.bgClass} ${
         isPortrait
-          ? 'w-full max-w-xs aspect-[1/1.414] text-neutral-900 border-2'
-          : 'w-full max-w-[450px] sm:max-w-[480px] md:max-w-[505px] aspect-[1.414/1] text-neutral-900 border-[1.5px] sm:border-2'
+          ? 'w-full max-w-[260px] sm:max-w-[280px] aspect-[1/1.414] text-neutral-900 border-2'
+          : 'w-full max-w-[350px] sm:max-w-[390px] md:max-w-[415px] aspect-[1.414/1] text-neutral-900 border-[1.5px]'
       }`}
       style={{
         borderColor: cert.theme.borderColor,

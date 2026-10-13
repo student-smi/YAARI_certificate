@@ -88,38 +88,38 @@ export const CertificateShowcase: React.FC<CertificateShowcaseProps> = ({
 
   return (
     <section 
-      className="mt-6 max-w-4xl mx-auto px-2 sm:px-4 focus:outline-hidden"
+      className="mt-4 max-w-3xl sm:max-w-[780px] mx-auto px-2 sm:px-3 focus:outline-hidden"
       onKeyDown={handleKeyDown}
       tabIndex={0}
       aria-label="Certificate designs showcase. Use left and right arrow keys to browse."
     >
       {/* Container with CertiCraft's Signature Deep Navy and Teal Website Branding */}
-      <div className="p-2.5 sm:p-4 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-2xl relative overflow-hidden backdrop-blur-xl">
+      <div className="p-2 sm:p-3 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl relative overflow-hidden backdrop-blur-xl">
         
         {/* Subtle background ambient teal & indigo glow */}
         <div className="absolute -top-32 -left-32 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-32 -right-32 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* 1. TOP CONTROL BAR */}
-        <div className="flex flex-wrap items-center justify-between gap-2.5 px-1 sm:px-2 py-1.5 border-b border-slate-800/80 pb-2.5">
+        <div className="flex flex-wrap items-center justify-between gap-2 px-1 py-1 border-b border-slate-800/80 pb-2">
           
           {/* Showcase Label & Badge */}
-          <div className="flex items-center gap-2.5">
-            <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-500/15 border border-teal-500/30 text-teal-300 text-[11px] font-bold">
+          <div className="flex items-center gap-2">
+            <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-teal-500/15 border border-teal-500/30 text-teal-300 text-[10.5px] font-bold">
               <Sparkles className="w-3 h-3 text-teal-400" />
-              <span>Sample certificate designs</span>
+              <span>Sample designs</span>
             </span>
-            <span className="hidden md:inline-flex items-center gap-1 text-slate-400 text-[11px]">
+            <span className="hidden md:inline-flex items-center gap-1 text-slate-400 text-[10.5px]">
               <Info className="w-3 h-3 text-slate-500" />
               <span>Click or use arrows to inspect 10 authentic academy designs</span>
             </span>
           </div>
 
           {/* Stepper counter & Navigation buttons */}
-          <div className="flex items-center gap-2 ml-auto">
+          <div className="flex items-center gap-1.5 ml-auto">
             {/* 1 of 10 Indicator */}
             <span 
-              className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-lg bg-slate-800/90 border border-slate-700 text-teal-300 tracking-wider"
+              className="text-[10.5px] font-mono font-bold px-1.5 py-0.5 rounded-md bg-slate-800/90 border border-slate-700 text-teal-300 tracking-wider"
               aria-live="polite"
             >
               {selectedIndex + 1} of {totalCerts}
@@ -129,42 +129,42 @@ export const CertificateShowcase: React.FC<CertificateShowcaseProps> = ({
             <button
               type="button"
               onClick={handlePrev}
-              className="p-1 sm:p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 hover:text-white border border-slate-700/80 transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-teal-500"
+              className="p-1 rounded-md bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 hover:text-white border border-slate-700/80 transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-teal-500"
               aria-label="Previous certificate design"
               title="Previous design (Left Arrow)"
             >
-              <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <ChevronLeft className="w-3.5 h-3.5" />
             </button>
 
             {/* Next Button */}
             <button
               type="button"
               onClick={handleNext}
-              className="p-1 sm:p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 hover:text-white border border-slate-700/80 transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-teal-500"
+              className="p-1 rounded-md bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 hover:text-white border border-slate-700/80 transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-teal-500"
               aria-label="Next certificate design"
               title="Next design (Right Arrow)"
             >
-              <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
 
         {/* 2. MAIN PREVIEW STAGE (Ultra-Compact, perfectly visible on 100% of screens) */}
-        <div className="relative my-2.5 sm:my-3 rounded-2xl bg-slate-950 border border-slate-800/80 shadow-inner flex items-center justify-center p-2 sm:p-2.5 md:p-3 min-h-[250px] sm:min-h-[290px] md:min-h-[330px] lg:min-h-[360px] overflow-hidden">
+        <div className="relative my-2 rounded-xl bg-slate-950 border border-slate-800/80 shadow-inner flex items-center justify-center p-1.5 sm:p-2 min-h-[220px] sm:min-h-[250px] md:min-h-[280px] lg:min-h-[305px] overflow-hidden">
           
           {/* Subtle stage grid pattern */}
           <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] opacity-25 pointer-events-none" />
 
           {/* Floating Live Verification Status Tag */}
-          <div className="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 z-20 flex items-center gap-1.5 bg-slate-900/90 border border-teal-500/30 text-teal-300 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-semibold backdrop-blur-md shadow-md">
+          <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 z-20 flex items-center gap-1 bg-slate-900/90 border border-teal-500/30 text-teal-300 px-2 py-0.5 rounded-full text-[9.5px] sm:text-[10px] font-semibold backdrop-blur-md shadow-md">
             <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
-            <ShieldCheck className="w-3 h-3 text-teal-400" />
+            <ShieldCheck className="w-2.5 h-2.5 text-teal-400" />
             <span className="hidden sm:inline">Cryptographic QR Ready</span>
             <span className="sm:hidden">QR Ready</span>
           </div>
 
           {/* Orientation indicator badge */}
-          <div className="absolute top-2 left-2 sm:top-2.5 sm:left-2.5 z-20 hidden sm:flex items-center gap-1 bg-slate-900/80 border border-slate-700 text-slate-300 px-2 py-0.5 rounded-md text-[10px] font-mono">
+          <div className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 z-20 hidden sm:flex items-center gap-1 bg-slate-900/80 border border-slate-700 text-slate-300 px-1.5 py-0.5 rounded text-[9.5px] font-mono">
             <Layers className="w-2.5 h-2.5 text-slate-400" />
             <span>Format: {currentCert.orientation === 'portrait' ? 'A4 Portrait' : 'A4 Landscape'}</span>
           </div>
@@ -183,7 +183,7 @@ export const CertificateShowcase: React.FC<CertificateShowcaseProps> = ({
           </div>
 
           {/* Subtle Disclaimer Pill at bottom of preview stage */}
-          <div className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[8.5px] sm:text-[9.5px] text-slate-400 bg-slate-950/80 px-2.5 py-0.2 rounded-full border border-slate-800 text-center pointer-events-none">
+          <div className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[8px] sm:text-[9px] text-slate-400 bg-slate-950/80 px-2 py-0.2 rounded-full border border-slate-800 text-center pointer-events-none">
             Sample certificate designs • Fictional institutes and recipients for demonstration
           </div>
         </div>
